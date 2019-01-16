@@ -5,6 +5,10 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+// Normalize.css
+// HACK: We have to refer to its location explicitly to avoid import errors
+require('../../node_modules/normalize.css/normalize.css')
+
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
