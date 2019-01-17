@@ -4,21 +4,21 @@
       <h2>Site Name</h2>
       <p class="wizard-info">The name of this site - it's just used for saving and loading files and won't be displayed anywhere online.</p>
       <div class="wizard-input">
-        <input type="text"/>
+        <input type="text" v-model="name"/>
       </div>
     </div>
     <div class="wizard-step">
       <h2>Title</h2>
       <p class="wizard-info">The title of this site to be displayed in the browser's title bar and main heading.</p>
       <div class="wizard-input">
-        <input type="text"/>
+        <input type="text" v-model="title"/>
       </div>
     </div>
     <div class="wizard-step">
       <h2>Introduction</h2>
       <p class="wizard-info">Some introductory text about who you are and what you do. It will be displayed under the heading on the main page.</p>
       <div class="wizard-input">
-        <textarea/>
+        <textarea v-model="intro"/>
       </div>
     </div>
     <div class="wizard-step">
@@ -48,8 +48,17 @@
 
 <script>
   import { mapActions } from 'vuex'
+  import { mapFields } from 'vuex-map-fields'
 
   export default {
+    computed: {
+      ...mapFields([
+        'info.name',
+        'info.title',
+        'info.intro'
+        // ...
+      ])
+    },
     methods: {
       ...mapActions([
         'createSite'
