@@ -1,6 +1,7 @@
 <template>
   <div class="header-wrapper">
     <h1>{{ title }}</h1>
+    <button type="button" @click="buildSiteInStore">Build</button>
     <select v-show="sitesExist" v-model="activeSite" @change="loadOrCreateSite(activeSite)">
       <option v-for="item in sites" :key="item">{{ item }}</option>
       <option value="~Create~">Create a Site</option>
@@ -26,7 +27,8 @@
     methods: {
       ...mapActions([
         'loadSite',
-        'startCreatingSite'
+        'startCreatingSite',
+        'buildSite'
       ]),
       loadOrCreateSite (data) {
         // HACK: Tildes ensure that it's not something that a user can create
@@ -35,6 +37,9 @@
         } else {
           this.loadSite(this.activeSite)
         }
+      },
+      async buildSiteInStore () {
+        this.buildSite(this.activeSite)
       }
     }
   }
@@ -54,7 +59,20 @@
     margin: 0;
   }
 
+  button {
+    background-color: white;
+    border-radius: 2px;
+    margin-right: 10px;
+  }
+
+  button:hover,
+  button:focus {
+    background-color: #ccc;
+  }
+
   select {
+    border: none;
+    border-radius: 2px;
     flex: 0 0 auto;
   }
 
