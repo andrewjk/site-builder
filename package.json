@@ -62,6 +62,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "axios": "^0.18.0",
     "fs-extra": "^7.0.1",
+    "klaw": "^3.0.0",
     "liquidjs": "^8.2.0",
     "normalize.css": "^8.0.1",
     "vue": "^2.6.10",
