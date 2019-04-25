@@ -10,7 +10,6 @@ import { exec } from 'child_process'
 
 const state = {
   sites: [],
-  // TODO: This should be state
   sitesExist: false,
   creatingSite: false,
   activeSite: '',
@@ -105,7 +104,6 @@ const actions = {
       .on('data', item => {
         if (!item.stats.isDirectory()) {
           const fileName = item.path.substring(item.path.lastIndexOf(path.sep) + 1, item.path.lastIndexOf('.'))
-          console.log(fileName)
           pages.push(fileName)
         }
       })
@@ -119,30 +117,54 @@ const actions = {
     await fs.remove(outputFolder)
     await fs.ensureDir(outputFolder)
 
-    // HACK: Recopy the templates to the output folder for the time being...
-    const tempFolder = path.join(await context.dispatch('getTemplatesFolder'), 'default')
-    const templateFolder = path.join(siteFolder, 'templates', 'default')
-    await fs.copy(tempFolder, templateFolder)
+    // Ensure the includes, layouts and site folders exist
+    const includesFolder = path.join(siteFolder, 'output', 'includes')
+    const layoutsFolder = path.join(siteFolder, 'output', 'layouts')
+    const webFolder = path.join(siteFolder, 'output', 'site')
+    await fs.ensureDir(includesFolder)
+    await fs.ensureDir(layoutsFolder)
+    await fs.ensureDir(webFolder)
+
+    // HACK: Copy the built-in default template to the output folder for the time being...
+    // TODO: Figure out whether this is something that should be done
+    //       Pro: allows us to update the default template for people
+    //       Con: those updates may break things
+    const builtInFolder = path.join(await context.dispatch('getTemplatesFolder'), 'default')
+    const defaultTemplateFolder = path.join(siteFolder, 'templates', 'default')
+    await fs.copy(builtInFolder, defaultTemplateFolder)
 
     // Copy the default template to the output folder
-    await fs.copy(templateFolder, outputFolder)
+    await fs.copy(defaultTemplateFolder, webFolder)
+
+    // Move the default template layouts folder to the output layouts folder
+    const defaultLayoutFolder = path.join(webFolder, 'layout')
+    const defaultLayoutFiles = await getFilesInFolder(defaultLayoutFolder)
+    for (let i = 0; i < defaultLayoutFiles.length; i++) {
+      const source = path.join(defaultLayoutFolder, defaultLayoutFiles[i])
+      const dest = path.join(layoutsFolder, defaultLayoutFiles[i])
+      await fs.move(source, dest)
+    }
 
     // TODO: Copy the theme template to the output folder (if applicable)
+    // TODO: Move the theme template layouts folder to the output layouts folder
+    // TODO: Need to have 'theme template' as part of info.json
 
-    // Liquid rendering
+    // TODO: Copy the used blocks into the includes folder
+
+    // Initialize the Liquid rendering engine
     const pagesFolder = path.join(siteFolder, 'pages')
     const engine = new Liquid({
-      root: pagesFolder, // root for layouts/includes lookup
-      extname: '.html' // used for layouts/includes, defaults ''
+      root: [ pagesFolder, layoutsFolder, includesFolder ]
     })
 
     // Generate each page in the pages folder
     state.pages.map(async (item) => {
       console.log('GENERATING', item)
-      const result = await engine.renderFile(item, { name: item })
+      const itemFile = path.join(pagesFolder, item + '.html')
+      const result = await engine.renderFile(itemFile, { name: item })
 
       // Write the output files
-      const outputFile = path.resolve(outputFolder, item + '.html')
+      const outputFile = path.resolve(webFolder, item + '.html')
       fs.writeFile(outputFile, result, (err) => {
         if (err) {
           console.log('GEN ERROR', err)
@@ -150,8 +172,11 @@ const actions = {
       })
     })
 
+    // TODO: Concat and minify css from templates, layouts and blocks
+    // TODO: Concat and minify css from templates, layouts and blocks
+
     // Open it in the user's default browser
-    const indexFile = path.join(outputFolder, 'index.html')
+    const indexFile = path.join(webFolder, 'index.html')
     exec(`"${indexFile}"`, (error, stdout, stderr) => {
       console.log(stdout)
       console.log(stderr)
@@ -160,6 +185,20 @@ const actions = {
       }
     })
   }
+}
+
+function getFilesInFolder (root) {
+  return new Promise((resolve, reject) => {
+    const result = []
+    walk(root)
+      .on('data', item => {
+        if (!item.stats.isDirectory()) {
+          const fileName = item.path.substring(item.path.lastIndexOf(path.sep) + 1)
+          result.push(fileName)
+        }
+      })
+      .on('end', () => resolve(result))
+  })
 }
 
 export default {
