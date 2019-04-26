@@ -20,36 +20,26 @@
 
 <script>
   export default {
-    data () {
-      return {
-        electron: process.versions.electron,
-        name: this.$route.name,
-        node: process.versions.node,
-        path: this.$route.path,
-        platform: require('os').platform(),
-        vue: require('vue/package.json').version
-      }
-    }
   }
 </script>
 
 <style scoped>
-
   .side-bar-wrapper {
     background-color: #2d2d2d;
     color: #eee;
     height: 100vh;
-    max-width: 120px;
+    width: 120px;
     overflow: hidden;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
+    padding: 0 10px;
   }
 
   .side-bar-title {
-    text-transform: uppercase;
-    margin: 5px 0;
     font-size: 80%;
+    margin: 15px 0;
+    text-transform: uppercase;
   }
 
+  .side-bar-item {
+    margin: 10px 0; 
+  }
 </style>

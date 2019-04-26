@@ -1,11 +1,11 @@
 <template>
   <div class="header-wrapper">
     <h1>{{ title }}</h1>
-    <button type="button" @click="buildSiteInStore">Build</button>
     <select v-show="sitesExist" v-model="activeSite" @change="loadOrCreateSite(activeSite)">
       <option v-for="item in sites" :key="item">{{ item }}</option>
       <option value="~Create~">Create a Site</option>
     </select>
+    <button type="button" @click="buildSiteInStore">Build</button>
   </div>
 </template>
 
@@ -50,19 +50,20 @@
   .header-wrapper {
     background-color: #2d2d2d;
     color: #eee;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-column-gap: 10px;
     padding: 20px 10px;
   }
 
   h1 {
-    flex: 1 1 auto;
     margin: 0;
   }
 
   button {
     background-color: white;
     border-radius: 2px;
-    margin-right: 10px;
+    padding: 0 10px;
   }
 
   button:hover,
@@ -73,7 +74,7 @@
   select {
     border: none;
     border-radius: 2px;
-    flex: 0 0 auto;
+    padding: 0 5px;
   }
 
 </style>
