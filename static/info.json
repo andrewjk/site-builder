@@ -1,0 +1,26 @@
+{
+    "title": "Site Information",
+    "definitions": [
+        {
+            "key": "name",
+            "name": "Site name",
+            "type": "text"
+        },
+        {
+            "key": "title",
+            "name": "Title",
+            "type": "text"
+        },
+        {
+            "key": "description",
+            "name": "Description",
+            "type": "text"
+        },
+        {
+            "key": "icon",
+            "name": "Icon",
+            "type": "image",
+            "ext": "ico"
+        }
+    ]
+}

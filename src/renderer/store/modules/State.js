@@ -13,13 +13,18 @@ const state = {
   sitesExist: false,
   creatingSite: false,
   activeSite: '',
+  infoDefinition: {},
+  // TODO: Fold this into each site
   info: {
     name: '',
     title: '',
-    intro: ''
+    description: '',
+    icon: null
     // etc
   },
-  pages: []
+  // TODO: Fold this into each site
+  pages: [],
+  blocks: []
 }
 
 const getters = {
@@ -48,6 +53,9 @@ const mutations = {
   SET_ACTIVE_SITE (state, site) {
     state.activeSite = site
   },
+  SET_INFO_DEFINITION (state, def) {
+    state.infoDefinition = def
+  },
   SET_INFO (state, info) {
     state.info.name = info.name
     state.info.title = info.title
@@ -74,6 +82,11 @@ const actions = {
       context.commit('SET_SITES_EXIST')
       context.dispatch('loadSite', sites[0])
     }
+
+    const infoJsonFile = path.join(__static, 'info.json')
+    const infoJson = await fs.readJson(infoJsonFile)
+    console.log(infoJson)
+    context.commit('SET_INFO_DEFINITION', infoJson)
   },
   startCreatingSite (context) {
     context.commit('START_CREATING_SITE')

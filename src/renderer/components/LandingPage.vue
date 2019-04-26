@@ -9,8 +9,9 @@
       </div>
 
       <div class="editor-container">
-        <intro v-show="!sitesExist && !creatingSite"></intro>
-        <new-site-wizard v-show="creatingSite"></new-site-wizard>
+        <intro v-if="!sitesExist && !creatingSite"></intro>
+        <new-site-wizard v-else-if="creatingSite"></new-site-wizard>
+        <data-editor :definition="siteInfoDefinition" :data="siteInfo"></data-editor>
       </div>
     </main>
   </div>
@@ -32,7 +33,9 @@
     computed: {
       ...mapState({
         sitesExist: state => state.State.sitesExist,
-        creatingSite: state => state.State.creatingSite
+        creatingSite: state => state.State.creatingSite,
+        siteInfoDefinition: state => state.State.infoDefinition,
+        siteInfo: state => state.State.info
       })
     },
     methods: {
@@ -51,17 +54,8 @@
 <style>
 
   main {
-    display: flex;
-  }
-
-  .side-bar-container {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .editor-container {
-    flex: 1 1 auto;
+    display: grid !important;
+    grid-template-columns: auto 1fr;
   }
 
 </style>
