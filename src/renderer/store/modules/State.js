@@ -63,7 +63,7 @@ const actions = {
     return path.join(__static, '/templates/')
   },
   getSitesFolder (context) {
-    return path.join(remote.app.getPath('appData'), '/Site Builder/sites/')
+    return path.join(remote.app.getPath('documents'), '/Site Builder')
   },
   async loadAllSites (context) {
     const sitesFolder = await context.dispatch('getSitesFolder')
