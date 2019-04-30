@@ -24,11 +24,17 @@ const state = {
   },
   // TODO: Fold this into each site
   pages: [],
-  blocks: []
+  blocks: [],
+  sections: []
 }
 
 const getters = {
-  getField
+  getField,
+  activeSection (state) {
+    return state.sections.find((section) => {
+      return section.isActive
+    })
+  }
 }
 
 const mutations = {
@@ -63,6 +69,14 @@ const mutations = {
   },
   SET_PAGES (state, pages) {
     state.pages = pages
+  },
+  SET_SECTIONS (state, items) {
+    state.sections = items
+  },
+  SET_ACTIVE_SECTION (state, index) {
+    state.sections.forEach((item, i) => {
+      item.isActive = (i === index)
+    })
   }
 }
 
@@ -74,18 +88,22 @@ const actions = {
     return path.join(remote.app.getPath('documents'), '/Site Builder')
   },
   async loadAllSites (context) {
+    // Load the folders in the sites directory
     const sitesFolder = await context.dispatch('getSitesFolder')
     const isDirectory = sitesFolder => fs.lstatSync(sitesFolder).isDirectory()
     const sites = fs.readdirSync(sitesFolder).map(name => path.join(sitesFolder, name)).filter(isDirectory).map(name => path.basename(name))
     context.commit('SET_SITES', sites)
+
+    // Load the first site
+    // TODO: Should load the previous site used
     if (sites.length) {
       context.commit('SET_SITES_EXIST')
       context.dispatch('loadSite', sites[0])
     }
 
+    // Load the info.json definitions file which contains types, explanations etc for site info
     const infoJsonFile = path.join(__static, 'info.json')
     const infoJson = await fs.readJson(infoJsonFile)
-    console.log(infoJson)
     context.commit('SET_INFO_DEFINITION', infoJson)
   },
   startCreatingSite (context) {
@@ -105,7 +123,7 @@ const actions = {
   },
   async loadSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
-    // Load the info
+    // Load the data from info.json
     const infoFile = path.join(siteFolder, 'data/info.json')
     fs.readJSON(infoFile).then((info) => {
       context.commit('SET_INFO', info)
@@ -120,7 +138,95 @@ const actions = {
           pages.push(fileName)
         }
       })
-      .on('end', () => context.commit('SET_PAGES', pages))
+      .on('end', () => {
+        context.commit('SET_PAGES', pages)
+        context.dispatch('loadSections')
+      })
+  },
+  loadSections (context) {
+    // Build the sidebar items from pages, blocks etc
+    const items = []
+    // Info
+    items.push({
+      key: 'title-info',
+      class: 'title',
+      text: 'Info'
+    })
+    items.push({
+      isActive: true,
+      key: 'info-json',
+      class: 'item',
+      type: 'data',
+      text: 'Site'
+    })
+    // Data
+    items.push({
+      key: 'title-data',
+      class: 'title',
+      text: 'Data'
+    })
+    // TODO: Real data...
+    items.push({
+      isActive: false,
+      key: 'data-news',
+      class: 'item',
+      type: 'collection',
+      text: 'News'
+    })
+    items.push({
+      isActive: false,
+      key: 'data-items',
+      class: 'item',
+      type: 'collection',
+      text: 'Items'
+    })
+    // Pages
+    items.push({
+      key: 'title-pages',
+      class: 'title',
+      text: 'Pages'
+    })
+    state.pages.forEach((page) => {
+      items.push({
+        isActive: false,
+        key: 'page-' + page,
+        class: 'item',
+        type: 'page',
+        text: page
+      })
+    })
+    // Blocks
+    items.push({
+      key: 'title-blocks',
+      class: 'title',
+      text: 'Blocks'
+    })
+    // TODO: Real blocks...
+    items.push({
+      isActive: false,
+      key: 'block-header',
+      class: 'item',
+      type: 'block',
+      text: 'Header'
+    })
+    items.push({
+      isActive: false,
+      key: 'block-footer',
+      class: 'item',
+      type: 'block',
+      text: 'Footer'
+    })
+    items.push({
+      isActive: false,
+      key: 'block-hours',
+      class: 'item',
+      type: 'block',
+      text: 'Hours'
+    })
+    context.commit('SET_SECTIONS', items)
+  },
+  setActiveSection (context, index) {
+    context.commit('SET_ACTIVE_SECTION', index)
   },
   async buildSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)

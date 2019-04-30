@@ -11,32 +11,38 @@
       <div class="editor-container">
         <intro v-if="!sitesExist && !creatingSite"></intro>
         <new-site-wizard v-else-if="creatingSite"></new-site-wizard>
-        <data-editor :definition="siteInfoDefinition" :data="siteInfo"></data-editor>
+        <data-editor v-else-if="activeSection.type === 'data'" :definition="siteInfoDefinition" :data="siteInfo"></data-editor>
+        <collection-editor v-else-if="activeSection.type === 'collection'"></collection-editor>
+        <page-editor v-else-if="activeSection.type === 'page'"></page-editor>
       </div>
     </main>
   </div>
 </template>
 
 <script>
-  import { mapState, mapMutations, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 
   import SiteHeader from './LandingPage/SiteHeader'
   import SideBar from './LandingPage/SideBar'
   import Intro from './LandingPage/Intro'
   import NewSiteWizard from './LandingPage/NewSiteWizard'
-  import CollectionEditor from './LandingPage/CollectionEditor'
   import DataEditor from './LandingPage/DataEditor'
+  import CollectionEditor from './LandingPage/CollectionEditor'
+  import PageEditor from './LandingPage/PageEditor'
 
   export default {
     name: 'landing-page',
-    components: { SiteHeader, SideBar, Intro, NewSiteWizard, CollectionEditor, DataEditor },
+    components: { SiteHeader, SideBar, Intro, NewSiteWizard, DataEditor, CollectionEditor, PageEditor },
     computed: {
       ...mapState({
         sitesExist: state => state.State.sitesExist,
         creatingSite: state => state.State.creatingSite,
         siteInfoDefinition: state => state.State.infoDefinition,
         siteInfo: state => state.State.info
-      })
+      }),
+      ...mapGetters([
+        'activeSection'
+      ])
     },
     methods: {
       ...mapMutations([

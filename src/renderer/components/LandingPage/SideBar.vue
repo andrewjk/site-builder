@@ -1,29 +1,36 @@
 <template>
   <div class="side-bar-wrapper">
-    <div class="side-bar-title">Info</div>
-    <div class="side-bar-item">Site</div>
-    <div class="side-bar-item">Hours</div>
-    <div class="side-bar-title">Data</div>
-    <div class="side-bar-item">News</div>
-    <div class="side-bar-item">Items</div>
-    <div class="side-bar-title">Pages</div>
-    <div class="side-bar-item">_Layout</div>
-    <div class="side-bar-item">Main</div>
-    <div class="side-bar-item">About</div>
-    <div class="side-bar-item">Contact</div>
-    <div class="side-bar-title">Blocks</div>
-    <div class="side-bar-item">Header</div>
-    <div class="side-bar-item">Footer</div>
-    <div class="side-bar-item">Hours</div>
+    <div v-for="(item, index) in sections" :key="item.key">
+      <div v-if="item.class === 'title'" class="side-bar-title">
+        {{ item.text }}
+      </div>
+      <div v-else-if="item.class === 'item'" :class="['side-bar-item', item.isActive ? 'selected' : '']">
+        <button @click="setActiveSection(index)">
+          {{ item.text }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
+
   export default {
+    computed: {
+      ...mapState({
+        sections: state => state.State.sections
+      })
+    },
+    methods: {
+      ...mapActions([
+        'setActiveSection'
+      ])
+    }
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .side-bar-wrapper {
     background-color: #2d2d2d;
     color: #eee;
@@ -34,12 +41,29 @@
   }
 
   .side-bar-title {
-    font-size: 80%;
-    margin: 15px 0;
+    font-size: 13px;
+    padding: 15px 0;
     text-transform: uppercase;
   }
 
   .side-bar-item {
-    margin: 10px 0; 
+    button {
+      border-radius: 2px;
+      color: inherit;
+      padding: 5px;
+      text-align: left;
+      width: 100%;
+    }
+
+    button:hover,
+    button:focus {
+      background-color: rgba(255, 255, 255, 0.15)
+    }
+  }
+
+  .side-bar-item.selected {
+    button {
+      color: orange;
+    }
   }
 </style>

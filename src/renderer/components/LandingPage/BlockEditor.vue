@@ -1,6 +1,7 @@
+
 <template>
   <div class="collection-editor-wrapper">
-    <div class="title">TODO: Collection</div>
+    <div class="title">TODO: Block</div>
   </div>
 </template>
 
