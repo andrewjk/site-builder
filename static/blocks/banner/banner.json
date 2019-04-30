@@ -1,0 +1,20 @@
+{
+    "title": "Banner",
+    "values": [
+        {
+            "key": "title",
+            "name": "Title (optional)",
+            "type": "text"
+        },
+        {
+            "key": "text",
+            "name": "Text",
+            "type": "text"
+        },
+        {
+            "key": "background-image",
+            "name": "Background image",
+            "type": "image"
+        }
+    ]
+}
