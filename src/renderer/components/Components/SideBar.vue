@@ -2,11 +2,18 @@
   <div class="side-bar-wrapper">
     <div v-for="(item, index) in sections" :key="item.key">
       <div v-if="item.class === 'title'" class="side-bar-title">
-        {{ item.text }}
+        <button @click="setActiveSection(index)">
+          {{ item.text }}
+        </button>
       </div>
       <div v-else-if="item.class === 'item'" :class="['side-bar-item', item.isActive ? 'selected' : '']">
         <button @click="setActiveSection(index)">
           {{ item.text }}
+        </button>
+      </div>
+      <div v-else-if="item.class === 'add'" class="side-bar-item add-button">
+        <button @click="addSomething(index)">
+          <fa icon="plus"/>
         </button>
       </div>
     </div>
@@ -24,7 +31,9 @@
     },
     methods: {
       ...mapActions([
-        'setActiveSection'
+        'setHelpSection',
+        'setActiveSection',
+        'addSomething'
       ])
     }
   }
@@ -40,12 +49,7 @@
     padding: 0 10px;
   }
 
-  .side-bar-title {
-    font-size: 13px;
-    padding: 15px 0;
-    text-transform: uppercase;
-  }
-
+  .side-bar-title,
   .side-bar-item {
     button {
       border-radius: 2px;
@@ -61,6 +65,23 @@
     }
   }
 
+  .side-bar-title {
+    button {
+      color: #bbb;
+      font-size: 13px;
+      margin: 5px 0;
+      padding: 7px 5px;
+      text-transform: uppercase;
+    }
+  }
+
+  .side-bar-item {
+    button {
+      padding: 5px 10px;
+    }
+  }
+
+  .side-bar-title.selected,
   .side-bar-item.selected {
     button {
       color: orange;
