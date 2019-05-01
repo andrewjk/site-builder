@@ -1,0 +1,27 @@
+{
+    "title": "Footer",
+    "values": [
+        {
+            "key": "text",
+            "name": "Text",
+            "type": "text"
+        },
+        {
+            "key": "links",
+            "name": "Links",
+            "type": "array",
+            "values": [
+                {
+                    "key": "link-type",
+                    "name": "Type",
+                    "type": "text"
+                },
+                {
+                    "key": "link-url",
+                    "name": "Url",
+                    "type": "text"
+                }
+            ]
+        }
+    ]
+}

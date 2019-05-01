@@ -22,7 +22,12 @@ const state = {
     icon: null
     // etc
   },
+  appearanceDefinition: {},
+  appearance: {
+    // TODO:
+  },
   // TODO: Fold this into each site
+  collections: [],
   pages: [],
   blocks: [],
   sections: []
@@ -32,6 +37,7 @@ const getters = {
   getField,
   activeSection (state) {
     return state.sections.find((section) => {
+      // if (section.isActive) console.log('got active section', section.text)
       return section.isActive
     })
   }
@@ -67,8 +73,20 @@ const mutations = {
     state.info.title = info.title
     state.info.intro = info.intro
   },
+  SET_APPEARANCE_DEFINITION (state, def) {
+    state.appearanceDefinition = def
+  },
+  SET_APPEARANCE (state, app) {
+    // TODO:
+  },
+  SET_COLLECTIONS (state, collections) {
+    state.collections = collections
+  },
   SET_PAGES (state, pages) {
     state.pages = pages
+  },
+  SET_BLOCKS (state, blocks) {
+    state.blocks = blocks
   },
   SET_SECTIONS (state, items) {
     state.sections = items
@@ -101,10 +119,14 @@ const actions = {
       context.dispatch('loadSite', sites[0])
     }
 
-    // Load the info.json definitions file which contains types, explanations etc for site info
+    // Load the definition files which contain types, explanations etc for site info and appearance
     const infoJsonFile = path.join(__static, 'info.json')
     const infoJson = await fs.readJson(infoJsonFile)
     context.commit('SET_INFO_DEFINITION', infoJson)
+
+    const appearanceJsonFile = path.join(__static, 'appearance.json')
+    const appearanceJson = await fs.readJson(appearanceJsonFile)
+    context.commit('SET_APPEARANCE_DEFINITION', appearanceJson)
   },
   startCreatingSite (context) {
     context.commit('START_CREATING_SITE')
@@ -114,76 +136,109 @@ const actions = {
     const templateFolder = path.join(await context.dispatch('getTemplatesFolder'), 'default')
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), state.info.name)
     await fs.copy(templateFolder, path.join(siteFolder, 'templates', 'default'))
-    // Create the info file
+
+    // Create the data files
     const dataFolder = path.join(siteFolder, 'data')
     await fs.mkdir(dataFolder)
     await fs.writeJSON(path.join(dataFolder + '/info.json'), state.info)
+    await fs.writeJSON(path.join(dataFolder + '/appearance.json'), state.info)
     context.commit('END_CREATING_SITE', state.info.name)
     context.commit('SET_ACTIVE_SITE', state.info.name)
   },
   async loadSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
-    // Load the data from info.json
+
+    // TODO: Rename info.json to info.json
+    // Load the data from info.json and appearance.json
     const infoFile = path.join(siteFolder, 'data/info.json')
     fs.readJSON(infoFile).then((info) => {
       context.commit('SET_INFO', info)
-      context.commit('SET_ACTIVE_SITE', name)
     })
+    const appearanceFile = path.join(siteFolder, 'data/appearance.json')
+    fs.readJSON(appearanceFile).then((app) => {
+      context.commit('SET_APPEARANCE', app)
+    })
+
+    // Load other data
+    let collections = await getFilesInFolder(path.join(siteFolder, 'data'))
+    collections = collections
+      .filter((item) => item !== 'info.json' && item !== 'appearance.json')
+      .map((item) => {
+        return item.substring(item.lastIndexOf(path.sep) + 1, item.lastIndexOf('.'))
+      })
+    context.commit('SET_COLLECTIONS', collections)
+
     // Load the pages that have been created
-    const pages = []
-    walk(path.join(siteFolder, 'pages'))
-      .on('data', item => {
-        if (!item.stats.isDirectory()) {
-          const fileName = item.path.substring(item.path.lastIndexOf(path.sep) + 1, item.path.lastIndexOf('.'))
-          pages.push(fileName)
-        }
-      })
-      .on('end', () => {
-        context.commit('SET_PAGES', pages)
-        context.dispatch('loadSections')
-      })
+    let pages = await getFilesInFolder(path.join(siteFolder, 'pages'))
+    pages = pages.map((item) => {
+      return item.substring(item.lastIndexOf(path.sep) + 1, item.lastIndexOf('.'))
+    })
+    context.commit('SET_PAGES', pages)
+
+    // Load the pages that are available
+    const blocks = await getDirectoriesInFolder(path.join(__static, 'blocks'))
+    context.commit('SET_BLOCKS', blocks)
+
+    // Now that that's all done, load the sections to display in the sidebar and set this site to active
+    context.dispatch('loadSections')
+    context.commit('SET_ACTIVE_SITE', name)
   },
   loadSections (context) {
     // Build the sidebar items from pages, blocks etc
     const items = []
     // Info
     items.push({
+      isActive: false,
       key: 'title-info',
       class: 'title',
-      text: 'Info'
+      type: 'title',
+      text: 'Settings'
     })
     items.push({
       isActive: true,
       key: 'info-json',
       class: 'item',
       type: 'data',
-      text: 'Site'
+      text: 'info',
+      definition: state.infoDefinition,
+      data: state.info
+    })
+    items.push({
+      isActive: false,
+      key: 'appearance-json',
+      class: 'item',
+      type: 'data',
+      text: 'appearance',
+      definition: state.appearanceDefinition,
+      data: state.appearance
     })
     // Data
     items.push({
+      isActive: false,
       key: 'title-data',
       class: 'title',
+      type: 'title',
       text: 'Data'
     })
-    // TODO: Real data...
-    items.push({
-      isActive: false,
-      key: 'data-news',
-      class: 'item',
-      type: 'collection',
-      text: 'News'
+    state.collections.forEach((data) => {
+      items.push({
+        isActive: false,
+        key: 'coll-' + data,
+        class: 'item',
+        type: 'collection',
+        text: data
+      })
     })
     items.push({
-      isActive: false,
-      key: 'data-items',
-      class: 'item',
-      type: 'collection',
-      text: 'Items'
+      key: 'add-data',
+      class: 'add'
     })
     // Pages
     items.push({
+      isActive: false,
       key: 'title-pages',
       class: 'title',
+      type: 'title',
       text: 'Pages'
     })
     state.pages.forEach((page) => {
@@ -195,38 +250,39 @@ const actions = {
         text: page
       })
     })
+    items.push({
+      key: 'add-page',
+      class: 'add'
+    })
     // Blocks
     items.push({
+      isActive: false,
       key: 'title-blocks',
       class: 'title',
+      type: 'title',
       text: 'Blocks'
     })
-    // TODO: Real blocks...
-    items.push({
-      isActive: false,
-      key: 'block-header',
-      class: 'item',
-      type: 'block',
-      text: 'Header'
+    state.blocks.forEach((block) => {
+      items.push({
+        isActive: false,
+        key: 'block-' + block,
+        class: 'item',
+        type: 'block',
+        text: block
+      })
     })
     items.push({
-      isActive: false,
-      key: 'block-footer',
-      class: 'item',
-      type: 'block',
-      text: 'Footer'
-    })
-    items.push({
-      isActive: false,
-      key: 'block-hours',
-      class: 'item',
-      type: 'block',
-      text: 'Hours'
+      key: 'add-block',
+      class: 'add'
     })
     context.commit('SET_SECTIONS', items)
   },
   setActiveSection (context, index) {
     context.commit('SET_ACTIVE_SECTION', index)
+  },
+  addSomething (context, index) {
+    // TODO:
+    alert('todo')
   },
   async buildSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
@@ -314,6 +370,26 @@ function getFilesInFolder (root) {
         if (!item.stats.isDirectory()) {
           const fileName = item.path.substring(item.path.lastIndexOf(path.sep) + 1)
           result.push(fileName)
+        }
+      })
+      .on('end', () => resolve(result))
+  })
+}
+
+function getDirectoriesInFolder (root) {
+  return new Promise((resolve, reject) => {
+    let first = true
+    const result = []
+    walk(root)
+      .on('data', item => {
+        if (item.stats.isDirectory()) {
+          // Skip the root folder
+          if (first) {
+            first = false
+            return
+          }
+          const dirName = item.path.substring(item.path.lastIndexOf(path.sep) + 1)
+          result.push(dirName)
         }
       })
       .on('end', () => resolve(result))

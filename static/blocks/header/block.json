@@ -1,0 +1,32 @@
+{
+    "title": "Header",
+    "values": [
+        {
+            "key": "title",
+            "name": "Title (optional)",
+            "type": "text"
+        },
+        {
+            "key": "logo",
+            "name": "Logo",
+            "type": "image"
+        },
+        {
+            "key": "menu",
+            "name": "Menu",
+            "type": "array",
+            "values": [
+                {
+                    "key": "menu-title",
+                    "name": "Title",
+                    "type": "text"
+                },
+                {
+                    "key": "menu-page",
+                    "name": "Page",
+                    "type": "text"
+                }
+            ]
+        }
+    ]
+}

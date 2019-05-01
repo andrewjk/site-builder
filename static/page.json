@@ -1,0 +1,25 @@
+{
+    "title": "Page Information",
+    "definitions": [
+        {
+            "key": "title",
+            "name": "Title",
+            "type": "text"
+        },
+        {
+            "key": "description",
+            "name": "Description",
+            "type": "text"
+        },
+        {
+            "key": "layout",
+            "name": "Layout",
+            "type": "text"
+        },
+        {
+            "key": "data",
+            "name": "Data",
+            "type": "text"
+        }
+    ]
+}

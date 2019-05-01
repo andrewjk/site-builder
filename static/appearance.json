@@ -1,0 +1,15 @@
+{
+    "title": "Site Appearance",
+    "definitions": [
+        {
+            "key": "font-family",
+            "name": "Font family",
+            "type": "text"
+        },
+        {
+            "key": "font-size",
+            "name": "Font size",
+            "type": "text"
+        }
+    ]
+}
