@@ -72,4 +72,8 @@
     grid-template-columns: auto 1fr;
   }
 
+  .editor-container {
+    padding: 20px;
+  }
+
 </style>

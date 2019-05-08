@@ -26,10 +26,6 @@
 </script>
 
 <style scoped>
-  .data-editor-wrapper {
-    padding: 20px;
-  }
-
   .title {
     font-size: 24px;
     margin-bottom: 10px;
