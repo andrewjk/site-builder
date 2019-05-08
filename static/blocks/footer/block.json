@@ -1,6 +1,6 @@
 {
     "title": "Footer",
-    "values": [
+    "definitions": [
         {
             "key": "text",
             "name": "Text",
@@ -10,7 +10,7 @@
             "key": "links",
             "name": "Links",
             "type": "array",
-            "values": [
+            "definitions": [
                 {
                     "key": "link-type",
                     "name": "Type",

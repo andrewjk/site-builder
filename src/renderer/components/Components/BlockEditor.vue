@@ -1,21 +1,25 @@
 
 <template>
-  <div class="collection-editor-wrapper">
+  <div class="block-editor-wrapper">
     <div class="title">TODO: Block</div>
+    <data-editor :definition="definition" :data="data"></data-editor>
   </div>
 </template>
 
 <script>
+  import DataEditor from './DataEditor'
+
   export default {
+    components: { DataEditor },
     props: {
       definition: {},
-      collection: {}
+      data: {}
     }
   }
 </script>
 
 <style scoped>
-  .collection-editor-wrapper {
+  .block-editor-wrapper {
     padding: 20px;
   }
 

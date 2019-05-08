@@ -1,6 +1,6 @@
 {
     "title": "Header",
-    "values": [
+    "definitions": [
         {
             "key": "title",
             "name": "Title (optional)",

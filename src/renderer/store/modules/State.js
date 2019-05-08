@@ -14,6 +14,8 @@ const state = {
   creatingSite: false,
   activeSite: '',
   infoDefinition: {},
+  appearanceDefinition: {},
+  pageDefinition: {},
   // TODO: Fold this into each site
   info: {
     name: '',
@@ -22,7 +24,6 @@ const state = {
     icon: null
     // etc
   },
-  appearanceDefinition: {},
   appearance: {
     // TODO:
   },
@@ -79,6 +80,9 @@ const mutations = {
   SET_APPEARANCE (state, app) {
     // TODO:
   },
+  SET_PAGE_DEFINITION (state, def) {
+    state.pageDefinition = def
+  },
   SET_COLLECTIONS (state, collections) {
     state.collections = collections
   },
@@ -119,14 +123,18 @@ const actions = {
       context.dispatch('loadSite', sites[0])
     }
 
-    // Load the definition files which contain types, explanations etc for site info and appearance
-    const infoJsonFile = path.join(__static, 'info.json')
+    // Load the definition files which contain types, explanations etc for site info, appearance and page info
+    const infoJsonFile = path.join(__static, 'info-def.json')
     const infoJson = await fs.readJson(infoJsonFile)
     context.commit('SET_INFO_DEFINITION', infoJson)
 
-    const appearanceJsonFile = path.join(__static, 'appearance.json')
+    const appearanceJsonFile = path.join(__static, 'appearance-def.json')
     const appearanceJson = await fs.readJson(appearanceJsonFile)
     context.commit('SET_APPEARANCE_DEFINITION', appearanceJson)
+
+    const pageJsonFile = path.join(__static, 'page-def.json')
+    const pageJson = await fs.readJson(pageJsonFile)
+    context.commit('SET_PAGE_DEFINITION', pageJson)
   },
   startCreatingSite (context) {
     context.commit('START_CREATING_SITE')
@@ -148,7 +156,6 @@ const actions = {
   async loadSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
 
-    // TODO: Rename info.json to info.json
     // Load the data from info.json and appearance.json
     const infoFile = path.join(siteFolder, 'data/info.json')
     fs.readJSON(infoFile).then((info) => {
@@ -169,14 +176,32 @@ const actions = {
     context.commit('SET_COLLECTIONS', collections)
 
     // Load the pages that have been created
-    let pages = await getFilesInFolder(path.join(siteFolder, 'pages'))
-    pages = pages.map((item) => {
-      return item.substring(item.lastIndexOf(path.sep) + 1, item.lastIndexOf('.'))
+    const pageFiles = await getFilesInFolder(path.join(siteFolder, 'pages'))
+    const pages = pageFiles.map((file) => {
+      const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
+      const dataFile = path.join(siteFolder, file, file.replace('.html', '.json'))
+      const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
+      return {
+        file,
+        name,
+        data
+      }
     })
     context.commit('SET_PAGES', pages)
 
-    // Load the pages that are available
-    const blocks = await getDirectoriesInFolder(path.join(__static, 'blocks'))
+    // Load the blocks that are available
+    // TODO: Is this the right place to be getting data from?
+    const blockFiles = await getDirectoriesInFolder(path.join(__static, 'blocks'))
+    const blocks = blockFiles.map((file) => {
+      const name = file.substring(file.lastIndexOf(path.sep) + 1)
+      const definitionFile = path.join(__static, 'blocks', file, 'block.json')
+      const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
+      return {
+        file,
+        name,
+        definition
+      }
+    })
     context.commit('SET_BLOCKS', blocks)
 
     // Now that that's all done, load the sections to display in the sidebar and set this site to active
@@ -244,10 +269,12 @@ const actions = {
     state.pages.forEach((page) => {
       items.push({
         isActive: false,
-        key: 'page-' + page,
+        key: 'page-' + page.name,
         class: 'item',
         type: 'page',
-        text: page
+        text: page.name,
+        definition: state.pageDefinition,
+        data: page.data
       })
     })
     items.push({
@@ -265,10 +292,12 @@ const actions = {
     state.blocks.forEach((block) => {
       items.push({
         isActive: false,
-        key: 'block-' + block,
+        key: 'block-' + block.name,
         class: 'item',
         type: 'block',
-        text: block
+        text: block.name,
+        definition: block.definition,
+        data: block.data
       })
     })
     items.push({
