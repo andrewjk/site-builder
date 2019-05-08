@@ -12,12 +12,12 @@
         <intro v-if="!sitesExist && !creatingSite"></intro>
         <new-site-wizard v-else-if="creatingSite"></new-site-wizard>
 
-        <help-section v-else-if="activeSection.type === 'title'" :section="activeSection.text"></help-section>
+        <help-section v-else-if="activeSection && activeSection.type === 'title'" :section="activeSection.text"></help-section>
 
-        <data-editor v-else-if="activeSection.type === 'data'" :definition="activeSection.definition" :data="activeSection.data"></data-editor>
-        <collection-editor v-else-if="activeSection.type === 'collection'" :definition="activeSection.definition" :data="activeSection.data"></collection-editor>
-        <page-editor v-else-if="activeSection.type === 'page'" :definition="activeSection.definition" :data="activeSection.data"></page-editor>
-        <block-editor v-else-if="activeSection.type === 'block'" :definition="activeSection.definition" :data="activeSection.data"></block-editor>
+        <data-editor v-else-if="activeSection && activeSection.type === 'data'" :definition="activeSection.definition" :data="activeSection.data"></data-editor>
+        <collection-editor v-else-if="activeSection && activeSection.type === 'collection'" :definition="activeSection.definition" :data="activeSection.data"></collection-editor>
+        <page-editor v-else-if="activeSection && activeSection.type === 'page'" :definition="activeSection.definition" :data="activeSection.data"></page-editor>
+        <block-editor v-else-if="activeSection && activeSection.type === 'block'" :definition="activeSection.definition" :data="activeSection.data"></block-editor>
       </div>
     </main>
   </div>
