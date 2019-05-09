@@ -16,8 +16,8 @@
 
         <data-editor v-else-if="activeSection && activeSection.type === 'data'" :definition="activeSection.definition" :data="activeSection.data"></data-editor>
         <collection-editor v-else-if="activeSection && activeSection.type === 'collection'" :definition="activeSection.definition" :data="activeSection.data"></collection-editor>
-        <page-editor v-else-if="activeSection && activeSection.type === 'page'" :definition="activeSection.definition" :data="activeSection.data"></page-editor>
-        <block-editor v-else-if="activeSection && activeSection.type === 'block'" :definition="activeSection.definition" :data="activeSection.data"></block-editor>
+        <page-editor v-else-if="activeSection && activeSection.type === 'page'" :page="activeSection.page" :definition="activeSection.definition" :data="activeSection.data"></page-editor>
+        <block-editor v-else-if="activeSection && activeSection.type === 'block'" :block="activeSection.block" :definition="activeSection.definition" :data="activeSection.data"></block-editor>
       </div>
     </main>
   </div>

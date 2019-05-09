@@ -269,6 +269,7 @@ const actions = {
     state.pages.forEach((page) => {
       items.push({
         isActive: false,
+        page,
         key: 'page-' + page.name,
         class: 'item',
         type: 'page',
@@ -292,6 +293,7 @@ const actions = {
     state.blocks.forEach((block) => {
       items.push({
         isActive: false,
+        block,
         key: 'block-' + block.name,
         class: 'item',
         type: 'block',

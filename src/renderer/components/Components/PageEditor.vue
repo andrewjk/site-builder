@@ -1,6 +1,6 @@
 <template>
   <div class="page-editor-wrapper">
-    <div class="title">TODO: Page</div>
+    <div class="title">Page: {{ page.name }}</div>
     <data-editor :definition="definition" :data="data"></data-editor>
   </div>
 </template>
@@ -11,6 +11,7 @@
   export default {
     components: { DataEditor },
     props: {
+      page: {},
       definition: {},
       data: {}
     }
