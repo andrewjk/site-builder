@@ -1,6 +1,5 @@
 <template>
   <div class="data-editor-wrapper">
-    <div class="title">{{ definition.title }}</div>
     <table>
       <tbody>
         <tr v-for="def in definition.definitions" :key="def.key">
@@ -8,7 +7,7 @@
             <label :for="def.key">{{ def.name }}</label>
           </td>
           <td>
-            <input type="text" :id="def.key" v-model="def.value">
+            <input type="text" :id="def.key" :value="data[def.key]" @input="$emit('change', def.key, $event.target.value)">
           </td>
         </tr>
       </tbody>
@@ -20,17 +19,13 @@
   export default {
     props: {
       definition: {},
-      data: {}
+      data: {},
+      file: ''
     }
   }
 </script>
 
-<style scoped>
-  .title {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
+<style lang="scss" scoped>
   label {
     margin-right: 20px;
   }

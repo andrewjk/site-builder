@@ -1,6 +1,6 @@
 <template>
   <div class="page-editor-wrapper">
-    <div class="title">Page: {{ page.name }}</div>
+    <div class="title">{{ definition.title }}</div>
     <data-editor :definition="definition" :data="data" @change="onChange"/>
   </div>
 </template>
@@ -12,16 +12,16 @@
   export default {
     components: { DataEditor },
     props: {
-      page: {},
+      name: '',
       definition: {},
       data: {}
     },
     methods: {
       ...mapMutations([
-        'SET_PAGE_VALUE'
+        'SET_SETTINGS_VALUE'
       ]),
       onChange (key, value) {
-        this.SET_PAGE_VALUE({ page: this.page, key, value })
+        this.SET_SETTINGS_VALUE({ name: this.name, key, value })
       }
     }
   }

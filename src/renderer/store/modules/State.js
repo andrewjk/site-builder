@@ -99,6 +99,19 @@ const mutations = {
     state.sections.forEach((item, i) => {
       item.isActive = (i === index)
     })
+  },
+  SET_SETTINGS_VALUE (state, { settingsName, key, value }) {
+    const data =
+      settingsName === 'info' ? state.info
+        : settingsName === 'appearance' ? state.appearance
+          : null
+    data[key] = value
+  },
+  SET_PAGE_VALUE (state, { page, key, value }) {
+    page.data[key] = value
+  },
+  SET_BLOCK_VALUE (state, { block, key, value }) {
+    block.data[key] = value
   }
 }
 
@@ -199,7 +212,9 @@ const actions = {
       return {
         file,
         name,
-        definition
+        definition,
+        // TODO: Where to load data from?!
+        data: {}
       }
     })
     context.commit('SET_BLOCKS', blocks)
@@ -211,7 +226,7 @@ const actions = {
   loadSections (context) {
     // Build the sidebar items from pages, blocks etc
     const items = []
-    // Info
+    // Settings
     items.push({
       isActive: false,
       key: 'title-info',
@@ -221,18 +236,20 @@ const actions = {
     })
     items.push({
       isActive: true,
-      key: 'info-json',
+      name: 'info',
+      key: 'settings-info',
       class: 'item',
-      type: 'data',
+      type: 'settings',
       text: 'info',
       definition: state.infoDefinition,
       data: state.info
     })
     items.push({
       isActive: false,
-      key: 'appearance-json',
+      name: 'appearance',
+      key: 'settings-appearance',
       class: 'item',
-      type: 'data',
+      type: 'settings',
       text: 'appearance',
       definition: state.appearanceDefinition,
       data: state.appearance
