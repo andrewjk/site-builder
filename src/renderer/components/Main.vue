@@ -91,6 +91,12 @@
 
 <style>
 
+  .body-wrapper {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+  }
+
   main {
     display: grid !important;
     grid-template-columns: auto 1fr;

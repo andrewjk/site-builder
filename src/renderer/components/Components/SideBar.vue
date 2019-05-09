@@ -43,7 +43,7 @@
   .side-bar-wrapper {
     background-color: #2d2d2d;
     color: #eee;
-    height: 100vh;
+    height: 100%;
     width: 120px;
     overflow: hidden;
     padding: 0 10px;
