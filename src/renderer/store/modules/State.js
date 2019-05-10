@@ -100,10 +100,10 @@ const mutations = {
       item.isActive = (i === index)
     })
   },
-  SET_SETTINGS_VALUE (state, { settingsName, key, value }) {
+  SET_SETTINGS_VALUE (state, { name, key, value }) {
     const data =
-      settingsName === 'info' ? state.info
-        : settingsName === 'appearance' ? state.appearance
+      name === 'info' ? state.info
+        : name === 'appearance' ? state.appearance
           : null
     data[key] = value
   },
@@ -180,6 +180,7 @@ const actions = {
     })
 
     // Load other data
+    // TODO: Load the ACTUAL data
     let collections = await getFilesInFolder(path.join(siteFolder, 'data'))
     collections = collections
       .filter((item) => item !== 'info.json' && item !== 'appearance.json')
@@ -190,9 +191,10 @@ const actions = {
 
     // Load the pages that have been created
     const pageFiles = await getFilesInFolder(path.join(siteFolder, 'pages'))
-    const pages = pageFiles.map((file) => {
+    const pages = pageFiles.filter((file) => file.indexOf('.html') !== -1).map((file) => {
       const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
-      const dataFile = path.join(siteFolder, file, file.replace('.html', '.json'))
+      const dataFile = path.join(siteFolder, 'pages', file.replace('.html', '.json'))
+      console.log(dataFile)
       const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
       return {
         file,
@@ -205,12 +207,12 @@ const actions = {
     // Load the blocks that are available
     // TODO: Is this the right place to be getting data from?
     const blockFiles = await getDirectoriesInFolder(path.join(__static, 'blocks'))
-    const blocks = blockFiles.map((file) => {
-      const name = file.substring(file.lastIndexOf(path.sep) + 1)
-      const definitionFile = path.join(__static, 'blocks', file, 'block.json')
+    const blocks = blockFiles.map((dir) => {
+      const name = dir.substring(dir.lastIndexOf(path.sep) + 1)
+      const definitionFile = path.join(__static, 'blocks', dir, 'block.json')
       const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
       return {
-        file,
+        dir,
         name,
         definition,
         // TODO: Where to load data from?!
@@ -331,6 +333,45 @@ const actions = {
   addSomething (context, index) {
     // TODO:
     alert('todo')
+  },
+  async saveSite (context, name) {
+    const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
+
+    // Save the data into info.json and appearance.json
+    const infoFile = path.join(siteFolder, 'data/info.json')
+    fs.writeJSON(infoFile, context.state.info)
+    const appearanceFile = path.join(siteFolder, 'data/appearance.json')
+    fs.writeJSON(appearanceFile, context.state.appearance)
+
+    // Save other data
+    context.state.collections.forEach((collection) => {
+      const collectionFile = path.join(siteFolder, 'data', collection.file)
+      fs.writeJSON(collectionFile, collection.data)
+    })
+
+    // Save the pages that have been created
+    context.state.pages.forEach((page) => {
+      const pageFile = path.join(siteFolder, 'pages', page.file.replace('.html', '.json'))
+      fs.writeJSON(pageFile, page.data)
+    })
+
+    /*
+    // TODO: Figure out what to do with blocks
+    // Save the blocks that are available
+    const blockFiles = await getDirectoriesInFolder(path.join(__static, 'blocks'))
+    const blocks = blockFiles.map((file) => {
+      const name = file.substring(file.lastIndexOf(path.sep) + 1)
+      const definitionFile = path.join(__static, 'blocks', file, 'block.json')
+      const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
+      return {
+        file,
+        name,
+        definition,
+        // TODO: Where to load data from?!
+        data: {}
+      }
+    })
+    */
   },
   async buildSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)

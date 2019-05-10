@@ -5,6 +5,7 @@
       <option v-for="item in sites" :key="item">{{ item }}</option>
       <option value="~Create~">Create a Site</option>
     </select>
+    <button type="button" @click="saveSiteInStore">Save</button>
     <button type="button" @click="buildSiteInStore">Build</button>
   </div>
 </template>
@@ -21,13 +22,13 @@
         'sitesExist',
         'sites',
         'activeSite'
-        // ...
       ])
     },
     methods: {
       ...mapActions([
         'loadSite',
         'startCreatingSite',
+        'saveSite',
         'buildSite'
       ]),
       loadOrCreateSite (data) {
@@ -37,6 +38,9 @@
         } else {
           this.loadSite(this.activeSite)
         }
+      },
+      async saveSiteInStore () {
+        this.saveSite(this.activeSite)
       },
       async buildSiteInStore () {
         this.buildSite(this.activeSite)
@@ -50,10 +54,11 @@
   .header-wrapper {
     background-color: #2d2d2d;
     color: #eee;
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    grid-column-gap: 10px;
     padding: 20px 10px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    grid-column-gap: 10px;
+    align-items: center;
   }
 
   h1 {
@@ -63,7 +68,7 @@
   button {
     background-color: white;
     border-radius: 2px;
-    padding: 0 10px;
+    padding: 6px 10px;
   }
 
   button:hover,
@@ -72,9 +77,9 @@
   }
 
   select {
-    border: none;
+    border: 0;
     border-radius: 2px;
-    padding: 0 5px;
+    padding: 5px 5px;
   }
 
 </style>
