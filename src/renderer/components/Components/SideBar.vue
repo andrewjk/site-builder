@@ -52,16 +52,17 @@
   .side-bar-title,
   .side-bar-item {
     button {
+      border: 1px solid transparent;
       border-radius: 2px;
       color: inherit;
-      padding: 5px;
       text-align: left;
       width: 100%;
     }
-
-    button:hover,
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
     button:focus {
-      background-color: rgba(255, 255, 255, 0.15)
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
   }
 
@@ -70,14 +71,14 @@
       color: #bbb;
       font-size: 13px;
       margin: 5px 0;
-      padding: 7px 5px;
+      padding: 6px 4px;
       text-transform: uppercase;
     }
   }
 
   .side-bar-item {
     button {
-      padding: 5px 10px;
+      padding: 4px 9px;
     }
   }
 
