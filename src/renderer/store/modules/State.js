@@ -38,9 +38,20 @@ const getters = {
   getField,
   activeSection (state) {
     return state.sections.find((section) => {
-      // if (section.isActive) console.log('got active section', section.text)
       return section.isActive
     })
+  },
+  sites (state) {
+    return state.sites
+  },
+  collections (state) {
+    return state.collections
+  },
+  pages (state) {
+    return state.pages
+  },
+  blocks (state) {
+    return state.blocks
   }
 }
 
@@ -112,6 +123,10 @@ const mutations = {
   },
   SET_BLOCK_VALUE (state, { block, key, value }) {
     block.data[key] = value
+  },
+  INSERT_BLOCK (state, { page, block }) {
+    page.blocks.push(block)
+    // page.blocks = [...page.blocks, block]
   }
 }
 
@@ -183,7 +198,7 @@ const actions = {
     // TODO: Load the ACTUAL data
     let collections = await getFilesInFolder(path.join(siteFolder, 'data'))
     collections = collections
-      .filter((item) => item !== 'info.json' && item !== 'appearance.json')
+      .filter((item) => item.indexOf('info.json') === -1 && item.indexOf('appearance.json') === -1)
       .map((item) => {
         return item.substring(item.lastIndexOf(path.sep) + 1, item.lastIndexOf('.'))
       })
@@ -194,13 +209,23 @@ const actions = {
     const pages = pageFiles.filter((file) => file.indexOf('.html') !== -1).map((file) => {
       const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
       const dataFile = path.join(siteFolder, 'pages', file.replace('.html', '.json'))
-      console.log(dataFile)
       const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
-      return {
+      // Load the page's blocks TODO: and block data
+      const content = fs.readFileSync(file)
+      const regex = /{% include '(.+)' %}/gi
+      const blocks = []
+      let match = regex.exec(content)
+      while (match != null) {
+        blocks.push(match[0])
+        match = regex.exec(content)
+      }
+      const page = {
         file,
         name,
-        data
+        data,
+        blocks
       }
+      return page
     })
     context.commit('SET_PAGES', pages)
 
@@ -211,13 +236,14 @@ const actions = {
       const name = dir.substring(dir.lastIndexOf(path.sep) + 1)
       const definitionFile = path.join(__static, 'blocks', dir, 'block.json')
       const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
-      return {
+      const block = {
         dir,
         name,
         definition,
         // TODO: Where to load data from?!
         data: {}
       }
+      return block
     })
     context.commit('SET_BLOCKS', blocks)
 
@@ -338,21 +364,24 @@ const actions = {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
 
     // Save the data into info.json and appearance.json
-    const infoFile = path.join(siteFolder, 'data/info.json')
+    const infoFile = path.join(siteFolder, 'data', 'info.json')
     fs.writeJSON(infoFile, context.state.info)
-    const appearanceFile = path.join(siteFolder, 'data/appearance.json')
+    const appearanceFile = path.join(siteFolder, 'data', 'appearance.json')
     fs.writeJSON(appearanceFile, context.state.appearance)
 
     // Save other data
     context.state.collections.forEach((collection) => {
-      const collectionFile = path.join(siteFolder, 'data', collection.file)
-      fs.writeJSON(collectionFile, collection.data)
+      // const collectionFile = path.join(siteFolder, 'data', collection.file)
+      fs.writeJSON(collection.file, collection.data)
     })
 
     // Save the pages that have been created
     context.state.pages.forEach((page) => {
-      const pageFile = path.join(siteFolder, 'pages', page.file.replace('.html', '.json'))
-      fs.writeJSON(pageFile, page.data)
+      const content = page.blocks.map(item => `{% include '${item.name}' %}`).join('\n')
+      fs.writeFile(page.file, content)
+
+      const dataFile = page.file.replace('.html', '.json')
+      fs.writeJSON(dataFile, page.data)
     })
 
     /*
@@ -455,10 +484,9 @@ function getFilesInFolder (root) {
   return new Promise((resolve, reject) => {
     const result = []
     walk(root)
-      .on('data', item => {
-        if (!item.stats.isDirectory()) {
-          const fileName = item.path.substring(item.path.lastIndexOf(path.sep) + 1)
-          result.push(fileName)
+      .on('data', file => {
+        if (!file.stats.isDirectory()) {
+          result.push(file.path)
         }
       })
       .on('end', () => resolve(result))
@@ -470,15 +498,14 @@ function getDirectoriesInFolder (root) {
     let first = true
     const result = []
     walk(root)
-      .on('data', item => {
-        if (item.stats.isDirectory()) {
+      .on('data', dir => {
+        if (dir.stats.isDirectory()) {
           // Skip the root folder
           if (first) {
             first = false
             return
           }
-          const dirName = item.path.substring(item.path.lastIndexOf(path.sep) + 1)
-          result.push(dirName)
+          result.push(dir.path)
         }
       })
       .on('end', () => resolve(result))

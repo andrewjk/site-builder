@@ -8608,6 +8608,11 @@ vue-loader@^15.7.0:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-modal-dialogs@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/vue-modal-dialogs/-/vue-modal-dialogs-3.0.0.tgz#df92dc2d8d3b3104ed54d5f814f6881b87d58eb8"
+  integrity sha512-52x3DR3mfDLV0yubhoyiXuljRVNpu5EjHAWoKXPIqpVNx3E8DEs4mbXmDYP6xPIlIYfFiYN2aAlEhoMgXkjrBg==
+
 vue-router@^3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.0.6.tgz#2e4f0f9cbb0b96d0205ab2690cfe588935136ac3"

@@ -170,22 +170,22 @@
 
   .dialog-content button.confirm {
     color: white;
-    background-color: #338fff;
+    background-color: #4d90fe;
   }
 
   .dialog-content button.confirm:hover,
   .dialog-content button.confirm:focus {
-    background-color: #0073ff;
+    background-color: darken(#4d90fe, 9%);
   }
 
   .dialog-content button.cancel {
     color: white;
-    background-color: #999;
+    background-color: #aaa;
   }
 
   .dialog-content button.cancel:hover,
   .dialog-content button.cancel:focus {
-    background-color: #7f7f7f;
+    background-color: darken(#aaa, 9%);
   }
 
   .message-box .dialog-content {

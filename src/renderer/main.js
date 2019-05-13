@@ -13,6 +13,9 @@ import {
 // } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+// Dialogs
+import * as ModalDialogs from 'vue-modal-dialogs'
+
 // Normalize.css
 // HACK: We have to refer to its location explicitly to avoid import errors
 require('../../node_modules/normalize.css/normalize.css')
@@ -21,6 +24,9 @@ require('../../node_modules/normalize.css/normalize.css')
 library.add(faPlus)
 
 Vue.component('fa', FontAwesomeIcon)
+
+// Dialogs
+Vue.use(ModalDialogs)
 
 if (!process.env.IS_WEB) {
   Vue.use(require('vue-electron'))
