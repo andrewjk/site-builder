@@ -206,52 +206,68 @@ const actions = {
 
     // Load the pages that have been created
     const pageFiles = await getFilesInFolder(path.join(siteFolder, 'pages'))
-    const pages = pageFiles.filter((file) => file.indexOf('.html') !== -1).map((file) => {
-      const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
-      const dataFile = path.join(siteFolder, 'pages', file.replace('.html', '.json'))
-      const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
-      // Load the page's blocks TODO: and block data
-      const content = fs.readFileSync(file)
-      const regex = /{% include '(.+)' %}/gi
-      const blocks = []
-      let match = regex.exec(content)
-      while (match != null) {
-        blocks.push(match[0])
-        match = regex.exec(content)
-      }
-      const page = {
-        file,
-        name,
-        data,
-        blocks
-      }
-      return page
-    })
+    const pages = await Promise.all(pageFiles.filter((file) => file.indexOf('.html') !== -1).map((file) => {
+      return context.dispatch('loadPage', { siteFolder, file })
+    }))
     context.commit('SET_PAGES', pages)
 
     // Load the blocks that are available
     // TODO: Is this the right place to be getting data from?
     const blockFiles = await getDirectoriesInFolder(path.join(__static, 'blocks'))
-    const blocks = blockFiles.map((dir) => {
-      const name = dir.substring(dir.lastIndexOf(path.sep) + 1)
-      const definitionFile = path.join(__static, 'blocks', dir, 'block.json')
-      const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
-      const block = {
-        dir,
-        name,
-        definition,
-        // TODO: Where to load data from?!
-        data: {}
-      }
-      return block
-    })
+    const blocks = await Promise.all(blockFiles.map(async (dir) => {
+      return context.dispatch('loadBlock', dir)
+    }))
     context.commit('SET_BLOCKS', blocks)
 
     // Now that that's all done, load the sections to display in the sidebar and set this site to active
-    context.dispatch('loadSections')
+    context.dispatch('buildSections')
     context.commit('SET_ACTIVE_SITE', name)
   },
-  loadSections (context) {
+  async loadPage (context, { siteFolder, file }) {
+    const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
+    const dataFile = path.join(siteFolder, 'pages', file.replace('.html', '.json'))
+    const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
+    // Load the page's blocks TODO: and block data
+    const content = fs.readFileSync(file).toString()
+    const regex = /{% include '(.+)' %}/gi
+    const blocks = []
+    let match = regex.exec(content)
+    while (match != null) {
+      const block = {
+        name: match[1],
+        content: ''
+      }
+      blocks.push(block)
+      match = regex.exec(content)
+    }
+    const page = {
+      file,
+      name,
+      data,
+      blocks
+    }
+    return page
+  },
+  async loadBlock (context, dir) {
+    const name = dir.substring(dir.lastIndexOf(path.sep) + 1)
+    // Load the block's content
+    const blockFile = path.join(dir, 'block.liquid')
+    const content = fs.readFileSync(blockFile).toString()
+    // Load the block's data definition
+    const definitionFile = path.join(dir, 'block.json')
+    const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
+    // TODO: Load the block's data
+    const block = {
+      dir,
+      name,
+      content,
+      definition,
+      // TODO: Where to load data from?!
+      data: {}
+    }
+    return block
+  },
+  buildSections (context) {
     // Build the sidebar items from pages, blocks etc
     const items = []
     // Settings

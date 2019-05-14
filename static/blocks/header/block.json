@@ -2,14 +2,14 @@
     "title": "Header",
     "definitions": [
         {
-            "key": "title",
-            "name": "Title (optional)",
-            "type": "text"
-        },
-        {
             "key": "logo",
             "name": "Logo",
             "type": "image"
+        },
+        {
+            "key": "title",
+            "name": "Title (optional)",
+            "type": "text"
         },
         {
             "key": "menu",
