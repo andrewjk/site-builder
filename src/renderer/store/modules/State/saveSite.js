@@ -18,7 +18,7 @@ export default async function saveSite (context, name) {
 
   // Save the pages that have been created
   context.state.pages.forEach(async (page) => {
-    const content = await context.dispatch('buildPageContent')
+    const content = await context.dispatch('buildPageContent', { page })
     fs.writeFile(page.file, content)
 
     const dataFile = page.file.replace('.html', '.json')
