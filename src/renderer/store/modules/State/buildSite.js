@@ -72,7 +72,7 @@ export default async function buildSite (context, name) {
     const result = await engine.parseAndRender(pageContent, { name: page.name })
 
     // Write the output files
-    const outputFile = path.join(webSiteFolder, path.basename(page.file))
+    const outputFile = path.join(webSiteFolder, path.basename(page.file).replace('.liquid', '.html'))
     fs.writeFile(outputFile, result, (err) => {
       if (err) {
         console.log('GEN ERROR', err)

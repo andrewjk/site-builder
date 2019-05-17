@@ -29,7 +29,7 @@ export default async function loadSite (context, name) {
 
   // Load the pages that have been created
   const pageFiles = await getFilesInFolder(path.join(siteFolder, 'pages'))
-  const pages = await Promise.all(pageFiles.filter((file) => file.indexOf('.html') !== -1).map((file) => {
+  const pages = await Promise.all(pageFiles.filter((file) => file.indexOf('.liquid') !== -1).map((file) => {
     return context.dispatch('loadPage', { siteFolder, file })
   }))
   context.commit('SET_PAGES', pages)

@@ -21,7 +21,7 @@ export default async function saveSite (context, name) {
     const content = await context.dispatch('buildPageContent', { page })
     fs.writeFile(page.file, content)
 
-    const dataFile = page.file.replace('.html', '.json')
+    const dataFile = page.file.replace('.liquid', '.json')
     fs.writeJSON(dataFile, page.data)
   })
 
