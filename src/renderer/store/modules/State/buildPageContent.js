@@ -1,6 +1,9 @@
 
 export default async function buildPageContent (context, { page }) {
   let template = page.data.layout || 'default.liquid'
+  if (template.indexOf('.liquid') === -1) {
+    template = template + '.liquid'
+  }
   const blockContent = page.blocks.map((block) => {
     const name = `'${block.name}.liquid'`
     const data = Object.keys(block.data)
