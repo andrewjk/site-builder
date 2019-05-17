@@ -3,7 +3,7 @@
     <div class="title">Page: {{ page.name }}</div>
 
     <div class="expander-title" @click="expandSettings = !expandSettings">
-      <span class="expander-icon"><fa :icon="expandSettings ? 'minus' : 'plus'"/></span>
+      <span class="expander-icon"><fa :icon="expandSettings ? 'caret-down' : 'caret-right'"/></span>
       <span>Settings</span>
     </div>
     <div v-show="expandSettings">
@@ -127,7 +127,10 @@
 
   .expander-icon {
     font-size: 14px;
-    vertical-align: top;
+
+    svg {
+      vertical-align: baseline;
+    }
   }
 
   .page-block-wrapper {

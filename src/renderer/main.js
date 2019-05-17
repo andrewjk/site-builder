@@ -8,7 +8,9 @@ import store from './store'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faPlus,
-  faMinus
+  faMinus,
+  faCaretRight,
+  faCaretDown
 } from '@fortawesome/free-solid-svg-icons'
 // import {
 // } from '@fortawesome/free-regular-svg-icons'
@@ -24,6 +26,8 @@ require('../../node_modules/normalize.css/normalize.css')
 // Add the FontAwesome icons that we will use
 library.add(faPlus)
 library.add(faMinus)
+library.add(faCaretRight)
+library.add(faCaretDown)
 
 Vue.component('fa', FontAwesomeIcon)
 
