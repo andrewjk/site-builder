@@ -2,7 +2,12 @@
     "title": "Footer",
     "definitions": [
         {
-            "key": "text",
+            "key": "leftText",
+            "name": "Text",
+            "type": "text"
+        },
+        {
+            "key": "rightText",
             "name": "Text",
             "type": "text"
         },

@@ -12,9 +12,9 @@
 
     <div class="page-block-wrapper">
       <div v-for="block in page.blocks" :key="block.name" class="page-block">
-        <template v-if="block.content">
-          <div v-html="block.content"></div>
-         </template>
+        <template v-if="block.tempFile">
+          <page-block-editor :block="block"/>
+        </template>
         <template v-else>
           Loading...
         </template>
@@ -29,14 +29,16 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import { create } from 'vue-modal-dialogs'
+  import path from 'path'
 
   import DataEditor from './DataEditor'
+  import PageBlockEditor from './PageBlockEditor'
   import SelectBlockDialog from '../Dialogs/SelectBlockDialog'
 
   export default {
-    components: { DataEditor },
+    components: { DataEditor, PageBlockEditor },
     props: {
       page: {},
       definition: {},
@@ -44,7 +46,9 @@
     },
     data () {
       return {
-        expandSettings: false
+        expandSettings: false,
+        // Per https://github.com/SimulatedGREG/electron-vue/issues/239
+        preload: 'file://' + path.join(__static, '/block-editor.js')
       }
     },
     computed: {
@@ -53,30 +57,57 @@
       ])
     },
     mounted () {
-      // Build all blocks that haven't yet been built
-      // TODO: Probably in the store?
-      this.page.blocks.filter((block) => !block.content).map((block) => {
-        let content = this.blocks.find((template) => template.name === block.name).content
-
-        // TODO: Make this dynamic, per https://stackoverflow.com/questions/39516731/dynamic-html-elements-in-vue-js
-        const regex = /{{ (.+) }}/gi
-        content = content.replace(regex, `<div class="data-input">$1</div>`)
-
-        block.content = content
-      })
+      this.buildBlocks()
+    },
+    beforeUpdate () {
+      this.buildBlocks()
     },
     methods: {
       ...mapMutations([
         'SET_PAGE_VALUE',
         'INSERT_BLOCK'
       ]),
+      ...mapActions([
+        'buildBlockContent'
+      ]),
       onChange (key, value) {
         this.SET_PAGE_VALUE({ page: this.page, key, value })
       },
+      dynamicBlock (block) {
+        return {
+          template: block.content,
+          data () {
+            return {
+              data: block.data
+            }
+          },
+          methods: {
+            logData () {
+              console.log(this.data)
+            }
+          }
+        }
+      },
+      buildBlocks () {
+        // Build all blocks that haven't yet been built
+        // TODO: Probably in the store? Maybe just when loading the site initially??
+        this.page.blocks.filter((block) => !block.tempFile).forEach((block) => {
+          const templateBlock = this.blocks.find((b) => b.name === block.name)
+
+          // NOTE: Originally tried to do a dynamic component (see dynamicBlock below), but I
+          // couldn't get styles working
+          // (see https://stackoverflow.com/questions/39516731/dynamic-html-elements-in-vue-js)
+          // Instead we build the content into a temp html file, display it in a webview, and
+          // TODO: use IPC messages to update data
+          this.buildBlockContent({ page: this.page, block, templateBlock })
+        })
+      },
       async addBlock () {
         const prompt = create(SelectBlockDialog)
-        const result = await prompt({ content: 'Select the type of block that you\'d like to add' }).transition()
-        this.INSERT_BLOCK({ page: this.page, block: { name: result.name } })
+        const templateBlock = await prompt({ content: 'Select the type of block that you\'d like to add' }).transition()
+        const block = { name: templateBlock.name, data: {}, tempFile: null }
+        this.INSERT_BLOCK({ page: this.page, block })
+        this.buildBlockContent({ page: this.page, block, templateBlock })
       }
     }
   }

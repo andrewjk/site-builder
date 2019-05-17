@@ -5,6 +5,9 @@ import path from 'path'
 import walk from 'klaw'
 import { remote } from 'electron'
 
+// NOTE: V4 uses random numbers
+import uuid from 'uuid/v4'
+
 import Liquid from 'liquidjs'
 import { exec } from 'child_process'
 
@@ -124,7 +127,19 @@ const mutations = {
   SET_BLOCK_VALUE (state, { block, key, value }) {
     block.data[key] = value
   },
+  SET_BLOCK_FIELDS (state, { block, fields }) {
+    if (fields.id) block.id = fields.id
+    if (fields.name) block.name = fields.name
+    if (fields.content) block.content = fields.content
+    if (fields.definition) block.definition = fields.definition
+    if (fields.data) block.data = fields.data
+    if (fields.tempFile) block.tempFile = fields.tempFile
+  },
+  SET_BLOCK_DATA (state, { block, data }) {
+    block.data = data
+  },
   INSERT_BLOCK (state, { page, block }) {
+    block.id = uuid()
     page.blocks.push(block)
     // page.blocks = [...page.blocks, block]
   }
@@ -213,8 +228,8 @@ const actions = {
 
     // Load the blocks that are available
     // TODO: Is this the right place to be getting data from?
-    const blockFiles = await getDirectoriesInFolder(path.join(__static, 'blocks'))
-    const blocks = await Promise.all(blockFiles.map(async (dir) => {
+    const blockFolders = await getDirectoriesInFolder(path.join(__static, 'blocks'))
+    const blocks = await Promise.all(blockFolders.map(async (dir) => {
       return context.dispatch('loadBlock', dir)
     }))
     context.commit('SET_BLOCKS', blocks)
@@ -225,17 +240,27 @@ const actions = {
   },
   async loadPage (context, { siteFolder, file }) {
     const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
-    const dataFile = path.join(siteFolder, 'pages', file.replace('.html', '.json'))
+    // Load the page's data
+    const dataFile = file.replace('.html', '.json')
     const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
-    // Load the page's blocks TODO: and block data
+    // Load the page's blocks
     const content = fs.readFileSync(file).toString()
-    const regex = /{% include '(.+)' %}/gi
+    const regex = /{% include '(.+).liquid'(?:, (.+)) %}/gi
     const blocks = []
     let match = regex.exec(content)
     while (match != null) {
+      // TODO: This probably needs to be much more robust
+      const blockData = {}
+      const dataRegex = /(\w+): '((?:[^'\\]|\\.)+)'/gi
+      let dataMatch = dataRegex.exec(match[2])
+      while (dataMatch != null) {
+        blockData[dataMatch[1]] = dataMatch[2].replace('\\\'', '\'')
+        dataMatch = dataRegex.exec(match[2])
+      }
       const block = {
         name: match[1],
-        content: ''
+        data: blockData,
+        tempFile: ''
       }
       blocks.push(block)
       match = regex.exec(content)
@@ -256,12 +281,16 @@ const actions = {
     // Load the block's data definition
     const definitionFile = path.join(dir, 'block.json')
     const definition = fs.existsSync(definitionFile) ? fs.readJSONSync(definitionFile) : {}
+    // Load the block's styles
+    const stylesFile = path.join(dir, 'block.css')
+    const styles = fs.readFileSync(stylesFile).toString()
     // TODO: Load the block's data
     const block = {
       dir,
       name,
       content,
       definition,
+      styles,
       // TODO: Where to load data from?!
       data: {}
     }
@@ -393,7 +422,14 @@ const actions = {
 
     // Save the pages that have been created
     context.state.pages.forEach((page) => {
-      const content = page.blocks.map(item => `{% include '${item.name}' %}`).join('\n')
+      const content = page.blocks.map((block) => {
+        const name = `'${block.name}.liquid'`
+        const data = Object.keys(block.data)
+          .filter((key) => block.data[key])
+          .map((key) => `${key}: '${block.data[key].replace('\'', '\\\'')}'`)
+          .join(', ')
+        return `{% include ${[name, data].join(', ')} %}`
+      }).join('\n')
       fs.writeFile(page.file, content)
 
       const dataFile = page.file.replace('.html', '.json')
@@ -417,6 +453,86 @@ const actions = {
       }
     })
     */
+  },
+  async buildBlockContent (context, { page, block, templateBlock }) {
+    const siteName = context.state.activeSite
+
+    // HACK: Give the block a temporary id
+    // TODO: Save and load these somehow?
+    if (!block.id) {
+      block.id = uuid()
+    }
+
+    const id = block.id
+
+    // Update data from the definition, just in case the template has changed
+    const data = block.data
+    templateBlock.definition.definitions.forEach((def) => {
+      if (!data[def.key]) {
+        // TODO: Depends on the type, I guess...
+        data[def.key] = ''
+      }
+    })
+
+    // Load the content from the template and make it dynamic, by replacing liquid fields with
+    // inputs that the user can type into and saving it to a temp file
+    // TODO: change the input based on the data type!
+    let content = templateBlock.content
+    const regex = /{{ (.+) }}/gi
+    let match = regex.exec(content)
+    while (match != null) {
+      const name = match[1]
+      const value = data[name]
+      // TODO: Placeholder from definitions...
+      const placeholder = name
+      const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}"/>`
+      content = content.replace(match[0], input)
+      match = regex.exec(content)
+    }
+
+    // TODO: Load CSS from the template, the block and our editing file
+    // Basically, the same way as we would when building the site
+    const editorCssFile = path.join(__static, '/block-editor.css')
+    const editorCss = fs.readFileSync(editorCssFile)
+
+    // Wrap the content in HTML so that it can be displayed in a webview
+    // TODO: Make sure that this works well with custom styling - probably need to include custom page styles etc
+    content = `<html>
+<head>
+  <link rel="stylesheet" href="../templates/default/css/normalize.css">
+  <link rel="stylesheet" href="../templates/default/css/main.css">
+  <link rel="stylesheet" href="../templates/default/css/site.css">
+  <style>
+${templateBlock.styles}
+${editorCss}
+  </style>
+</head>
+<body>
+${content}
+  <div id="data-border"/>
+  <script>
+    document.__blockId = '${id}';
+  </script>
+</body>
+</html>`
+    // console.log(content)
+
+    // Write the content to a temp file
+    const siteFolder = path.join(await context.dispatch('getSitesFolder'), siteName)
+    const tempFolder = path.join(siteFolder, 'temp')
+    await fs.ensureDir(tempFolder)
+    const tempFile = path.join(tempFolder, id + '.html')
+    fs.writeFileSync(tempFile, content)
+
+    context.commit('SET_BLOCK_FIELDS', {
+      block: block,
+      fields: {
+        id,
+        definition: templateBlock.definition,
+        data,
+        tempFile
+      }
+    })
   },
   async buildSite (context, name) {
     const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
@@ -445,20 +561,30 @@ const actions = {
     // Copy the default template to the output folder
     await fs.copy(defaultTemplateFolder, webFolder)
 
-    // Move the default template layouts folder to the output layouts folder
-    const defaultLayoutFolder = path.join(webFolder, 'layout')
-    const defaultLayoutFiles = await getFilesInFolder(defaultLayoutFolder)
-    for (let i = 0; i < defaultLayoutFiles.length; i++) {
-      const source = path.join(defaultLayoutFolder, defaultLayoutFiles[i])
-      const dest = path.join(layoutsFolder, defaultLayoutFiles[i])
-      await fs.move(source, dest)
-    }
+    // Uh, what was this?
+    // // Move the default template layouts folder to the output layouts folder
+    // const defaultLayoutFolder = path.join(siteFolder, 'layout')
+    // const defaultLayoutFiles = await getFilesInFolder(defaultLayoutFolder)
+    // for (let i = 0; i < defaultLayoutFiles.length; i++) {
+    //   const source = defaultLayoutFiles[i]
+    //   const dest = path.join(layoutsFolder, path.basename(defaultLayoutFiles[i]))
+    //   await fs.move(source, dest)
+    // }
 
     // TODO: Copy the theme template to the output folder (if applicable)
     // TODO: Move the theme template layouts folder to the output layouts folder
     // TODO: Need to have 'theme template' as part of info.json
 
-    // TODO: Copy the used blocks into the includes folder
+    // Copy the used blocks into the includes folder
+    // TODO: This probably isn't the right place to be getting them from
+    const blockFiles = (await getFilesInFolder(path.join(__static, 'blocks'))).filter((file) => file.indexOf('.liquid') !== -1)
+    for (let i = 0; i < blockFiles.length; i++) {
+      const file = blockFiles[i]
+      const parts = file.split(path.sep)
+      const blockName = parts[parts.length - 2]
+      const dest = path.join(includesFolder, blockName + '.liquid')
+      fs.copySync(file, dest)
+    }
 
     // Initialize the Liquid rendering engine
     const pagesFolder = path.join(siteFolder, 'pages')
@@ -467,13 +593,12 @@ const actions = {
     })
 
     // Generate each page in the pages folder
-    state.pages.map(async (item) => {
-      console.log('GENERATING', item)
-      const itemFile = path.join(pagesFolder, item + '.html')
-      const result = await engine.renderFile(itemFile, { name: item })
+    state.pages.forEach(async (page) => {
+      console.log('GENERATING', page.file)
+      const result = await engine.renderFile(page.file, { name: page.name })
 
       // Write the output files
-      const outputFile = path.resolve(webFolder, item + '.html')
+      const outputFile = path.join(webFolder, path.basename(page.file))
       fs.writeFile(outputFile, result, (err) => {
         if (err) {
           console.log('GEN ERROR', err)

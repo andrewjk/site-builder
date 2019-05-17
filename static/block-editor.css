@@ -1,0 +1,31 @@
+html {
+    border: 1px dashed #aaa;
+}
+
+.data-input {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    margin: inherit;
+    outline: none;
+    padding: inherit;
+    text-align: inherit;
+    text-transform: inherit;
+}
+
+.data-input:hover,
+.data-input:active,
+.data-input:focus {
+    outline: none;
+}
+
+#data-border {
+    border: 1px solid red;
+    display: none;
+    pointer-events: none;
+    position: absolute;
+}
