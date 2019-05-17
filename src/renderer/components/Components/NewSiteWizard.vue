@@ -67,7 +67,9 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  $create-color: #00b752;
+
   .wizard-wrapper {
     margin: 40px;
     max-width: 800px;
@@ -82,8 +84,9 @@
   }
 
   button {
-    background-color: lightgreen;
+    background-color: $create-color;
     border-radius: 4px;
+    color: white;
     font-size: 32px;
     padding: 20px 40px;
     cursor: pointer;
@@ -91,7 +94,7 @@
   }
 
   button:hover {
-    background-color: darkgreen;
+    background-color: darken($create-color, 9%);
   }
 
 </style>
