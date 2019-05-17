@@ -2,18 +2,18 @@
   <div class="intro-wrapper">
     <div class="intro-inner-wrapper">
       <p>Welcome to the site builder. You don't have any sites yet but you can create one by pressing the button below.</p>
-      <button @click="startCreatingSite">Create a site</button>
+      <button @click="START_CREATING_SITE">Create a site</button>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+  import { mapMutations } from 'vuex'
 
   export default {
     methods: {
-      ...mapActions([
-        'startCreatingSite'
+      ...mapMutations([
+        'START_CREATING_SITE'
       ])
     }
   }

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+  import { mapMutations, mapActions } from 'vuex'
   import { mapFields } from 'vuex-map-fields'
 
   export default {
@@ -25,17 +25,21 @@
       ])
     },
     methods: {
+      ...mapMutations([
+        'START_CREATING_SITE',
+        'STOP_CREATING_SITE'
+      ]),
       ...mapActions([
         'loadSite',
-        'startCreatingSite',
         'saveSite',
         'buildSite'
       ]),
       loadOrCreateSite (data) {
         // HACK: Tildes ensure that it's not something that a user can create
         if (this.activeSite === '~Create~') {
-          this.startCreatingSite()
+          this.START_CREATING_SITE()
         } else {
+          this.STOP_CREATING_SITE()
           this.loadSite(this.activeSite)
         }
       },
