@@ -17,15 +17,8 @@ export default async function saveSite (context, name) {
   })
 
   // Save the pages that have been created
-  context.state.pages.forEach((page) => {
-    const content = page.blocks.map((block) => {
-      const name = `'${block.name}.liquid'`
-      const data = Object.keys(block.data)
-        .filter((key) => block.data[key])
-        .map((key) => `${key}: '${block.data[key].replace('\'', '\\\'')}'`)
-        .join(', ')
-      return `{% include ${[name, data].join(', ')} %}`
-    }).join('\n')
+  context.state.pages.forEach(async (page) => {
+    const content = await context.dispatch('buildPageContent')
     fs.writeFile(page.file, content)
 
     const dataFile = page.file.replace('.html', '.json')

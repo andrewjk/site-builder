@@ -9,6 +9,7 @@ import loadBlock from './loadBlock'
 import buildSections from './buildSections'
 import saveSite from './saveSite'
 import buildBlockContent from './buildBlockContent'
+import buildPageContent from './buildPageContent'
 import buildSite from './buildSite'
 
 export const actions = {
@@ -33,5 +34,6 @@ export const actions = {
   },
   saveSite,
   buildBlockContent,
+  buildPageContent,
   buildSite
 }

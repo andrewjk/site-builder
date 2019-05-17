@@ -64,10 +64,13 @@ export default async function buildSite (context, name) {
     root: [pagesFolder, layoutsFolder, includesFolder]
   })
 
-  // Generate each page in the pages folder
+  // Generate each page in memory
   context.state.pages.forEach(async (page) => {
     console.log('GENERATING', page.file)
-    const result = await engine.renderFile(page.file, { name: page.name })
+
+    const pageContent = await context.dispatch('buildPageContent', { page })
+    console.log(pageContent)
+    const result = await engine.parseAndRender(pageContent, { name: page.name })
 
     // Write the output files
     const outputFile = path.join(webFolder, path.basename(page.file))
