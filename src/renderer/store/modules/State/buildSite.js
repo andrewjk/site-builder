@@ -17,10 +17,10 @@ export default async function buildSite (context, name) {
   // Ensure the includes, layouts and site folders exist
   const includesFolder = path.join(siteFolder, 'output', 'includes')
   const layoutsFolder = path.join(siteFolder, 'output', 'layouts')
-  const webFolder = path.join(siteFolder, 'output', 'site')
+  const webSiteFolder = path.join(siteFolder, 'output', 'site')
   await fs.ensureDir(includesFolder)
   await fs.ensureDir(layoutsFolder)
-  await fs.ensureDir(webFolder)
+  await fs.ensureDir(webSiteFolder)
 
   // HACK: Copy the built-in default template to the output folder for the time being...
   // TODO: Figure out whether this is something that should be done
@@ -31,17 +31,17 @@ export default async function buildSite (context, name) {
   await fs.copy(builtInFolder, defaultTemplateFolder)
 
   // Copy the default template to the output folder
-  await fs.copy(defaultTemplateFolder, webFolder)
+  await fs.copy(defaultTemplateFolder, webSiteFolder)
 
-  // Uh, what was this?
-  // // Move the default template layouts folder to the output layouts folder
-  // const defaultLayoutFolder = path.join(siteFolder, 'layout')
-  // const defaultLayoutFiles = await getFilesInFolder(defaultLayoutFolder)
-  // for (let i = 0; i < defaultLayoutFiles.length; i++) {
-  //   const source = defaultLayoutFiles[i]
-  //   const dest = path.join(layoutsFolder, path.basename(defaultLayoutFiles[i]))
-  //   await fs.move(source, dest)
-  // }
+  // Move the default template layout folder to the output layouts folder
+  // TODO: Remove the default template layout folder? Or move and overwrite dir if that works?
+  const defaultLayoutFolder = path.join(webSiteFolder, 'layout')
+  const defaultLayoutFiles = await getFilesInFolder(defaultLayoutFolder)
+  for (let i = 0; i < defaultLayoutFiles.length; i++) {
+    const source = defaultLayoutFiles[i]
+    const dest = path.join(layoutsFolder, path.basename(defaultLayoutFiles[i]))
+    await fs.move(source, dest)
+  }
 
   // TODO: Copy the theme template to the output folder (if applicable)
   // TODO: Move the theme template layouts folder to the output layouts folder
@@ -65,27 +65,26 @@ export default async function buildSite (context, name) {
   })
 
   // Generate each page in memory
-  context.state.pages.forEach(async (page) => {
+  await Promise.all(context.state.pages.sort(sorter).map(async (page) => {
     console.log('GENERATING', page.file)
 
     const pageContent = await context.dispatch('buildPageContent', { page })
-    console.log(pageContent)
     const result = await engine.parseAndRender(pageContent, { name: page.name })
 
     // Write the output files
-    const outputFile = path.join(webFolder, path.basename(page.file))
+    const outputFile = path.join(webSiteFolder, path.basename(page.file))
     fs.writeFile(outputFile, result, (err) => {
       if (err) {
         console.log('GEN ERROR', err)
       }
     })
-  })
+  }))
 
   // TODO: Concat and minify css from templates, layouts and blocks
   // TODO: Concat and minify css from templates, layouts and blocks
 
   // Open it in the user's default browser
-  const indexFile = path.join(webFolder, 'index.html')
+  const indexFile = path.join(webSiteFolder, 'index.html')
   exec(`"${indexFile}"`, (error, stdout, stderr) => {
     console.log(stdout)
     console.log(stderr)
@@ -93,4 +92,14 @@ export default async function buildSite (context, name) {
       console.log(`OPEN ERROR: ${error}`)
     }
   })
+}
+
+function sorter (a, b) {
+  if (a.name < b.name) {
+    return -1
+  } else if (a.name > b.name) {
+    return 1
+  } else {
+    return 0
+  }
 }

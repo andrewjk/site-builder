@@ -1,6 +1,7 @@
 
 export default async function buildPageContent (context, { page }) {
-  const content = page.blocks.map((block) => {
+  let template = page.data.layout || 'default.liquid'
+  const blockContent = page.blocks.map((block) => {
     const name = `'${block.name}.liquid'`
     const data = Object.keys(block.data)
       .filter((key) => block.data[key])
@@ -8,5 +9,10 @@ export default async function buildPageContent (context, { page }) {
       .join(', ')
     return `{% include ${[name, data].join(', ')} %}`
   }).join('\n')
+  const content = `
+{% layout '${template}' %}
+{% block content %}
+${blockContent}
+{% endblock %}`.trim()
   return content
 }
