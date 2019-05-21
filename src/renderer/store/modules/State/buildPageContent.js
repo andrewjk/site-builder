@@ -5,12 +5,16 @@ export default async function buildPageContent (context, { page }) {
     template = template + '.liquid'
   }
   const blockContent = page.blocks.map((block) => {
-    const name = `'${block.name}.liquid'`
-    const data = Object.keys(block.data)
-      .filter((key) => block.data[key])
-      .map((key) => `${key}: '${block.data[key].replace('\'', '\\\'')}'`)
-      .join(', ')
-    return `{% include ${[name, data].join(', ')} %}`
+    if (block.name === 'content') {
+      return '{% block content %}Page content{% endblock %}'
+    } else {
+      const name = `'${block.name}.liquid'`
+      const data = Object.keys(block.data)
+        .filter((key) => block.data[key])
+        .map((key) => `${key}: '${block.data[key].replace('\'', '\\\'')}'`)
+        .join(', ')
+      return `{% include ${name}${data && data.length ? ', ' : ''}${data} %}`
+    }
   }).join('\n')
   const content = `
 {% layout '${template}' %}

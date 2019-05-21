@@ -59,25 +59,22 @@ export default async function buildSite (context, name) {
   }
 
   // Initialize the Liquid rendering engine
-  const pagesFolder = path.join(siteFolder, 'pages')
+  // const pagesFolder = path.join(siteFolder, 'pages')
   const engine = new Liquid({
-    root: [pagesFolder, layoutsFolder, includesFolder]
+    root: [layoutsFolder, includesFolder]
   })
 
-  // Generate each page in memory
-  await Promise.all(context.state.pages.sort(sorter).map(async (page) => {
-    console.log('GENERATING', page.file)
+  // Generate each layout
+  // Files starting with underscores are templates and should get built into the layouts folder
+  await Promise.all([...context.state.pages].sort(sorter).filter(page => path.basename(page.file).indexOf('_') === 0).map(async (page) => {
+    const outputFile = path.join(layoutsFolder, path.basename(page.file))
+    await buildPage(page, outputFile, context, engine, true)
+  }))
 
-    const pageContent = await context.dispatch('buildPageContent', { page })
-    const result = await engine.parseAndRender(pageContent, { name: page.name })
-
-    // Write the output files
+  // Generate each page
+  await Promise.all([...context.state.pages].sort(sorter).filter(page => path.basename(page.file).indexOf('_') !== 0).map(async (page) => {
     const outputFile = path.join(webSiteFolder, path.basename(page.file).replace('.liquid', '.html'))
-    fs.writeFile(outputFile, result, (err) => {
-      if (err) {
-        console.log('GEN ERROR', err)
-      }
-    })
+    await buildPage(page, outputFile, context, engine, false)
   }))
 
   // TODO: Concat and minify css from templates, layouts and blocks
@@ -86,8 +83,8 @@ export default async function buildSite (context, name) {
   // Open it in the user's default browser
   const indexFile = path.join(webSiteFolder, 'index.html')
   exec(`"${indexFile}"`, (error, stdout, stderr) => {
-    console.log(stdout)
-    console.log(stderr)
+    if (stdout) console.log(stdout)
+    if (stderr) console.log(stderr)
     if (error !== null) {
       console.log(`OPEN ERROR: ${error}`)
     }
@@ -102,4 +99,27 @@ function sorter (a, b) {
   } else {
     return 0
   }
+}
+
+async function buildPage (page, outputFile, context, engine, isLayout) {
+  console.log('GENERATING', page.file)
+
+  // Generate the page in memory
+  let pageContent = await context.dispatch('buildPageContent', { page })
+  if (isLayout) {
+    // HACK: LiquidJS seems to lose the block content in nested layouts?
+    pageContent = pageContent.replace('{% block content %}Page content{% endblock %}', '<div id="block-content">Page content</div>')
+  }
+  let result = await engine.parseAndRender(pageContent, { name: page.name })
+  if (isLayout) {
+    // HACK: LiquidJS seems to lose the block content in nested layouts?
+    result = result.replace('<div id="block-content">Page content</div>', '{% block content %}Page content{% endblock %}')
+  }
+
+  // Write the output file
+  fs.writeFileSync(outputFile, result, (err) => {
+    if (err) {
+      console.log('GEN ERROR', err)
+    }
+  })
 }
