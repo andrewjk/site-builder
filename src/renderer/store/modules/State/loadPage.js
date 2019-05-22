@@ -20,7 +20,7 @@ export default async function loadPage (context, { siteFolder, file }) {
       const dataRegex = /(\w+): '((?:[^'\\]|\\.)+)'/gi
       let dataMatch = dataRegex.exec(match[2])
       while (dataMatch != null) {
-        blockData[dataMatch[1]] = dataMatch[2].replace('\\\'', '\'')
+        blockData[dataMatch[1]] = dataMatch[2].replace('&#39;', '\'')
         dataMatch = dataRegex.exec(match[2])
       }
       const block = {

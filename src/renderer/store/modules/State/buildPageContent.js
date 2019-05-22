@@ -11,7 +11,7 @@ export default async function buildPageContent (context, { page }) {
       const name = `'${block.name}.liquid'`
       const data = Object.keys(block.data)
         .filter((key) => block.data[key])
-        .map((key) => `${key}: '${block.data[key].replace('\'', '\\\'')}'`)
+        .map((key) => `${key}: '${block.data[key].replace('\'', '&#39;')}'`)
         .join(', ')
       return `{% include ${name}${data && data.length ? ', ' : ''}${data} %}`
     }
