@@ -8,9 +8,9 @@ import loadPage from './loadPage'
 import loadBlock from './loadBlock'
 import buildSections from './buildSections'
 import saveSite from './saveSite'
-import buildBlockContent from './buildBlockContent'
 import buildPageContent from './buildPageContent'
 import buildSite from './buildSite'
+import buildPageEditorHtml from './buildPageEditorHtml'
 
 export const actions = {
   getTemplatesFolder (context) {
@@ -33,7 +33,7 @@ export const actions = {
     alert('todo')
   },
   saveSite,
-  buildBlockContent,
   buildPageContent,
-  buildSite
+  buildSite,
+  buildPageEditorHtml
 }

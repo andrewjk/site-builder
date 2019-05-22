@@ -2,23 +2,18 @@
   <div class="page-editor-wrapper">
     <div class="title">Page: {{ page.name }}</div>
 
-    <div class="expander-title" @click="expandSettings = !expandSettings">
-      <span class="expander-icon"><fa :icon="expandSettings ? 'caret-down' : 'caret-right'"/></span>
-      <span>Settings</span>
-    </div>
-    <div v-show="expandSettings">
-      <data-editor :definition="definition" :data="data" @change="onChange"/>
+    <div class="expander">
+      <div class="expander-title" @click="expandSettings = !expandSettings">
+        <span class="expander-icon"><fa :icon="expandSettings ? 'caret-down' : 'caret-right'"/></span>
+        <span>Settings</span>
+      </div>
+      <div v-show="expandSettings">
+        <data-editor :definition="definition" :data="data" @change="onChange"/>
+      </div>
     </div>
 
     <div class="page-block-wrapper">
-      <div v-for="block in page.blocks" :key="block.name" class="page-block">
-        <template v-if="block.tempFile">
-          <page-block-editor :block="block"/>
-        </template>
-        <template v-else>
-          Loading...
-        </template>
-      </div>
+      <webview class="page-block-editor" :src="page.tempFile" :preload="preload" autosize minwidth="0" minheight="0" ref="webview"/>
       <div class="edit-block-buttons">
         <button title="Add a block" @click="addBlock">
           <fa icon="plus"/>
@@ -31,14 +26,15 @@
 <script>
   import { mapGetters, mapMutations, mapActions } from 'vuex'
   import { create } from 'vue-modal-dialogs'
+
+  import electron from 'electron'
   import path from 'path'
 
   import DataEditor from './DataEditor'
-  import PageBlockEditor from './PageBlockEditor'
   import SelectBlockDialog from '../Dialogs/SelectBlockDialog'
 
   export default {
-    components: { DataEditor, PageBlockEditor },
+    components: { DataEditor },
     props: {
       page: {},
       definition: {},
@@ -48,7 +44,7 @@
       return {
         expandSettings: false,
         // Per https://github.com/SimulatedGREG/electron-vue/issues/239
-        preload: 'file://' + path.join(__static, '/block-editor.js')
+        preload: 'file://' + path.join(__static, '/page-editor.js')
       }
     },
     computed: {
@@ -56,19 +52,23 @@
         'blocks'
       ])
     },
-    mounted () {
-      this.buildBlocks()
+    async mounted () {
+      await this.buildPageEditorHtml({ page: this.page, blocks: this.blocks })
+      this.setupWebviewListeners()
     },
     beforeUpdate () {
-      this.buildBlocks()
+      if (!this.page.tempFile) {
+        this.buildPageEditorHtml({ page: this.page, blocks: this.blocks })
+      }
     },
     methods: {
       ...mapMutations([
         'SET_PAGE_VALUE',
-        'INSERT_BLOCK'
+        'INSERT_BLOCK',
+        'SET_BLOCK_DATA'
       ]),
       ...mapActions([
-        'buildBlockContent'
+        'buildPageEditorHtml'
       ]),
       onChange (key, value) {
         this.SET_PAGE_VALUE({ page: this.page, key, value })
@@ -88,26 +88,34 @@
           }
         }
       },
-      buildBlocks () {
-        // Build all blocks that haven't yet been built
-        // TODO: Probably in the store? Maybe just when loading the site initially??
-        this.page.blocks.filter((block) => !block.tempFile).forEach((block) => {
-          const templateBlock = this.blocks.find((b) => b.name === block.name)
-
-          // NOTE: Originally tried to do a dynamic component (see dynamicBlock below), but I
-          // couldn't get styles working
-          // (see https://stackoverflow.com/questions/39516731/dynamic-html-elements-in-vue-js)
-          // Instead we build the content into a temp html file, display it in a webview, and
-          // TODO: use IPC messages to update data
-          this.buildBlockContent({ page: this.page, block, templateBlock })
-        })
-      },
       async addBlock () {
         const prompt = create(SelectBlockDialog)
         const templateBlock = await prompt({ content: 'Select the type of block that you\'d like to add' }).transition()
-        const block = { name: templateBlock.name, data: {}, tempFile: null }
+        const block = { name: templateBlock.name, data: {} }
         this.INSERT_BLOCK({ page: this.page, block })
-        this.buildBlockContent({ page: this.page, block, templateBlock })
+        await this.buildPageEditorHtml({ page: this.page, blocks: this.blocks })
+        this.$refs.webview.reload()
+      },
+      setupWebviewListeners () {
+        const webview = this.$refs.webview
+
+        // Listen to console messages from within the webview (handy for debugging the webview-preload script)
+        // But only listen to messages that start with a $ because those will be the ones that we have made
+        webview.addEventListener('console-message', (e) => {
+          if (e.message.indexOf('$') === 0) {
+            console.log('WEBVIEW:', e.message.substring(1))
+          }
+        })
+
+        // Listen to changes to inputs and update the corresponding block data
+        electron.remote.ipcMain.on('block-input-changed', async (event, { pageId, blockId, data }) => {
+          if (pageId === this.page.id) {
+            const block = this.page.blocks.find((block) => block.id === blockId)
+            console.log(block, blockId)
+            const newData = Object.assign({}, block.data, data)
+            this.SET_BLOCK_DATA({ block, data: newData })
+          }
+        })
       }
     }
   }
@@ -117,6 +125,11 @@
   .title {
     font-size: 24px;
     margin-bottom: 10px;
+  }
+
+  .page-editor-wrapper {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
   }
 
   .expander-title {
@@ -137,6 +150,8 @@
     border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 2px;
     min-height: 400px;
+    display: grid;
+    grid-template-rows: 1fr auto;
   }
 
   .edit-block-buttons {

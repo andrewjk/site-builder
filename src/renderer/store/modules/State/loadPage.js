@@ -25,8 +25,7 @@ export default async function loadPage (context, { siteFolder, file }) {
       }
       const block = {
         name: match[1],
-        data: blockData,
-        tempFile: ''
+        data: blockData
       }
       blocks.push(block)
       match = regex.exec(content)
@@ -36,8 +35,7 @@ export default async function loadPage (context, { siteFolder, file }) {
     while (contentMatch != null) {
       const block = {
         name: 'content',
-        data: {},
-        tempFile: ''
+        data: {}
       }
       blocks.push(block)
       contentMatch = contentRegex.exec(content)
@@ -47,7 +45,8 @@ export default async function loadPage (context, { siteFolder, file }) {
     file,
     name,
     data,
-    blocks
+    blocks,
+    tempFile: null
   }
   return page
 }

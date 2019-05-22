@@ -69,6 +69,10 @@ export const mutations = {
   SET_PAGE_VALUE (state, { page, key, value }) {
     page.data[key] = value
   },
+  SET_PAGE_FIELDS (state, { page, fields }) {
+    if (fields.id) page.id = fields.id
+    if (fields.tempFile) page.tempFile = fields.tempFile
+  },
   SET_BLOCK_VALUE (state, { block, key, value }) {
     block.data[key] = value
   },
@@ -78,7 +82,6 @@ export const mutations = {
     if (fields.content) block.content = fields.content
     if (fields.definition) block.definition = fields.definition
     if (fields.data) block.data = fields.data
-    if (fields.tempFile) block.tempFile = fields.tempFile
   },
   SET_BLOCK_DATA (state, { block, data }) {
     block.data = data

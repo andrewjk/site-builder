@@ -17,11 +17,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Listen to the input event to resize the input and relay changes to the app
     if (inputs[i].value) inputs[i].size = inputs[i].value.length
     inputs[i].addEventListener('input', (e) => {
-      if (e.target.value) e.target.size = e.target.value.length
+      if (e.target.value) {
+        e.target.size = e.target.value.length
+      }
 
-      const update = {}
-      update[e.target.name] = e.target.value
-      ipcRenderer.send('block-input-changed-' + document.__blockId, update)
+      const data = {}
+      data[e.target.name] = e.target.value
+      const update = {
+        pageId: document.__pageId,
+        blockId: e.target.dataset.blockId,
+        data
+      }
+      ipcRenderer.send('block-input-changed', update)
 
       // Recalculate the position and size of the border, too
       showDataBorder(e)
@@ -32,9 +39,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 function showDataBorder (e) {
   const el = document.getElementById('data-border')
   el.style.display = 'block'
-  el.style.top = e.target.offsetTop
-  el.style.left = e.target.offsetLeft
-  el.style.width = e.target.offsetWidth
+  el.style.top = e.target.offsetTop - 1
+  el.style.left = e.target.offsetLeft - 1
+  el.style.width = e.target.offsetWidth - 1
   el.style.height = e.target.offsetHeight
 }
 

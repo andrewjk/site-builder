@@ -1,4 +1,8 @@
-html {
+html, body {
+    height: 100vh;
+}
+
+.block-container {
     border: 1px dashed #aaa;
 }
 
