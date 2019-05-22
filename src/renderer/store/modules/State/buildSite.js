@@ -77,8 +77,19 @@ export default async function buildSite (context, name) {
     await buildPage(page, outputFile, context, engine, false)
   }))
 
-  // TODO: Concat and minify css from templates, layouts and blocks
-  // TODO: Concat and minify css from templates, layouts and blocks
+  // TODO: Concat and minify CSS from templates, layouts and blocks
+  // For now, we're just loading CSS from blocks into site.css
+  const allBlocks = [].concat.apply([], context.state.pages.map(page => page.blocks))
+  const templateBlocks = allBlocks.map(block => context.state.blocks.find(tb => block.name === tb.name))
+  const uniqueBlocks = [...new Set(templateBlocks)]
+  let styles = ''
+  for (let i = 0; i < uniqueBlocks.length; i++) {
+    styles = styles + '\n' + uniqueBlocks[i].styles
+  }
+  const siteCssFile = path.join(webSiteFolder, 'css', 'site.css')
+  fs.writeFileSync(siteCssFile, styles)
+
+  // TODO: Concat and minify JS from templates, layouts and blocks
 
   // Open it in the user's default browser
   const indexFile = path.join(webSiteFolder, 'index.html')

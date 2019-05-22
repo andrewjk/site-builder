@@ -66,21 +66,20 @@ export default async function buildPageEditorHtml (context, { page, blocks }) {
     })
   }
 
-  // TODO: Load CSS from the template, the blocks and our editing file
-  // Basically, the same way as we would when building the site
-  const editorCssFile = path.join(__static, '/page-editor.css')
-  const editorCss = fs.readFileSync(editorCssFile)
+  // Load styles from the page-editor file
+  const editorStylesFile = path.join(__static, '/page-editor.css')
+  const editorStyles = fs.readFileSync(editorStylesFile)
 
   // Wrap the content in HTML so that it can be displayed in a webview
+  // TODO: Load CSS from the template, instead of just including normalize and main
   // TODO: Make sure that this works well with custom styling - probably need to include custom page styles etc
   content = `<html>
 <head>
   <link rel="stylesheet" href="../templates/default/css/normalize.css">
   <link rel="stylesheet" href="../templates/default/css/main.css">
-  <link rel="stylesheet" href="../templates/default/css/site.css">
   <style>
 ${styles}
-${editorCss}
+${editorStyles}
   </style>
 </head>
 <body>
