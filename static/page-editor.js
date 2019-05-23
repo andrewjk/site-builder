@@ -2,14 +2,17 @@
 const { ipcRenderer } = require('electron')
 
 window.addEventListener('DOMContentLoaded', (event) => {
-  // Listen to mouse and focus events to display the red data border over blocks
-  // We're using JS rather than an outline CSS because outlines can overlap things and be overridden
-  // document.body.onmouseover = (e) => showDataBorder(e);
-  // document.body.onmouseleave = (e) => hideDataBorder(e);
+  const blocks = document.getElementsByClassName('block-container')
+  for (let i = 0; i < blocks.length; i++) {
+    // Listen to mouse and focus events to display the data border over blocks
+    // We're using JS rather than an outline CSS because outlines can overlap things and be overridden
+    blocks[i].addEventListener('mouseover', (e) => showDataBorder(e))
+    blocks[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
+  }
 
   const inputs = document.getElementsByClassName('data-input')
-  for (var i = 0; i < inputs.length; i++) {
-    // Listen to mouse and focus events to display the red data border over inputs
+  for (let i = 0; i < inputs.length; i++) {
+    // Listen to mouse and focus events to display the data border over inputs
     inputs[i].addEventListener('mouseover', (e) => showDataBorder(e))
     inputs[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
     inputs[i].addEventListener('focus', (e) => showDataBorder(e))
@@ -37,15 +40,22 @@ window.addEventListener('DOMContentLoaded', (event) => {
 })
 
 function showDataBorder (e) {
-  const el = document.getElementById('data-border')
-  el.style.display = 'block'
-  el.style.top = e.target.offsetTop - 1
-  el.style.left = e.target.offsetLeft - 1
-  el.style.width = e.target.offsetWidth - 1
-  el.style.height = e.target.offsetHeight
+  const target = e.target.closest('.block-container, .data-input')
+  if (target) {
+    const el = document.getElementById('data-border')
+    el.style.display = 'block'
+    el.style.top = target.offsetTop
+    el.style.left = target.offsetLeft
+    el.style.width = target.offsetWidth - 2
+    el.style.height = target.offsetHeight - 2
+    el.style.borderColor = target.classList.contains('data-input') ? 'orange' : 'lightblue'
+  }
 }
 
 function hideDataBorder (e) {
-  const el = document.getElementById('data-border')
-  el.style.display = 'none'
+  const target = e.target.closest('.block-container, .data-input')
+  if (target) {
+    const el = document.getElementById('data-border')
+    el.style.display = 'none'
+  }
 }

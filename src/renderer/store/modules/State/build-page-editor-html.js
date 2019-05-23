@@ -21,49 +21,10 @@ export default async function buildPageEditorHtml (context, { page, blocks }) {
     const block = page.blocks[i]
     const templateBlock = blocks.find((b) => b.name === block.name)
 
-    // HACK: Give the block a temporary id
-    if (!block.id) {
-      block.id = uuid()
-    }
+    const blockContent = buildBlockEditorHtml(context, block, templateBlock)
 
-    const blockId = block.id
-
-    // Update data from the definition, just in case the template has changed
-    const data = block.data
-    templateBlock.definition.definitions.forEach((def) => {
-      if (!data[def.key]) {
-        // TODO: Depends on the type, I guess...
-        data[def.key] = ''
-      }
-    })
-
-    // Load the content from the template and make it dynamic, by replacing liquid fields with
-    // inputs that the user can type into and saving it to a temp file
-    // TODO: change the input based on the data type!
-    let blockContent = templateBlock.content
-    const regex = /{{ (.+) }}/gi
-    let match = regex.exec(blockContent)
-    while (match != null) {
-      const name = match[1]
-      const value = data[name]
-      // TODO: Placeholder from definitions...
-      const placeholder = name
-      const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
-      blockContent = blockContent.replace(match[0], input)
-      match = regex.exec(blockContent)
-    }
-
-    content = `${content}\n<div class="block-container">${blockContent}</div>`
-    styles = styles + '\n' + templateBlock.styles
-
-    context.commit('SET_BLOCK_FIELDS', {
-      block: block,
-      fields: {
-        id: blockId,
-        definition: templateBlock.definition,
-        data
-      }
-    })
+    content = `${content}\n${blockContent}`
+    styles = `${styles}\n${templateBlock.styles}`
   }
 
   // Load styles from the page-editor file
@@ -73,7 +34,8 @@ export default async function buildPageEditorHtml (context, { page, blocks }) {
   // Wrap the content in HTML so that it can be displayed in a webview
   // TODO: Load CSS from the template, instead of just including normalize and main
   // TODO: Make sure that this works well with custom styling - probably need to include custom page styles etc
-  content = `<html>
+  content = `
+<html>
 <head>
   <link rel="stylesheet" href="../templates/default/css/normalize.css">
   <link rel="stylesheet" href="../templates/default/css/main.css">
@@ -89,7 +51,7 @@ ${content}
     document.__pageId = '${id}';
   </script>
 </body>
-</html>`
+</html>`.trim()
   // console.log(content)
 
   // Write the content to a temp file
@@ -106,4 +68,52 @@ ${content}
       tempFile
     }
   })
+}
+
+function buildBlockEditorHtml (context, block, templateBlock) {
+  // HACK: Give the block a temporary id
+  if (!block.id) {
+    block.id = uuid()
+  }
+
+  const blockId = block.id
+
+  // Update data from the definition, just in case the template has changed
+  const data = block.data
+  templateBlock.definition.definitions.forEach((def) => {
+    if (!data[def.key]) {
+      // TODO: Depends on the type, I guess...
+      data[def.key] = ''
+    }
+  })
+
+  // Load the content from the template and make it dynamic, by replacing liquid fields with
+  // inputs that the user can type into and saving it to a temp file
+  // TODO: change the input based on the data type!
+  let content = templateBlock.content
+  const regex = /{{ (.+) }}/gi
+  let match = regex.exec(content)
+  while (match != null) {
+    const name = match[1]
+    const value = data[name]
+    // TODO: Placeholder from definitions...
+    const placeholder = name
+    const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
+    content = content.replace(match[0], input)
+    match = regex.exec(content)
+  }
+
+  context.commit('SET_BLOCK_FIELDS', {
+    block: block,
+    fields: {
+      id: blockId,
+      definition: templateBlock.definition,
+      data
+    }
+  })
+
+  return `
+<div class="block-container">
+${content}
+</div>`.trim()
 }

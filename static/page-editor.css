@@ -2,10 +2,6 @@ html, body {
     height: 100vh;
 }
 
-.block-container {
-    border: 1px dashed #aaa;
-}
-
 .data-input {
     border: none;
     font-family: inherit;
@@ -28,7 +24,7 @@ html, body {
 }
 
 #data-border {
-    border: 1px solid red;
+    border: 1px solid orange;
     display: none;
     pointer-events: none;
     position: absolute;
