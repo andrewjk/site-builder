@@ -7,18 +7,17 @@
         <span class="expander-icon"><fa :icon="expandSettings ? 'caret-down' : 'caret-right'"/></span>
         <span>Settings</span>
       </div>
-      <div v-show="expandSettings">
+      <div class="expander-body" v-show="expandSettings">
         <data-editor :definition="definition" :data="data" @change="onChange"/>
       </div>
     </div>
 
-    <div class="page-block-wrapper">
-      <webview class="page-block-editor" :src="page.tempFile" :preload="preload" autosize minwidth="0" minheight="0" ref="webview"/>
-      <div class="edit-block-buttons">
-        <button title="Add a block" @click="addBlock">
-          <fa icon="plus"/>
-        </button>
-      </div>
+    <webview class="page-block-editor" :src="page.tempFile" :preload="preload" autosize minwidth="0" minheight="0" ref="webview"/>
+
+    <div class="edit-block-buttons">
+      <button title="Add a block" @click="addBlock">
+        <fa icon="plus"/>
+      </button>
     </div>
   </div>
 </template>
@@ -65,7 +64,10 @@
       ...mapMutations([
         'SET_PAGE_VALUE',
         'INSERT_BLOCK',
-        'SET_BLOCK_DATA'
+        'SET_BLOCK_DATA',
+        'MOVE_BLOCK_UP',
+        'MOVE_BLOCK_DOWN',
+        'DELETE_BLOCK'
       ]),
       ...mapActions([
         'buildPageEditorHtml'
@@ -93,6 +95,9 @@
         const templateBlock = await prompt({ content: 'Select the type of block that you\'d like to add' }).transition()
         const block = { name: templateBlock.name, data: {} }
         this.INSERT_BLOCK({ page: this.page, block })
+        await this.rebuildPageEditorHtml()
+      },
+      async rebuildPageEditorHtml () {
         await this.buildPageEditorHtml({ page: this.page, blocks: this.blocks })
         this.$refs.webview.reload()
       },
@@ -111,9 +116,32 @@
         electron.remote.ipcMain.on('block-input-changed', async (event, { pageId, blockId, data }) => {
           if (pageId === this.page.id) {
             const block = this.page.blocks.find((block) => block.id === blockId)
-            console.log(block, blockId)
             const newData = Object.assign({}, block.data, data)
             this.SET_BLOCK_DATA({ block, data: newData })
+          }
+        })
+
+        // Listen to button clicks
+        // TODO: Rather than rebuilding the page all the time, we could do DOM manipulations...
+        electron.remote.ipcMain.on('move-block-up', async (event, { pageId, blockId }) => {
+          if (pageId === this.page.id) {
+            const block = this.page.blocks.find((block) => block.id === blockId)
+            this.MOVE_BLOCK_UP({ page: this.page, block })
+            await this.rebuildPageEditorHtml()
+          }
+        })
+        electron.remote.ipcMain.on('move-block-down', async (event, { pageId, blockId }) => {
+          if (pageId === this.page.id) {
+            const block = this.page.blocks.find((block) => block.id === blockId)
+            this.MOVE_BLOCK_DOWN({ page: this.page, block })
+            await this.rebuildPageEditorHtml()
+          }
+        })
+        electron.remote.ipcMain.on('delete-block', async (event, { pageId, blockId }) => {
+          if (pageId === this.page.id) {
+            const block = this.page.blocks.find((block) => block.id === blockId)
+            this.DELETE_BLOCK({ page: this.page, block })
+            await this.rebuildPageEditorHtml()
           }
         })
       }
@@ -124,34 +152,35 @@
 <style lang="scss" scoped>
   .title {
     font-size: 24px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .page-editor-wrapper {
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    height: 100%;
   }
 
   .expander-title {
     cursor: pointer;
     font-size: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .expander-icon {
     font-size: 14px;
-
     svg {
       vertical-align: baseline;
     }
   }
 
-  .page-block-wrapper {
-    border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: 2px;
+  .expander-body {
+    margin-bottom: 20px;
+  }
+
+  .page-block-editor {
     min-height: 400px;
-    display: grid;
-    grid-template-rows: 1fr auto;
+    margin-bottom: 20px;
   }
 
   .edit-block-buttons {

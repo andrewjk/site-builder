@@ -89,5 +89,21 @@ export const mutations = {
   INSERT_BLOCK (state, { page, block }) {
     page.blocks.push(block)
     // page.blocks = [...page.blocks, block]
+  },
+  MOVE_BLOCK_UP (staet, { page, block }) {
+    const index = page.blocks.indexOf(block)
+    if (index > 0) {
+      page.blocks.splice(index - 1, 0, page.blocks.splice(index, 1)[0])
+    }
+  },
+  MOVE_BLOCK_DOWN (staet, { page, block }) {
+    const index = page.blocks.indexOf(block)
+    if (index < page.blocks.length - 1) {
+      page.blocks.splice(index + 1, 0, page.blocks.splice(index, 1)[0])
+    }
+  },
+  DELETE_BLOCK (staet, { page, block }) {
+    const index = page.blocks.indexOf(block)
+    page.blocks.splice(index, 1)
   }
 }

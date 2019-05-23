@@ -113,7 +113,7 @@ function buildBlockEditorHtml (context, block, templateBlock) {
   })
 
   return `
-<div class="block-container">
+<div class="data-block" data-block-id="${blockId}">
 ${content}
 </div>`.trim()
 }

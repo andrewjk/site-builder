@@ -2,6 +2,11 @@ html, body {
     height: 100vh;
 }
 
+body {
+    border: 1px solid rgba(0, 0, 0, .2);
+    padding: 10px 0;
+}
+
 .data-input {
     border: none;
     font-family: inherit;
@@ -28,4 +33,30 @@ html, body {
     display: none;
     pointer-events: none;
     position: absolute;
+}
+
+.data-block {
+    position: relative;
+}
+
+.data-block-controls {
+    display: none;
+    margin: -10px 0 0;
+    position: absolute;
+    top: 0;
+    z-index: 100;
+}
+
+.data-block-button {
+    background-color: lightblue;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    margin: 0 2px;
+    height: 20px;
+    width: 20px;
+}
+
+.data-block-button:hover {
+    background-color: blue;
 }
