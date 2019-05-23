@@ -15,8 +15,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Listen to mouse and focus events to display the data border over inputs
     inputs[i].addEventListener('mouseover', (e) => showDataBorder(e))
     inputs[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
-    inputs[i].addEventListener('focus', (e) => showDataBorder(e))
-    inputs[i].addEventListener('blur', (e) => hideDataBorder(e))
+    inputs[i].addEventListener('focus', (e) => showDataBorder(e, true))
+    inputs[i].addEventListener('blur', (e) => hideDataBorder(e, true))
     // Listen to the input event to resize the input and relay changes to the app
     if (inputs[i].value) inputs[i].size = inputs[i].value.length
     inputs[i].addEventListener('input', (e) => {
@@ -39,7 +39,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
 })
 
-function showDataBorder (e) {
+function showDataBorder (e, focussing) {
+  // Don't move the data border when the cursor is in a data input
+  if (!focussing && isDataInputFocused(e.target)) {
+    return
+  }
+
   const target = e.target.closest('.block-container, .data-input')
   if (target) {
     const el = document.getElementById('data-border')
@@ -52,10 +57,21 @@ function showDataBorder (e) {
   }
 }
 
-function hideDataBorder (e) {
+function hideDataBorder (e, focussing) {
+  // Don't move the data border when the cursor is in a data input
+  if (!focussing && isDataInputFocused(e.target)) {
+    return
+  }
+
   const target = e.target.closest('.block-container, .data-input')
-  if (target) {
+  if (target && target !== document.activeElement) {
     const el = document.getElementById('data-border')
     el.style.display = 'none'
   }
+}
+
+function isDataInputFocused (target) {
+  return document.activeElement &&
+    document.activeElement.classList.contains('data-input') &&
+    document.activeElement !== target
 }
