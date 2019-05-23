@@ -1,16 +1,16 @@
 import path from 'path'
 import { remote } from 'electron'
 
-import loadAllSites from './loadAllSites'
-import createSite from './createSite'
-import loadSite from './loadSite'
-import loadPage from './loadPage'
-import loadBlock from './loadBlock'
-import buildSections from './buildSections'
-import saveSite from './saveSite'
-import buildPageContent from './buildPageContent'
-import buildSite from './buildSite'
-import buildPageEditorHtml from './buildPageEditorHtml'
+import loadAllSites from './load-all-sites'
+import createSite from './create-site'
+import loadSite from './load-site'
+import loadPage from './load-page'
+import loadBlock from './load-block'
+import buildSections from './build-sections'
+import saveSite from './save-site'
+import buildPageContent from './build-page-content'
+import buildPageEditorHtml from './build-page-editor-html'
+import buildSite from './build-site'
 
 export const actions = {
   getTemplatesFolder (context) {
@@ -34,6 +34,6 @@ export const actions = {
   },
   saveSite,
   buildPageContent,
-  buildSite,
-  buildPageEditorHtml
+  buildPageEditorHtml,
+  buildSite
 }

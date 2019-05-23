@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import getFilesInFolder from './getFilesInFolder'
+import getFilesInFolder from './get-files-in-folder'
 
 import Liquid from 'liquidjs'
 import { exec } from 'child_process'

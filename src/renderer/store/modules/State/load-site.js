@@ -1,8 +1,8 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import getFilesInFolder from './getFilesInFolder'
-import getDirectoriesInFolder from './getDirectoriesInFolder'
+import getFilesInFolder from './get-files-in-folder'
+import getDirectoriesInFolder from './get-directories-in-folder'
 
 export default async function loadSite (context, name) {
   const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
