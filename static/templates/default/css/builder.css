@@ -1,0 +1,11 @@
+/*
+ * Specific styles for the site builder that build upon normalize.css and main.css.
+ */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: sans-serif;
+}
