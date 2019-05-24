@@ -6,7 +6,10 @@ export default async function buildPageContent (context, { page }) {
   }
   const blockContent = page.blocks.map((block) => {
     if (block.name === 'content') {
-      return '{% block content %}Page content{% endblock %}'
+      return `
+<main>
+  {% block content %}Page content{% endblock %}
+</main>`.trim()
     } else {
       const name = `'${block.name}.liquid'`
       const data = Object.keys(block.data)

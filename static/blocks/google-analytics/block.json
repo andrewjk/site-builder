@@ -1,0 +1,10 @@
+{
+    "title": "Google Analytics",
+    "definitions": [
+        {
+            "key": "siteId",
+            "name": "Text",
+            "type": "text"
+        }
+    ]
+}

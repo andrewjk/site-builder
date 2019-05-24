@@ -115,13 +115,16 @@ function sorter (a, b) {
 async function buildPage (page, outputFile, context, engine, isLayout) {
   console.log('GENERATING', page.file)
 
+  // Build the page's data
+  const data = Object.assign({}, context.state.info, page.data)
+
   // Generate the page in memory
   let pageContent = await context.dispatch('buildPageContent', { page })
   if (isLayout) {
     // HACK: LiquidJS seems to lose the block content in nested layouts?
     pageContent = pageContent.replace('{% block content %}Page content{% endblock %}', '<div id="block-content">Page content</div>')
   }
-  let result = await engine.parseAndRender(pageContent, { name: page.name })
+  let result = await engine.parseAndRender(pageContent, data)
   if (isLayout) {
     // HACK: LiquidJS seems to lose the block content in nested layouts?
     result = result.replace('<div id="block-content">Page content</div>', '{% block content %}Page content{% endblock %}')

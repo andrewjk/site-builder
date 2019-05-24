@@ -39,6 +39,7 @@ export default async function buildPageEditorHtml (context, { page, blocks }) {
 <head>
   <link rel="stylesheet" href="../templates/default/css/normalize.css">
   <link rel="stylesheet" href="../templates/default/css/main.css">
+  <link rel="stylesheet" href="../templates/default/css/builder.css">
   <style>
 ${styles}
 ${editorStyles}
