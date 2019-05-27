@@ -31,6 +31,7 @@
 
   import DataEditor from './DataEditor'
   import SelectBlockDialog from '../Dialogs/SelectBlockDialog'
+  import ConfirmDialog from '../Dialogs/ConfirmDialog'
 
   export default {
     components: { DataEditor },
@@ -137,8 +138,14 @@
         })
         electron.remote.ipcMain.on('delete-block', async (event, { pageId, blockId }) => {
           if (pageId === this.page.id) {
-            const block = this.page.blocks.find((block) => block.id === blockId)
-            this.DELETE_BLOCK({ page: this.page, block })
+            const dialog = create(ConfirmDialog)
+            const result = await dialog({ content: 'Are you sure you want to delete this block?', confirmText: 'Yes', cancelText: 'No' }).transition()
+            if (result) {
+              const block = this.page.blocks.find((block) => block.id === blockId)
+              this.DELETE_BLOCK({ page: this.page, block })
+
+              event.sender.send('confirm-delete-block', { blockId })
+            }
           }
         })
       }

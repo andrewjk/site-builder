@@ -21,7 +21,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     inputs[i].addEventListener('focus', (e) => showDataBorder(e, true))
     inputs[i].addEventListener('blur', (e) => hideDataBorder(e, true))
     // Listen to the input event to resize the input and relay changes to the app
-    if (inputs[i].value) inputs[i].size = inputs[i].value.length
+    if (inputs[i].value) {
+      inputs[i].size = inputs[i].value.length
+    }
     inputs[i].addEventListener('input', (e) => {
       if (e.target.value) {
         e.target.size = e.target.value.length
@@ -123,13 +125,8 @@ function deleteBlock (e) {
     const pageId = document.__pageId
     const blockId = e.target.dataset.blockId
 
-    const div = document.getElementById(`data-block-${blockId}`)
-
-    // Delete the node
-    const parent = div.parentNode
-    parent.removeChild(div)
-
     // Send an event so that things can be updated
+    // The actual block will be deleted in the event below, if the user confirms they want to do it
     const update = {
       pageId,
       blockId
@@ -139,6 +136,16 @@ function deleteBlock (e) {
     console.log('$' + err)
   }
 }
+
+ipcRenderer.on('confirm-delete-block', (event, data) => {
+  const blockId = data.blockId
+  const div = document.getElementById(`data-block-${blockId}`)
+  if (div) {
+    // Delete the node
+    const parent = div.parentNode
+    parent.removeChild(div)
+  }
+})
 
 function showDataBorder (e, focussing) {
   // Don't move the data border when the cursor is in a data input
