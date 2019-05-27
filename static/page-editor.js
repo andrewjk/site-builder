@@ -48,25 +48,22 @@ function addControlContainer (block) {
 
   const moveUpButton = document.createElement('button')
   moveUpButton.type = 'button'
-  moveUpButton.classList.add('data-block-button')
+  moveUpButton.classList.add('data-block-button', 'chevron', 'up')
   moveUpButton.dataset.blockId = block.dataset.blockId
-  moveUpButton.innerText = '^'
   moveUpButton.addEventListener('click', moveBlockUp)
   container.appendChild(moveUpButton)
 
   const moveDownButton = document.createElement('button')
   moveDownButton.type = 'button'
-  moveDownButton.classList.add('data-block-button')
+  moveDownButton.classList.add('data-block-button', 'chevron', 'down')
   moveDownButton.dataset.blockId = block.dataset.blockId
-  moveDownButton.innerText = 'v'
   moveDownButton.addEventListener('click', moveBlockDown)
   container.appendChild(moveDownButton)
 
   const deleteButton = document.createElement('button')
   deleteButton.type = 'button'
-  deleteButton.classList.add('data-block-button')
+  deleteButton.classList.add('data-block-button', 'cross')
   deleteButton.dataset.blockId = block.dataset.blockId
-  deleteButton.innerText = 'X'
   deleteButton.addEventListener('click', deleteBlock)
   container.appendChild(deleteButton)
 
