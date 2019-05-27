@@ -5,6 +5,8 @@ import getFilesInFolder from './get-files-in-folder'
 
 import Liquid from 'liquidjs'
 import { exec } from 'child_process'
+// eslint-disable-next-line camelcase
+import { html_beautify } from 'js-beautify'
 
 export default async function buildSite (context, name) {
   const siteFolder = path.join(await context.dispatch('getSitesFolder'), name)
@@ -129,6 +131,12 @@ async function buildPage (page, outputFile, context, engine, isLayout) {
     // HACK: LiquidJS seems to lose the block content in nested layouts?
     result = result.replace('<div id="block-content">Page content</div>', '{% block content %}Page content{% endblock %}')
   }
+
+  // Remove multiple newlines and
+  result = result.replace(/\n\s*\n\s*\n/g, '\n\n')
+
+  // Beautify the HTML a little bit
+  result = html_beautify(result)
 
   // Write the output file
   fs.writeFileSync(outputFile, result, (err) => {
