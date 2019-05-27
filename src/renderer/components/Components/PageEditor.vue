@@ -127,21 +127,18 @@
           if (pageId === this.page.id) {
             const block = this.page.blocks.find((block) => block.id === blockId)
             this.MOVE_BLOCK_UP({ page: this.page, block })
-            await this.rebuildPageEditorHtml()
           }
         })
         electron.remote.ipcMain.on('move-block-down', async (event, { pageId, blockId }) => {
           if (pageId === this.page.id) {
             const block = this.page.blocks.find((block) => block.id === blockId)
             this.MOVE_BLOCK_DOWN({ page: this.page, block })
-            await this.rebuildPageEditorHtml()
           }
         })
         electron.remote.ipcMain.on('delete-block', async (event, { pageId, blockId }) => {
           if (pageId === this.page.id) {
             const block = this.page.blocks.find((block) => block.id === blockId)
             this.DELETE_BLOCK({ page: this.page, block })
-            await this.rebuildPageEditorHtml()
           }
         })
       }

@@ -51,47 +51,96 @@ function addControlContainer (block) {
   moveUpButton.classList.add('data-block-button')
   moveUpButton.dataset.blockId = block.dataset.blockId
   moveUpButton.innerText = '^'
+  moveUpButton.addEventListener('click', moveBlockUp)
   container.appendChild(moveUpButton)
-
-  moveUpButton.addEventListener('click', (e) => {
-    const update = {
-      pageId: document.__pageId,
-      blockId: e.target.dataset.blockId
-    }
-    ipcRenderer.send('move-block-up', update)
-  })
 
   const moveDownButton = document.createElement('button')
   moveDownButton.type = 'button'
   moveDownButton.classList.add('data-block-button')
   moveDownButton.dataset.blockId = block.dataset.blockId
   moveDownButton.innerText = 'v'
+  moveDownButton.addEventListener('click', moveBlockDown)
   container.appendChild(moveDownButton)
-
-  moveDownButton.addEventListener('click', (e) => {
-    const update = {
-      pageId: document.__pageId,
-      blockId: e.target.dataset.blockId
-    }
-    ipcRenderer.send('move-block-down', update)
-  })
 
   const deleteButton = document.createElement('button')
   deleteButton.type = 'button'
   deleteButton.classList.add('data-block-button')
   deleteButton.dataset.blockId = block.dataset.blockId
   deleteButton.innerText = 'X'
+  deleteButton.addEventListener('click', deleteBlock)
   container.appendChild(deleteButton)
 
-  deleteButton.addEventListener('click', (e) => {
+  block.appendChild(container)
+}
+
+function moveBlockDown (e) {
+  try {
+    const pageId = document.__pageId
+    const blockId = e.target.dataset.blockId
+
+    const div = document.getElementById(`data-block-${blockId}`)
+    const next = div.nextElementSibling
+    if (next) {
+      // Move the node
+      const parent = div.parentNode
+      parent.insertBefore(div, next.nextElementSibling)
+
+      // Send an event so that things can be updated
+      const update = {
+        pageId,
+        blockId
+      }
+      ipcRenderer.send('move-block-up', update)
+    }
+  } catch (err) {
+    console.log('$' + err)
+  }
+}
+
+function moveBlockUp (e) {
+  try {
+    const pageId = document.__pageId
+    const blockId = e.target.dataset.blockId
+
+    const div = document.getElementById(`data-block-${blockId}`)
+    const before = div.previousElementSibling
+    if (before) {
+      // Move the node
+      const parent = div.parentNode
+      parent.insertBefore(div, before)
+
+      // Send an event so that things can be updated
+      const update = {
+        pageId,
+        blockId
+      }
+      ipcRenderer.send('move-block-up', update)
+    }
+  } catch (err) {
+    console.log('$' + err)
+  }
+}
+
+function deleteBlock (e) {
+  try {
+    const pageId = document.__pageId
+    const blockId = e.target.dataset.blockId
+
+    const div = document.getElementById(`data-block-${blockId}`)
+
+    // Delete the node
+    const parent = div.parentNode
+    parent.removeChild(div)
+
+    // Send an event so that things can be updated
     const update = {
-      pageId: document.__pageId,
-      blockId: e.target.dataset.blockId
+      pageId,
+      blockId
     }
     ipcRenderer.send('delete-block', update)
-  })
-
-  block.appendChild(container)
+  } catch (err) {
+    console.log('$' + err)
+  }
 }
 
 function showDataBorder (e, focussing) {
