@@ -47,85 +47,21 @@ body {
     z-index: 100;
 }
 
+.data-block-controls svg {
+    pointer-events: none;
+}
+
 .data-block-button {
     background-color: lightblue;
     border: none;
     border-radius: 50%;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
     margin: 0 2px;
+    padding: 3px;
 }
 
 .data-block-button:hover {
     background-color: blue;
-}
-
-.chevron {
-    display: inline-block;
-    position: relative;
-    height: 20px;
-    width: 20px;
-}
-  
-.chevron::before,
-.chevron::after {
-    background-color: white;
-    position: absolute;
-    width: 10px;
-    height: 3px; /* chevron width */
-    content: "";
-}
-
-.chevron.down::before,
-.chevron.down::after {
-    top: 9px;
-}
-
-.chevron.down::before {
-    left: 2px;
-    transform: rotate(45deg);
-}
-
-.chevron.down::after {
-    right: 2px;
-    transform: rotate(-45deg);
-}
-
-.chevron.up::before,
-.chevron.up::after {
-    bottom: 9px;
-}
-
-.chevron.up::before {
-    left: 2px;
-    transform: rotate(135deg);
-}
-
-.chevron.up::after {
-    right: 2px;
-    transform: rotate(-135deg);
-}
-
-.cross {
-    display: inline-block;
-    position: relative;
-    height: 20px;
-    width: 20px;
-}
-
-.cross::before,
-.cross::after {
-    background-color: white;
-    position: absolute;
-    width: 15px;
-    height: 3px; /* cross width */
-    top: 8px;
-    left: 2.5px;
-    content: "";
-}
-
-.cross::before {
-    transform: rotate(45deg);
-}
-
-.cross::after {
-    transform: rotate(-45deg);
 }

@@ -2,6 +2,11 @@
 const { ipcRenderer } = require('electron')
 
 window.addEventListener('DOMContentLoaded', (event) => {
+  setupBlocks()
+  setupInputs()
+})
+
+function setupBlocks () {
   const blocks = document.getElementsByClassName('data-block')
   for (let i = 0; i < blocks.length; i++) {
     // Listen to mouse and focus events to display the data border over blocks
@@ -12,7 +17,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Add the control container to the block
     addControlContainer(blocks[i])
   }
+}
 
+function setupInputs () {
   const inputs = document.getElementsByClassName('data-input')
   for (let i = 0; i < inputs.length; i++) {
     // Listen to mouse and focus events to display the data border over inputs
@@ -42,7 +49,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
       showDataBorder(e)
     })
   }
-})
+}
 
 function addControlContainer (block) {
   const container = document.createElement('div')
@@ -50,26 +57,54 @@ function addControlContainer (block) {
 
   const moveUpButton = document.createElement('button')
   moveUpButton.type = 'button'
-  moveUpButton.classList.add('data-block-button', 'chevron', 'up')
+  moveUpButton.classList.add('data-block-button')
   moveUpButton.dataset.blockId = block.dataset.blockId
+  moveUpButton.appendChild(buildSvg('M20,60 L50,30 L80,60'))
   moveUpButton.addEventListener('click', moveBlockUp)
   container.appendChild(moveUpButton)
 
   const moveDownButton = document.createElement('button')
   moveDownButton.type = 'button'
-  moveDownButton.classList.add('data-block-button', 'chevron', 'down')
+  moveDownButton.classList.add('data-block-button')
   moveDownButton.dataset.blockId = block.dataset.blockId
+  moveDownButton.appendChild(buildSvg('M20,40 L50,70 L80,40'))
   moveDownButton.addEventListener('click', moveBlockDown)
   container.appendChild(moveDownButton)
 
   const deleteButton = document.createElement('button')
   deleteButton.type = 'button'
-  deleteButton.classList.add('data-block-button', 'cross')
+  deleteButton.classList.add('data-block-button')
   deleteButton.dataset.blockId = block.dataset.blockId
+  deleteButton.appendChild(buildSvg(['M25,25 L75,75', 'M25,75 L75,25']))
   deleteButton.addEventListener('click', deleteBlock)
   container.appendChild(deleteButton)
 
   block.appendChild(container)
+}
+
+function buildSvg (paths) {
+  if (!Array.isArray(paths)) {
+    paths = [paths]
+  }
+
+  const svgns = 'http://www.w3.org/2000/svg'
+
+  const svg = document.createElementNS(svgns, 'svg')
+  svg.setAttributeNS(null, 'viewBox', '0 0 100 100')
+  const g = document.createElementNS(svgns, 'g')
+  for (let i = 0; i < paths.length; i++) {
+    const path = document.createElementNS(svgns, 'path')
+    path.setAttributeNS(null, 'd', paths[i])
+    path.setAttributeNS(null, 'stroke', 'white')
+    path.setAttributeNS(null, 'stroke-width', '20')
+    path.setAttributeNS(null, 'stroke-linecap', 'round')
+    path.setAttributeNS(null, 'stroke-linejoin', 'round')
+    path.setAttributeNS(null, 'fill', 'transparent')
+    g.appendChild(path)
+  }
+  svg.appendChild(g)
+
+  return svg
 }
 
 function moveBlockDown (e) {
