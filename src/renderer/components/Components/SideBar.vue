@@ -2,12 +2,12 @@
   <div class="side-bar-wrapper">
     <div v-for="(item, index) in sections" :key="item.key">
       <div v-if="item.class === 'title'" class="side-bar-title">
-        <button @click="setActiveSection(index)">
+        <button @click="setActiveSection(item)">
           {{ item.text }}
         </button>
       </div>
       <div v-else-if="item.class === 'item'" :class="['side-bar-item', item.isActive ? 'selected' : '']">
-        <button @click="setActiveSection(index)">
+        <button @click="setActiveSection(item)">
           {{ item.text }}
         </button>
       </div>
@@ -33,8 +33,17 @@
       ...mapActions([
         'setHelpSection',
         'setActiveSection',
-        'addSomething'
-      ])
+        'addPage',
+        'addData'
+      ]),
+      addSomething (index) {
+        const key = this.sections[index].key
+        if (key === 'add-data') {
+          this.addData()
+        } else if (key === 'add-page') {
+          this.addPage()
+        }
+      }
     }
   }
 </script>

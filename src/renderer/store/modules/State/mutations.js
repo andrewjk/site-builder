@@ -48,15 +48,21 @@ export const mutations = {
   SET_PAGES (state, pages) {
     state.pages = pages
   },
+  ADD_PAGE (state, { page, section }) {
+    state.pages.push(page)
+    const addSection = state.sections.find((item) => item.key === 'add-page')
+    const index = state.sections.indexOf(addSection)
+    state.sections.splice(index, 0, section)
+  },
   SET_BLOCKS (state, blocks) {
     state.blocks = blocks
   },
   SET_SECTIONS (state, items) {
     state.sections = items
   },
-  SET_ACTIVE_SECTION (state, index) {
-    state.sections.forEach((item, i) => {
-      item.isActive = (i === index)
+  SET_ACTIVE_SECTION (state, section) {
+    state.sections.forEach((item) => {
+      item.isActive = (item.key === section.key)
     })
   },
   SET_SETTINGS_VALUE (state, { name, key, value }) {

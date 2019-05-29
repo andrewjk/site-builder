@@ -60,16 +60,8 @@ export default function buildSections (context) {
     text: 'Pages'
   })
   context.state.pages.forEach((page) => {
-    items.push({
-      isActive: false,
-      page,
-      key: 'page-' + page.name,
-      class: 'item',
-      type: 'page',
-      text: page.name,
-      definition: context.state.pageDefinition,
-      data: page.data
-    })
+    const section = context.getters.buildPageSection(page)
+    items.push(section)
   })
   items.push({
     key: 'add-page',

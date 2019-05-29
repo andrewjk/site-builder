@@ -7,6 +7,8 @@ import loadSite from './load-site'
 import loadPage from './load-page'
 import loadBlock from './load-block'
 import buildSections from './build-sections'
+import addPage from './add-page'
+import addData from './add-data'
 import saveSite from './save-site'
 import buildPageContent from './build-page-content'
 import buildPageEditorHtml from './build-page-editor-html'
@@ -25,13 +27,11 @@ export const actions = {
   loadPage,
   loadBlock,
   buildSections,
-  setActiveSection (context, index) {
-    context.commit('SET_ACTIVE_SECTION', index)
+  setActiveSection (context, section) {
+    context.commit('SET_ACTIVE_SECTION', section)
   },
-  addSomething (context, index) {
-    // TODO:
-    alert('todo')
-  },
+  addPage,
+  addData,
   saveSite,
   buildPageContent,
   buildPageEditorHtml,

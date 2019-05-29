@@ -18,5 +18,17 @@ export const getters = {
   },
   blocks (state) {
     return state.blocks
+  },
+  buildPageSection: (state) => (page) => {
+    return {
+      isActive: false,
+      page,
+      key: 'page-' + page.name,
+      class: 'item',
+      type: 'page',
+      text: page.name,
+      definition: state.pageDefinition,
+      data: page.data
+    }
   }
 }
