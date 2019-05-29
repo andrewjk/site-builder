@@ -3,9 +3,11 @@ import path from 'path'
 
 export default async function loadPage (context, { siteFolder, file }) {
   const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
+
   // Load the page's data
   const dataFile = file.replace('.liquid', '.json')
   const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
+
   // Load the page's blocks
   const lines = fs.readFileSync(file).toString().split('\n')
   const regex = /{% include '(.+).liquid'(?:, (.+))* %}/gi
@@ -41,6 +43,7 @@ export default async function loadPage (context, { siteFolder, file }) {
       contentMatch = contentRegex.exec(content)
     }
   }
+
   const page = {
     file,
     name,

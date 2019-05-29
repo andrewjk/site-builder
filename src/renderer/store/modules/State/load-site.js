@@ -19,12 +19,12 @@ export default async function loadSite (context, name) {
 
   // Load other data
   // TODO: Load the ACTUAL data
-  let collections = await getFilesInFolder(path.join(siteFolder, 'data'))
-  collections = collections
-    .filter((item) => item.indexOf('info.json') === -1 && item.indexOf('appearance.json') === -1)
-    .map((item) => {
-      return item.substring(item.lastIndexOf(path.sep) + 1, item.lastIndexOf('.'))
-    })
+  const collectionFiles = await getFilesInFolder(path.join(siteFolder, 'data'))
+  const collections = await Promise.all(collectionFiles
+    .filter((file) => file.indexOf('info.json') === -1 && file.indexOf('appearance.json') === -1)
+    .map((file) => {
+      return context.dispatch('loadCollection', file)
+    }))
   context.commit('SET_COLLECTIONS', collections)
 
   // Load the pages that have been created

@@ -4,11 +4,12 @@ import { remote } from 'electron'
 import loadAllSites from './load-all-sites'
 import createSite from './create-site'
 import loadSite from './load-site'
+import loadCollection from './load-collection'
 import loadPage from './load-page'
 import loadBlock from './load-block'
 import buildSections from './build-sections'
 import addPage from './add-page'
-import addData from './add-data'
+import addData from './add-collection'
 import saveSite from './save-site'
 import buildPageContent from './build-page-content'
 import buildPageEditorHtml from './build-page-editor-html'
@@ -24,6 +25,7 @@ export const actions = {
   loadAllSites,
   createSite,
   loadSite,
+  loadCollection,
   loadPage,
   loadBlock,
   buildSections,

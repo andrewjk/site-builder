@@ -45,6 +45,12 @@ export const mutations = {
   SET_COLLECTIONS (state, collections) {
     state.collections = collections
   },
+  ADD_COLLECTION (state, { collection, section }) {
+    state.collections.push(collection)
+    const addSection = state.sections.find((item) => item.key === 'add-collection')
+    const index = state.sections.indexOf(addSection)
+    state.sections.splice(index, 0, section)
+  },
   SET_PAGES (state, pages) {
     state.pages = pages
   },

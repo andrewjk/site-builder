@@ -38,7 +38,7 @@
       ]),
       addSomething (index) {
         const key = this.sections[index].key
-        if (key === 'add-data') {
+        if (key === 'add-collection') {
           this.addData()
         } else if (key === 'add-page') {
           this.addPage()

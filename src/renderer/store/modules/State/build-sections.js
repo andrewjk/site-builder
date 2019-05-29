@@ -38,17 +38,12 @@ export default function buildSections (context) {
     type: 'title',
     text: 'Data'
   })
-  context.state.collections.forEach((data) => {
-    items.push({
-      isActive: false,
-      key: 'coll-' + data,
-      class: 'item',
-      type: 'collection',
-      text: data
-    })
+  context.state.collections.forEach((collection) => {
+    const section = context.getters.buildCollectionSection(collection)
+    items.push(section)
   })
   items.push({
-    key: 'add-data',
+    key: 'add-collection',
     class: 'add'
   })
   // Pages
