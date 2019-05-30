@@ -12,7 +12,10 @@ export default async function addData (context) {
     const name = collectionName.replace(/ /g, '_')
 
     // Create the empty file
-    const data = {}
+    const data = {
+      definitions: [],
+      items: []
+    }
     const siteName = context.state.activeSite
     const dataFolder = path.join(await context.dispatch('getSitesFolder'), siteName, 'data')
     const file = path.join(dataFolder, name + '.json')

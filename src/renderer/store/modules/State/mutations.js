@@ -51,6 +51,31 @@ export const mutations = {
     const index = state.sections.indexOf(addSection)
     state.sections.splice(index, 0, section)
   },
+  ADD_DEFINITION (state, definitions) {
+    definitions.push({
+      key: '',
+      name: '',
+      type: 'text'
+    })
+  },
+  SET_DEFINITION_FIELDS (state, { definition, fields }) {
+    if (fields.key) definition.key = fields.key
+    if (fields.name) definition.name = fields.name
+    if (fields.type) definition.type = fields.type
+
+    // TODO: Need to update items in the collection with this definition
+  },
+  ADD_COLLECTION_ITEM (state, { collection, definitions }) {
+    const item = {}
+    for (let i = 0; i < definitions.length; i++) {
+      // TODO: From type e.g. numbers should be 0
+      item[definitions[i].key] = ''
+    }
+    collection.push(item)
+  },
+  SET_COLLECTION_ITEM_VALUE (state, { item, key, value }) {
+    item[key] = value
+  },
   SET_PAGES (state, pages) {
     state.pages = pages
   },

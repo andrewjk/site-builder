@@ -15,7 +15,7 @@
         <help-section v-else-if="activeSection && activeSection.type === 'title'" :section="activeSection.text"></help-section>
 
         <settings-editor v-else-if="activeSection && activeSection.type === 'settings'" :name="activeSection.name" :definition="activeSection.definition" :data="activeSection.data" @save="saveSettings(activeSection)" @cancel="cancelSettings(activeSection)"/>
-        <collection-editor v-else-if="activeSection && activeSection.type === 'collection'" :definition="activeSection.definition" :data="activeSection.data" @save="saveData(activeSection)" @cancel="cancelData(activeSection)"/>
+        <collection-editor v-else-if="activeSection && activeSection.type === 'collection'" :name="activeSection.text" :data="activeSection.data" @save="saveData(activeSection)" @cancel="cancelData(activeSection)"/>
         <page-editor v-else-if="activeSection && activeSection.type === 'page'" :page="activeSection.page" :definition="activeSection.definition" :data="activeSection.data" @save="savePage(activeSection)" @cancel="cancelPage(activeSection)"/>
         <block-editor v-else-if="activeSection && activeSection.type === 'block'" :block="activeSection.block" :definition="activeSection.definition" :data="activeSection.data" @save="saveBlock(activeSection)" @cancel="cancelBlock(activeSection)"/>
       </div>
