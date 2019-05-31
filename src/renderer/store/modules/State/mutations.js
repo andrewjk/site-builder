@@ -133,20 +133,38 @@ export const mutations = {
     page.blocks.push(block)
     // page.blocks = [...page.blocks, block]
   },
-  MOVE_BLOCK_UP (staet, { page, block }) {
+  MOVE_BLOCK_UP (state, { page, block }) {
     const index = page.blocks.indexOf(block)
     if (index > 0) {
       page.blocks.splice(index - 1, 0, page.blocks.splice(index, 1)[0])
     }
   },
-  MOVE_BLOCK_DOWN (staet, { page, block }) {
+  MOVE_BLOCK_DOWN (state, { page, block }) {
     const index = page.blocks.indexOf(block)
     if (index < page.blocks.length - 1) {
       page.blocks.splice(index + 1, 0, page.blocks.splice(index, 1)[0])
     }
   },
-  DELETE_BLOCK (staet, { page, block }) {
+  DELETE_BLOCK (state, { page, block }) {
     const index = page.blocks.indexOf(block)
     page.blocks.splice(index, 1)
+  },
+  DELETE_COLLECTION (state, collection) {
+    const index = state.collections.indexOf(collection)
+    state.collections.splice(index, 1)
+
+    const sectionIndex = state.sections.findIndex((item) => item.collection === collection)
+    if (sectionIndex !== -1) {
+      state.sections.splice(sectionIndex, 1)
+    }
+  },
+  DELETE_PAGE (state, page) {
+    const index = state.pages.indexOf(page)
+    state.pages.splice(index, 1)
+
+    const sectionIndex = state.sections.findIndex((item) => item.page && item.page === page)
+    if (sectionIndex !== -1) {
+      state.sections.splice(sectionIndex, 1)
+    }
   }
 }

@@ -14,6 +14,8 @@ import saveSite from './save-site'
 import buildPageContent from './build-page-content'
 import buildPageEditorHtml from './build-page-editor-html'
 import buildSite from './build-site'
+import deleteCollection from './delete-collection'
+import deletePage from './delete-page'
 
 export const actions = {
   getTemplatesFolder (context) {
@@ -37,5 +39,7 @@ export const actions = {
   saveSite,
   buildPageContent,
   buildPageEditorHtml,
-  buildSite
+  buildSite,
+  deleteCollection,
+  deletePage
 }

@@ -7,7 +7,7 @@
         </button>
       </div>
       <div v-else-if="item.class === 'item'" :class="['side-bar-item', item.isActive ? 'selected' : '']">
-        <button @click="setActiveSection(item)">
+        <button @click="setActiveSection(item)" @keydown.delete="deleteSomething(index)" @keydown.f2="renameSomething(index)">
           {{ item.text }}
         </button>
       </div>
@@ -22,6 +22,9 @@
 
 <script>
   import { mapState, mapActions } from 'vuex'
+  import { create } from 'vue-modal-dialogs'
+
+  import ConfirmDialog from '../Dialogs/ConfirmDialog'
 
   export default {
     computed: {
@@ -34,7 +37,9 @@
         'setHelpSection',
         'setActiveSection',
         'addPage',
-        'addData'
+        'addData',
+        'deleteCollection',
+        'deletePage'
       ]),
       addSomething (index) {
         const key = this.sections[index].key
@@ -43,6 +48,27 @@
         } else if (key === 'add-page') {
           this.addPage()
         }
+      },
+      async deleteSomething (index) {
+        const key = this.sections[index].key
+        if (key.indexOf('coll-') === 0) {
+          const dialog = create(ConfirmDialog)
+          const result = await dialog({ content: 'Are you sure you want to delete this data?', confirmText: 'Yes', cancelText: 'No' }).transition()
+          if (result) {
+            const collection = this.sections[index].collection
+            this.deleteCollection(collection)
+          }
+        } else if (key.indexOf('page-') === 0) {
+          const dialog = create(ConfirmDialog)
+          const result = await dialog({ content: 'Are you sure you want to delete this page?', confirmText: 'Yes', cancelText: 'No' }).transition()
+          if (result) {
+            const page = this.sections[index].page
+            this.deletePage(page)
+          }
+        }
+      },
+      async renameSomething (index) {
+        alert('todo: rename this')
       }
     }
   }

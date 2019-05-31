@@ -22,6 +22,7 @@ export const getters = {
   buildCollectionSection: (state) => (collection) => {
     return {
       isActive: false,
+      collection,
       key: 'coll-' + collection.name,
       class: 'item',
       type: 'collection',
