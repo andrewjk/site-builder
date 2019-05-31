@@ -8,7 +8,7 @@
         <span>Fields</span>
       </div>
       <div class="expander-body" v-show="expandDefinitions">
-        <definitions-editor :definitions="data.definitions"/>
+        <definitions-editor :collection="data.items" :definitions="data.definitions"/>
       </div>
     </div>
 

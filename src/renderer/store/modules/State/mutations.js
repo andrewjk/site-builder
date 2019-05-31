@@ -58,12 +58,18 @@ export const mutations = {
       type: 'text'
     })
   },
-  SET_DEFINITION_FIELDS (state, { definition, fields }) {
-    if (fields.key) definition.key = fields.key
+  SET_DEFINITION_FIELDS (state, { definition, fields, collection }) {
+    if (fields.key) {
+      const oldKey = definition.key
+      definition.key = fields.key
+      // Update items in the collection with this new key
+      collection.forEach((item) => {
+        item[fields.key] = item[oldKey]
+        item[oldKey] = undefined
+      })
+    }
     if (fields.name) definition.name = fields.name
     if (fields.type) definition.type = fields.type
-
-    // TODO: Need to update items in the collection with this definition
   },
   ADD_COLLECTION_ITEM (state, { collection, definitions }) {
     const item = {}

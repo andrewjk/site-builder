@@ -35,7 +35,8 @@
 
   export default {
     props: {
-      definitions: Array
+      definitions: Array,
+      collection: Array
     },
     methods: {
       ...mapMutations([
@@ -48,7 +49,7 @@
       setDefinitionValue (definition, field, value) {
         const fields = {}
         fields[field] = value
-        this.SET_DEFINITION_FIELDS({ definition, fields })
+        this.SET_DEFINITION_FIELDS({ definition, fields, collection: this.collection })
       }
     }
   }

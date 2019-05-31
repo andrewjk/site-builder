@@ -2,7 +2,7 @@
   <div class="data-editor-wrapper">
     <table>
       <tbody>
-        <tr v-for="def in definition.definitions" :key="def.key">
+        <tr v-for="(def, index) in definition.definitions" :key="index">
           <td>
             <label :for="def.key">{{ def.name }}</label>
           </td>
