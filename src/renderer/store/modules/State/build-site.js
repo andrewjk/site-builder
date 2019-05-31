@@ -70,13 +70,13 @@ export default async function buildSite (context, name) {
   // Files starting with underscores are templates and should get built into the layouts folder
   await Promise.all([...context.state.pages].sort(sorter).filter(page => path.basename(page.file).indexOf('_') === 0).map(async (page) => {
     const outputFile = path.join(layoutsFolder, path.basename(page.file))
-    await buildPage(page, outputFile, context, engine, true)
+    await generatePage(page, outputFile, context, engine, true)
   }))
 
   // Generate each page
   await Promise.all([...context.state.pages].sort(sorter).filter(page => path.basename(page.file).indexOf('_') !== 0).map(async (page) => {
     const outputFile = path.join(webSiteFolder, path.basename(page.file).replace('.liquid', '.html'))
-    await buildPage(page, outputFile, context, engine, false)
+    await buildPage(page, outputFile, context, engine)
   }))
 
   // TODO: Concat and minify CSS from templates, layouts and blocks
@@ -114,11 +114,36 @@ function sorter (a, b) {
   }
 }
 
-async function buildPage (page, outputFile, context, engine, isLayout) {
+async function buildPage (page, outputFile, context, engine) {
+  console.log('GENERATING', page.file)
+
+  if (page.data.data) {
+    // We need to create a page file for each item in the collection
+    const collection = context.state.collections.find((item) => item.name === page.data.data)
+
+    // Put each file in a folder with the page's name
+    const outputFolder = outputFile.replace('.html', '')
+    await fs.ensureDir(outputFolder)
+
+    collection.data.items.forEach(async (item) => {
+      const itemOutputFile = path.join(outputFolder, item.name + '.html')
+      const itemData = item
+      await generatePage(page, itemOutputFile, context, engine, false, itemData)
+    })
+  } else {
+    await generatePage(page, outputFile, context, engine, false)
+  }
+}
+
+async function generatePage (page, outputFile, context, engine, isLayout, itemData) {
   console.log('GENERATING', page.file)
 
   // Build the page's data
   const data = Object.assign({}, context.state.info, page.data)
+
+  if (itemData) {
+    data.item = itemData
+  }
 
   // Generate the page in memory
   let pageContent = await context.dispatch('buildPageContent', { page })
@@ -132,11 +157,19 @@ async function buildPage (page, outputFile, context, engine, isLayout) {
     result = result.replace('<div id="block-content">Page content</div>', '{% block content %}Page content{% endblock %}')
   }
 
-  // Remove multiple newlines and
+  // Remove multiple newlines
   result = result.replace(/\n\s*\n\s*\n/g, '\n\n')
 
   // Beautify the HTML a little bit
   result = html_beautify(result)
+
+  // HACK: If there's itemData present, we need to re-orient our relative CSS and JS
+  // TODO: Be a lot smarter about this!
+  if (itemData) {
+    result = result
+      .replace(/<link rel="stylesheet" href="/gi, '<link rel="stylesheet" href="../')
+      .replace(/<script src="/gi, '<script src="../')
+  }
 
   // Write the output file
   fs.writeFileSync(outputFile, result, (err) => {
