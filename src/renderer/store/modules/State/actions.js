@@ -16,6 +16,8 @@ import buildPageEditorHtml from './build-page-editor-html'
 import buildSite from './build-site'
 import deleteCollection from './delete-collection'
 import deletePage from './delete-page'
+import renameCollection from './rename-collection'
+import renamePage from './rename-page'
 
 export const actions = {
   getTemplatesFolder (context) {
@@ -41,5 +43,7 @@ export const actions = {
   buildPageEditorHtml,
   buildSite,
   deleteCollection,
-  deletePage
+  deletePage,
+  renameCollection,
+  renamePage
 }

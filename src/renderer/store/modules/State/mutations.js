@@ -166,5 +166,28 @@ export const mutations = {
     if (sectionIndex !== -1) {
       state.sections.splice(sectionIndex, 1)
     }
+  },
+  TOGGLE_RENAMING_SECTION (state, section) {
+    section.renaming = !section.renaming
+  },
+  RENAME_COLLECTION (state, { collection, name }) {
+    collection.file = collection.file.replace(collection.name + '.liquid', name + '.liquid')
+    collection.name = name
+
+    const section = state.sections.find((item) => item.collection === collection)
+    if (section) {
+      section.key = 'coll-' + collection.name
+      section.text = collection.name
+    }
+  },
+  RENAME_PAGE (state, { page, name }) {
+    page.file = page.file.replace(page.name + '.liquid', name + '.liquid')
+    page.name = name
+
+    const section = state.sections.find((item) => item.page === page)
+    if (section) {
+      section.key = 'page-' + page.name
+      section.text = page.name
+    }
   }
 }

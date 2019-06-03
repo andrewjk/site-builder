@@ -1,18 +1,19 @@
 <template>
   <div class="side-bar-wrapper">
-    <div v-for="(item, index) in sections" :key="item.key">
-      <div v-if="item.class === 'title'" class="side-bar-title">
-        <button @click="setActiveSection(item)">
-          {{ item.text }}
+    <div v-for="section in sections" :key="section.key">
+      <div v-if="section.class === 'title'" class="side-bar-title">
+        <button @click="setActiveSection(section)">
+          {{ section.text }}
         </button>
       </div>
-      <div v-else-if="item.class === 'item'" :class="['side-bar-item', item.isActive ? 'selected' : '']">
-        <button @click="setActiveSection(item)" @keydown.delete="deleteSomething(index)" @keydown.f2="renameSomething(index)">
-          {{ item.text }}
+      <div v-else-if="section.class === 'item'" :class="['side-bar-section', section.isActive ? 'selected' : '']">
+        <input v-if="section.renaming" type="text" v-model="newName" @keydown.enter="renameSomething(section)" @keydown.escape="toggleRenamingSomething(section)" ref="input">
+        <button v-else @click="setActiveSection(section)" @keydown.delete="deleteSomething(section)" @keydown.f2="toggleRenamingSomething(section)">
+          {{ section.text }}
         </button>
       </div>
-      <div v-else-if="item.class === 'add'" class="side-bar-item add-button">
-        <button @click="addSomething(index)">
+      <div v-else-if="section.class === 'add'" class="side-bar-section add-button">
+        <button @click="addSomething(section)">
           <fa icon="plus"/>
         </button>
       </div>
@@ -21,54 +22,84 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+  import Vue from 'vue'
+  import { mapState, mapMutations, mapActions } from 'vuex'
   import { create } from 'vue-modal-dialogs'
 
   import ConfirmDialog from '../Dialogs/ConfirmDialog'
 
   export default {
+    data () {
+      return {
+        newName: ''
+      }
+    },
     computed: {
       ...mapState({
         sections: state => state.State.sections
       })
     },
     methods: {
+      ...mapMutations([
+        'TOGGLE_RENAMING_SECTION'
+      ]),
       ...mapActions([
         'setHelpSection',
         'setActiveSection',
         'addPage',
         'addData',
         'deleteCollection',
-        'deletePage'
+        'deletePage',
+        'renameCollection',
+        'renamePage'
       ]),
-      addSomething (index) {
-        const key = this.sections[index].key
+      addSomething (section) {
+        const key = section.key
         if (key === 'add-collection') {
           this.addData()
         } else if (key === 'add-page') {
           this.addPage()
         }
       },
-      async deleteSomething (index) {
-        const key = this.sections[index].key
+      async deleteSomething (section) {
+        const key = section.key
         if (key.indexOf('coll-') === 0) {
           const dialog = create(ConfirmDialog)
           const result = await dialog({ content: 'Are you sure you want to delete this data?', confirmText: 'Yes', cancelText: 'No' }).transition()
           if (result) {
-            const collection = this.sections[index].collection
+            const collection = section.collection
             this.deleteCollection(collection)
           }
         } else if (key.indexOf('page-') === 0) {
           const dialog = create(ConfirmDialog)
           const result = await dialog({ content: 'Are you sure you want to delete this page?', confirmText: 'Yes', cancelText: 'No' }).transition()
           if (result) {
-            const page = this.sections[index].page
+            const page = section.page
             this.deletePage(page)
           }
         }
       },
-      async renameSomething (index) {
-        alert('todo: rename this')
+      async toggleRenamingSomething (section) {
+        this.newName = section.text
+        this.TOGGLE_RENAMING_SECTION(section)
+        Vue.nextTick(() => {
+          const el = this.$refs['input'][0]
+          if (el) {
+            el.focus()
+            el.select()
+          }
+        })
+      },
+      async renameSomething (section) {
+        const key = section.key
+        if (key.indexOf('coll-') === 0) {
+          const collection = section.collection
+          this.renameCollection({ collection, name: this.newName })
+        } else if (key.indexOf('page-') === 0) {
+          const page = section.page
+          this.renamePage({ page, name: this.newName })
+        }
+        this.TOGGLE_RENAMING_SECTION(section)
       }
     }
   }
@@ -85,7 +116,7 @@
   }
 
   .side-bar-title,
-  .side-bar-item {
+  .side-bar-section {
     button {
       border: 1px solid transparent;
       border-radius: 2px;
@@ -111,14 +142,14 @@
     }
   }
 
-  .side-bar-item {
+  .side-bar-section {
     button {
       padding: 4px 9px;
     }
   }
 
   .side-bar-title.selected,
-  .side-bar-item.selected {
+  .side-bar-section.selected {
     button {
       color: orange;
     }
