@@ -15,7 +15,7 @@
     <div class="expander">
       <div class="expander-title" @click="expandItems = !expandItems">
         <span class="expander-icon"><fa :icon="expandItems ? 'caret-down' : 'caret-right'"/></span>
-        <span>Items</span>
+        <span>{{ data.items.length === 1 ? data.items.length + ' Item' : data.items.length + ' Items' }}</span>
       </div>
       <div class="expander-body" v-show="expandItems">
         <div v-for="(item, index) in data.items" :key="index">
