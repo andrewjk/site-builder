@@ -4,11 +4,10 @@ const path = require('path')
 const merge = require('webpack-merge')
 const webpack = require('webpack')
 
-const baseConfig = require('../../.electron-vue/webpack.renderer.config')
-const projectRoot = path.resolve(__dirname, '../../src/renderer')
-
 // Set BABEL_ENV to use proper preset config
 process.env.BABEL_ENV = 'test'
+
+const baseConfig = require('../../webpack.renderer.js')
 
 let webpackConfig = merge(baseConfig, {
   devtool: '#inline-source-map',
@@ -22,11 +21,15 @@ let webpackConfig = merge(baseConfig, {
 // don't treat dependencies as externals
 delete webpackConfig.entry
 delete webpackConfig.externals
-delete webpackConfig.output.libraryTarget
+//delete webpackConfig.output.libraryTarget
 
-// apply vue option to apply isparta-loader on js
+//// apply svelte option to apply babel-loader on js
+//webpackConfig.module.rules
+//  .find(rule => rule.use.loader === 'svelte-loader').use.options.loaders.js = 'babel-loader'
+
+// don't emit CSS when testing
 webpackConfig.module.rules
-  .find(rule => rule.use.loader === 'vue-loader').use.options.loaders.js = 'babel-loader'
+  .find(rule => rule.use.loader === 'svelte-loader').use.options.emitCss = false
 
 module.exports = config => {
   config.set({

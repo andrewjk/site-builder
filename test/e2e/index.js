@@ -5,6 +5,7 @@ process.env.BABEL_ENV = 'test'
 
 // Enable use of ES6+ on required files
 require('babel-register')({
+  presets: ['env'],
   ignore: /node_modules/
 })
 
