@@ -1,4 +1,5 @@
 <script>
+  import settings from "electron-settings";
   import {
     sites,
     creatingSite,
@@ -23,6 +24,7 @@
       $creatingSite = false;
       $activeSite = await loadSite(siteName);
       $sections = buildSections($activeSite, $definitions);
+      settings.set('app', { siteName });
     }
   }
 </script>

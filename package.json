@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
+    "electron-settings": "^3.2.0",
     "fs-extra": "^8.0.1",
     "js-beautify": "^1.10.0",
     "klaw": "^3.0.0",

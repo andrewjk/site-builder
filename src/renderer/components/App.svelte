@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import settings from "electron-settings";
   import {
     sites,
     activeSite,
@@ -29,9 +30,9 @@
 
   onMount(async () => {
     $sites = await loadAllSites();
-    // Load the first site
-    // TODO: Should load the previous site used
-    $activeSite = await loadSite($sites[0]);
+    // Load the previous site used
+    const siteName = settings.get('app.siteName') || $sites[0];
+    $activeSite = await loadSite(siteName);
     $definitions = await loadDefinitionFiles();
     $sections = buildSections($activeSite, $definitions);
     loaded = true;
