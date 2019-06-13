@@ -17,7 +17,7 @@
 
   function setKey(e, definition) {
     const oldKey = definition.key;
-    const newKey = e.target.value;
+    const newKey = e.target.value.replace(/\W+/g, '_').toLowerCase();
     definition.key = newKey;
     // Update items in the collection with this new key
     collection.forEach(item => {
@@ -50,7 +50,6 @@
   <table>
     <thead>
       <tr>
-        <td>Key</td>
         <td>Name</td>
         <td>Type</td>
       </tr>
@@ -59,10 +58,7 @@
       {#each definitions as def, index}
         <tr>
           <td>
-            <input type="text" value={def.key} on:input={e => setKey(e, def)} />
-          </td>
-          <td>
-            <input type="text" bind:value={def.name} />
+            <input type="text" bind:value={def.name} on:input={e => setKey(e, def)} />
           </td>
           <td>
             <input type="text" bind:value={def.type} />
