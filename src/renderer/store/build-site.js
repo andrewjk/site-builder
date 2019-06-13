@@ -134,7 +134,7 @@ async function buildPage (site, page, outputFile, engine) {
       await fs.ensureDir(outputFolder)
 
       collection.data.items.forEach(async (item) => {
-        const itemOutputFile = path.join(outputFolder, item.name + '.html')
+        const itemOutputFile = path.join(outputFolder, item.name.replace(/\W+/g, '_').toLowerCase() + '.html')
         const itemData = item
         await generatePage(site, page, itemOutputFile, engine, false, itemData)
       })
