@@ -5993,10 +5993,10 @@ karma-coverage@^1.1.2:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
-karma-electron@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/karma-electron/-/karma-electron-6.1.1.tgz#b3efd2473fb0f6d4d614d2f46af1829846cd4f2b"
-  integrity sha512-MLmoVoStjeBthSae4ItgZYB2HGU3gNje+vjFRiq0y0thEhRiF34tZGlW8Fn0zYxCJ2QAutlMf2WXISWDgKl/kw==
+karma-electron@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/karma-electron/-/karma-electron-6.2.0.tgz#174111fd62f1e4d42c025b3e8d4eb4dc5d4c6c89"
+  integrity sha512-XtVMOWfzBCxh/s5dotO00kpxW/Fzok0pB4ddSQPt7t9lh7dEvlhq5n+aOF3sXIiYzjPl4gfH0foJMNPx9VfhDQ==
   dependencies:
     combine-source-map "~0.8.0"
     commander "~2.9.0"
@@ -10183,10 +10183,10 @@ webpack-sources@^1.1.0, webpack-sources@^1.3.0:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^4.33.0:
-  version "4.33.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.33.0.tgz#c30fc4307db432e5c5e3333aaa7c16a15a3b277e"
-  integrity sha512-ggWMb0B2QUuYso6FPZKUohOgfm+Z0sVFs8WwWuSH1IAvkWs428VDNmOlAxvHGTB9Dm/qOB/qtE5cRx5y01clxw==
+webpack@^4.34.0:
+  version "4.34.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.34.0.tgz#a4c30129482f7b4ece4c0842002dedf2b56fab58"
+  integrity sha512-ry2IQy1wJjOefLe1uJLzn5tG/DdIKzQqNlIAd2L84kcaADqNvQDTBlo8UcCNyDaT5FiaB+16jhAkb63YeG3H8Q==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
