@@ -77,12 +77,14 @@ function buildBlockEditorHtml (block, templateBlock) {
 
   // Update data from the definition, just in case it hasn't been loaded or the template has changed
   const data = block.data
-  templateBlock.definition.definitions.forEach((def) => {
-    if (!data[def.key]) {
+  if (templateBlock.definition.definitions) {
+    templateBlock.definition.definitions.forEach((def) => {
+      if (!data[def.key]) {
       // TODO: Depends on the type, I guess...
-      data[def.key] = ''
-    }
-  })
+        data[def.key] = ''
+      }
+    })
+  }
 
   // Load the content from the template and make it dynamic, by replacing liquid fields with
   // inputs that the user can type into and saving it to a temp file

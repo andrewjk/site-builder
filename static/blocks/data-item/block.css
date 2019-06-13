@@ -1,0 +1,10 @@
+/*
+ * This class is used for displaying the page in the editor.
+ */
+ .data-item {
+    background-color: #fafafa;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
