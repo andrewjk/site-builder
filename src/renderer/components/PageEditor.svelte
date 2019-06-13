@@ -13,6 +13,8 @@
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 
+  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+
   export let page = {};
   export let definition = {};
   export let data = {};
@@ -99,12 +101,11 @@
       "delete-block",
       async (event, { pageId, blockId }) => {
         if (pageId === page.id) {
-          const dialog = create(ConfirmDialog);
-          const result = await dialog({
+          const result = await showConfirm({
             content: "Are you sure you want to delete this block?",
             confirmText: "Yes",
             cancelText: "No"
-          }).transition();
+          });
           if (result) {
             const index = page.blocks.findIndex(block => block.id === blockId);
             page.blocks.splice(index, 1);
