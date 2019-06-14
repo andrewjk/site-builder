@@ -6,7 +6,7 @@ export default async function renameCollection (collection, name, sections) {
   await fs.move(oldFile, newFile)
 
   // Rename the collection in pages
-  sections.filter((section) => section.key.indexOf('page-') === 0).forEach((section) => {
+  sections.filter((section) => section.key.startsWith('page-')).forEach((section) => {
     if (section.page.data && section.page.data.data === collection.name) {
       section.page.data.data = name
     }

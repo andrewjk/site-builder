@@ -58,7 +58,7 @@
     // Listen to console messages from within the webview (handy for debugging the webview-preload script)
     // But only listen to messages that start with a $ because those will be the ones that we have made
     webview.addEventListener("console-message", e => {
-      if (e.message.indexOf("$") === 0) {
+      if (e.message.startsWith("$")) {
         console.log("WEBVIEW:", e.message.substring(1));
       }
     });

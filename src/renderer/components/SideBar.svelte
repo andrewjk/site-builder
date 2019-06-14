@@ -33,8 +33,8 @@
 
   async function handleSectionKey(e, section) {
     if (
-      section.key.indexOf("coll-") === 0 ||
-      section.key.indexOf("page-") === 0
+      section.key.startsWith("coll-") ||
+      section.key.startsWith("page-")
     ) {
       if (e.key === "Delete") {
         await deleteSomething(section);
@@ -90,9 +90,9 @@
 
   async function deleteSomething(section) {
     const key = section.key;
-    if (key.indexOf("coll-") === 0) {
+    if (key.startsWith("coll-")) {
       await maybeDeleteCollection(section);
-    } else if (key.indexOf("page-") === 0) {
+    } else if (key.startsWith("page-")) {
       await maybeDeletePage(section);
     }
   }
@@ -148,10 +148,10 @@
 
   async function renameSomething(section) {
     const key = section.key;
-    if (key.indexOf("coll-") === 0) {
+    if (key.startsWith("coll-")) {
       const collection = section.collection;
       renameCollection(collection, newName, $sections);
-    } else if (key.indexOf("page-") === 0) {
+    } else if (key.startsWith("page-")) {
       const page = section.page;
       renamePage(page, newName, $sections);
     }

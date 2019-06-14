@@ -71,7 +71,7 @@ export default async function buildSite (site) {
 
   // Generate each layout
   // Files starting with underscores are templates and should get built into the layouts folder
-  await Promise.all([...site.pages].sort(sorter).filter(page => path.basename(page.file).indexOf('_') === 0).map(async (page) => {
+  await Promise.all([...site.pages].sort(sorter).filter(page => path.basename(page.file).startsWith('_')).map(async (page) => {
     const outputFile = path.join(layoutsFolder, path.basename(page.file))
     await generatePage(site, page, outputFile, engine, true)
   }))
