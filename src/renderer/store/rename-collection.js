@@ -5,10 +5,18 @@ export default async function renameCollection (collection, name, sections) {
   const newFile = collection.file.replace(collection.name + '.json', name + '.json')
   await fs.move(oldFile, newFile)
 
-  // TODO: Need to update these in components etc
+  // Rename the collection in pages
+  sections.filter((section) => section.key.indexOf('page-') === 0).forEach((section) => {
+    if (section.page.data && section.page.data.data === collection.name) {
+      section.page.data.data = name
+    }
+  })
+
+  // Update the collection
   collection.file = newFile
   collection.name = name
 
+  // Update sections
   const section = sections.find((item) => item.collection === collection)
   if (section) {
     section.key = 'coll-' + collection.name

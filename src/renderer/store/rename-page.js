@@ -6,10 +6,11 @@ export default async function renamePage (page, name, sections) {
   await fs.move(oldFile, newFile)
   await fs.move(oldFile.replace('.liquid', '.json'), newFile.replace('.liquid', '.json'))
 
-  // TODO: Need to update these in components etc
+  // Update the page
   page.file = newFile
   page.name = name
 
+  // Rename the page in sections
   const section = sections.find((item) => item.page === page)
   if (section) {
     section.key = 'page-' + page.name
