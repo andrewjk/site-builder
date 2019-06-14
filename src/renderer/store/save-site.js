@@ -9,12 +9,12 @@ export default async function saveSite (site) {
   const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name)
 
   // Save the data into info.json and appearance.json
-  const infoFile = path.join(siteFolder, 'data', 'info.json')
+  const infoFile = path.join(siteFolder, 'settings', 'info.json')
   fs.writeJSON(infoFile, site.info)
-  const appearanceFile = path.join(siteFolder, 'data', 'appearance.json')
+  const appearanceFile = path.join(siteFolder, 'settings', 'appearance.json')
   fs.writeJSON(appearanceFile, site.appearance)
 
-  // Save other data
+  // Save data
   site.collections.forEach((collection) => {
     fs.writeJSON(collection.file, collection.data)
   })

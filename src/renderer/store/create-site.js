@@ -10,11 +10,11 @@ export default async function createSite (name, info, appearance) {
   const templateFolder = path.join(__static, 'templates', 'default')
   await fs.copy(templateFolder, path.join(siteFolder, 'templates', 'default'))
 
-  // Create the data files
-  const dataFolder = path.join(siteFolder, 'data')
-  await fs.mkdir(dataFolder)
-  await fs.writeJSON(path.join(dataFolder + '/info.json'), info)
-  await fs.writeJSON(path.join(dataFolder + '/appearance.json'), appearance)
+  // Create the settings files
+  const settingsFolder = path.join(siteFolder, 'settings')
+  await fs.mkdir(settingsFolder)
+  await fs.writeJSON(path.join(settingsFolder + '/info.json'), info)
+  await fs.writeJSON(path.join(settingsFolder + '/appearance.json'), appearance)
 
   // Create the pages folder
   const pagesFolder = path.join(siteFolder, 'pages')
