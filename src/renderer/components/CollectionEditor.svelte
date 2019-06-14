@@ -1,10 +1,9 @@
 <script>
   import DefinitionsEditor from "./DefinitionsEditor";
-  import DataEditor from "./DataEditor";
+  import ItemEditor from "./ItemEditor";
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
-  import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 
@@ -14,7 +13,6 @@
   export let data = {};
 
   let expandDefinitions = false;
-  let expandItems = false;
 
   function addItem() {
     const item = {};
@@ -39,7 +37,6 @@
       data.items.splice(index, 1);
       // HACK: Force reactivity
       data.items = data.items;
-      dispatch("defchange");
     }
   }
 
@@ -53,11 +50,6 @@
   .title {
     font-size: 24px;
     margin-bottom: 10px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    margin: 8px 0;
   }
 
   .expander-title {
@@ -112,35 +104,13 @@
     {/if}
   </div>
 
-  <div class="expander">
-    <div class="expander-title" on:click={e => (expandItems = !expandItems)}>
-      <span class="expander-icon">
-        <Icon icon={expandItems ? faCaretDown : faCaretRight} />
-      </span>
-      <span>
-         {data.items.length === 1 ? data.items.length + ' Item' : data.items.length + ' Items'}
+  {#each data.items as item, index}
+    <ItemEditor definition={data} {item} {index} on:delete={deleteItem} />
+  {/each}
 
-      </span>
-    </div>
-    {#if expandItems}
-      <div class="expander-body">
-        {#each data.items as item, index}
-          <div>
-            <div class="subtitle">Item {index + 1}</div>
-            <DataEditor definition={data} data={item} />
-            <button
-              title="Delete this item"
-              on:click={e => deleteItem(item, index)}>
-              <Icon icon={faTimes} />
-            </button>
-          </div>
-        {/each}
-        <div class="edit-collection-buttons">
-          <button title="Add an item" on:click={addItem}>
-            <Icon icon={faPlus} />
-          </button>
-        </div>
-      </div>
-    {/if}
+  <div class="edit-collection-buttons">
+    <button title="Add an item" on:click={addItem}>
+      <Icon icon={faPlus} />
+    </button>
   </div>
 </div>
