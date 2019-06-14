@@ -100,8 +100,10 @@
   async function maybeDeleteCollection(section) {
     const result = await showConfirm({
       content: "Are you sure you want to delete this data?",
-      confirmText: "Yes",
-      cancelText: "No"
+      buttons: [
+        { content: "Yes", confirm: true },
+        { content: "No", cancel: true }
+      ]
     });
     if (result) {
       const collection = section.collection;
@@ -119,8 +121,10 @@
   async function maybeDeletePage(section) {
     const result = await showConfirm({
       content: "Are you sure you want to delete this page?",
-      confirmText: "Yes",
-      cancelText: "No"
+      buttons: [
+        { content: "Yes", confirm: true },
+        { content: "No", cancel: true }
+      ]
     });
     if (result) {
       const page = section.page;

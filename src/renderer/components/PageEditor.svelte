@@ -103,8 +103,10 @@
         if (pageId === page.id) {
           const result = await showConfirm({
             content: "Are you sure you want to delete this block?",
-            confirmText: "Yes",
-            cancelText: "No"
+            buttons: [
+              { content: "Yes", confirm: true },
+              { content: "No", cancel: true }
+            ]
           });
           if (result) {
             const index = page.blocks.findIndex(block => block.id === blockId);
