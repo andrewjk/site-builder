@@ -4,8 +4,11 @@
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+  import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
+
+  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   export let name = "";
   export let data = {};
@@ -20,6 +23,27 @@
       item[data.definitions[i].key] = "";
     }
     data.items.push(item);
+    // HACK: Force reactivity
+    data.items = data.items;
+  }
+
+  async function deleteItem(item, index) {
+    const result = await showConfirm({
+      content: "Are you sure you want to delete this item?",
+      buttons: [
+        { content: "Yes", confirm: true },
+        { content: "No", cancel: true }
+      ]
+    });
+    if (result) {
+      data.items.splice(index, 1);
+      // HACK: Force reactivity
+      data.items = data.items;
+      dispatch("defchange");
+    }
+  }
+
+  function defChanged() {
     // HACK: Force reactivity
     data.items = data.items;
   }
@@ -50,21 +74,19 @@
     margin-bottom: 20px;
   }
 
-  .edit-collection-buttons {
-    button {
-      background-color: #ddd;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      color: inherit;
-      padding: 10px;
-      width: 100%;
-    }
-    button:hover {
-      background-color: darken(#ddd, 9%);
-    }
-    button:focus {
-      border: 1px solid rgba(0, 0, 0, 0.15);
-    }
+  button {
+    background-color: #ddd;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    color: inherit;
+    padding: 10px;
+    width: 100%;
+  }
+  button:hover {
+    background-color: darken(#ddd, 9%);
+  }
+  button:focus {
+    border: 1px solid rgba(0, 0, 0, 0.15);
   }
 </style>
 
@@ -84,7 +106,8 @@
       <div class="expander-body">
         <DefinitionsEditor
           collection={data.items}
-          definitions={data.definitions} />
+          definitions={data.definitions}
+          on:defchange={defChanged} />
       </div>
     {/if}
   </div>
@@ -105,6 +128,11 @@
           <div>
             <div class="subtitle">Item {index + 1}</div>
             <DataEditor definition={data} data={item} />
+            <button
+              title="Delete this item"
+              on:click={e => deleteItem(item, index)}>
+              <Icon icon={faTimes} />
+            </button>
           </div>
         {/each}
         <div class="edit-collection-buttons">
