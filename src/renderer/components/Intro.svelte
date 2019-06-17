@@ -1,5 +1,6 @@
 <script>
   import { creatingSite, activeSite } from "../store/state";
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
 
   function startCreatingSite() {
     $creatingSite = true;
@@ -44,6 +45,6 @@
       Welcome to the site builder. You don't have any sites yet but you can
       create one by pressing the button below.
     </p>
-    <button on:click={startCreatingSite}>Create a site</button>
+    <Button class="full-width" size="large" type="success" on:click={startCreatingSite}>Create a site</Button>
   </div>
 </div>

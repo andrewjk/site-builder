@@ -1,12 +1,13 @@
 <script>
   import { createEventDispatcher } from "svelte";
-
-  import DataEditor from "./DataEditor";
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
 
   import Icon from "./Icon";
   import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
+
+  import DataEditor from "./DataEditor";
 
   export let definition;
   export let item = {};
@@ -70,11 +71,14 @@
       <div class="expander-body">
         <div>
           <DataEditor {definition} data={item} />
-          <button
+          <Button
+            class="full-width"
+            type="danger"
+            size="inline"
             title="Delete this item"
             on:click={e => deleteItem(item, index)}>
             <Icon icon={faTimes} />
-          </button>
+          </Button>
         </div>
       </div>
     {/if}

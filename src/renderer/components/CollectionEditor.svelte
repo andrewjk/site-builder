@@ -1,13 +1,14 @@
 <script>
-  import DefinitionsEditor from "./DefinitionsEditor";
-  import ItemEditor from "./ItemEditor";
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 
-  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  import DefinitionsEditor from "./DefinitionsEditor";
+  import ItemEditor from "./ItemEditor";
 
   export let name = "";
   export let data = {};
@@ -109,8 +110,8 @@
   {/each}
 
   <div class="edit-collection-buttons">
-    <button title="Add an item" on:click={addItem}>
+    <Button class="full-width" size="inline" title="Add an item" on:click={addItem}>
       <Icon icon={faPlus} />
-    </button>
+    </Button>
   </div>
 </div>

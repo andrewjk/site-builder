@@ -1,5 +1,7 @@
 <script>
   import { creatingSite, sites, activeSite } from "../store/state";
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+
   import createSite from "../store/create-site";
   import loadSite from '../store/load-site';
 
@@ -107,5 +109,5 @@
       <input type="file" />
     </div>
   </div>
-  <button on:click={handleCreateSite}>Create site</button>
+  <Button class="full-width" size="large" type="success" on:click={handleCreateSite}>Create site</Button>
 </div>

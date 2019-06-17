@@ -7,13 +7,15 @@
   import buildPageEditorHtml from "../store/build-page-editor-html";
   import showSelectBlockDialog from "../store/show-select-block-dialog";
 
-  import DataEditor from "./DataEditor";
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
   import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
   import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 
-  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  import DataEditor from "./DataEditor";
 
   export let page = {};
   export let definition = {};
@@ -197,8 +199,8 @@
     bind:this={webview} />
 
   <div class="edit-block-buttons">
-    <button title="Add a block" on:click={addBlock}>
+    <Button class="full-width" size="inline" title="Add a block" on:click={addBlock}>
       <Icon icon={faPlus} />
-    </button>
+    </Button>
   </div>
 </div>

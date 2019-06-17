@@ -1,14 +1,14 @@
 <script>
   import { createEventDispatcher } from "svelte";
-
-  export let definitions = [];
-  export let collection = [];
+  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
   import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 
-  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  export let definitions = [];
+  export let collection = [];
 
   const dispatch = createEventDispatcher();
 
@@ -94,19 +94,21 @@
             <input type="text" bind:value={def.type} />
           </td>
           <td>
-            <button
+            <Button
+              type="danger"
+              size="inline"
               title="Delete this definition"
               on:click={e => deleteDefinition(def, index)}>
               <Icon icon={faTimes} />
-            </button>
+            </Button>
           </td>
         </tr>
       {/each}
     </tbody>
   </table>
   <div class="edit-definition-buttons">
-    <button title="Add a definition" on:click={addDefinition}>
+    <Button class="full-width" size="inline" title="Add a definition" on:click={addDefinition}>
       <Icon icon={faPlus} />
-    </button>
+    </Button>
   </div>
 </div>
