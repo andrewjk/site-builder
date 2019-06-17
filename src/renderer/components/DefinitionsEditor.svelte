@@ -57,20 +57,7 @@
 </script>
 
 <style lang="scss">
-  button {
-    background-color: #ddd;
-    border: 1px solid transparent;
-    border-radius: 2px;
-    color: inherit;
-    padding: 10px;
-    width: 100%;
-  }
-  button:hover {
-    background-color: darken(#ddd, 9%);
-  }
-  button:focus {
-    border: 1px solid rgba(0, 0, 0, 0.15);
-  }
+
 </style>
 
 <div class="definitions-editor-wrapper">

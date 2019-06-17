@@ -24,19 +24,6 @@
     max-width: 400px;
     text-align: center;
   }
-
-  button {
-    background-color: $create-color;
-    border-radius: 4px;
-    color: white;
-    font-size: 32px;
-    padding: 20px 40px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background-color: darken($create-color, 9%);
-  }
 </style>
 
 <div class="intro-wrapper">

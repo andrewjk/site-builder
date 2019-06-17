@@ -32,20 +32,6 @@
   .wizard-info {
     color: #888;
   }
-
-  button {
-    background-color: $create-color;
-    border-radius: 4px;
-    color: white;
-    font-size: 32px;
-    padding: 20px 40px;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  button:hover {
-    background-color: darken($create-color, 9%);
-  }
 </style>
 
 <div class="wizard-wrapper">

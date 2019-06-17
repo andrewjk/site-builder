@@ -151,23 +151,6 @@
     min-height: 400px;
     margin-bottom: 20px;
   }
-
-  .edit-block-buttons {
-    button {
-      background-color: #ddd;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      color: inherit;
-      padding: 10px;
-      width: 100%;
-    }
-    button:hover {
-      background-color: darken(#ddd, 9%);
-    }
-    button:focus {
-      border: 1px solid rgba(0, 0, 0, 0.15);
-    }
-  }
 </style>
 
 <div class="page-editor-wrapper">
@@ -198,9 +181,11 @@
     minheight="0"
     bind:this={webview} />
 
-  <div class="edit-block-buttons">
-    <Button class="full-width" size="inline" title="Add a block" on:click={addBlock}>
-      <Icon icon={faPlus} />
-    </Button>
-  </div>
+  <Button
+    class="full-width"
+    size="inline"
+    title="Add a block"
+    on:click={addBlock}>
+    <Icon icon={faPlus} />
+  </Button>
 </div>
