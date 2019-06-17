@@ -9,8 +9,12 @@ export default async function addCollection (collectionName, site, sections) {
   const name = collectionName.replace(/ /g, '_')
 
   // Create the empty file
+  // Add a default Name definition that can't be removed
   const data = {
-    definitions: [],
+    definitions: [{
+      name: 'Name',
+      type: 'text'
+    }],
     items: []
   }
   const dataFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name, 'data')

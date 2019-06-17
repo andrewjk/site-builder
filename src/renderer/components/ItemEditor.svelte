@@ -64,8 +64,7 @@
       <span class="expander-icon">
         <Icon icon={expanded ? faCaretDown : faCaretRight} />
       </span>
-      <span>Item {index + 1}</span>
-      {@debug item}
+      <span>Item: {item.name}</span>
     </div>
     {#if expanded}
       <div class="expander-body">

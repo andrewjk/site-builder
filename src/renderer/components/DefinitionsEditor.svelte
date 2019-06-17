@@ -94,20 +94,26 @@
             <input type="text" bind:value={def.type} />
           </td>
           <td>
-            <Button
-              type="danger"
-              size="inline"
-              title="Delete this definition"
-              on:click={e => deleteDefinition(def, index)}>
-              <Icon icon={faTimes} />
-            </Button>
+            {#if def.name !== 'Name'}
+              <Button
+                type="danger"
+                size="inline"
+                title="Delete this definition"
+                on:click={e => deleteDefinition(def, index)}>
+                <Icon icon={faTimes} />
+              </Button>
+            {/if}
           </td>
         </tr>
       {/each}
     </tbody>
   </table>
   <div class="edit-definition-buttons">
-    <Button class="full-width" size="inline" title="Add a definition" on:click={addDefinition}>
+    <Button
+      class="full-width"
+      size="inline"
+      title="Add a definition"
+      on:click={addDefinition}>
       <Icon icon={faPlus} />
     </Button>
   </div>
