@@ -3795,10 +3795,10 @@ electron-webpack@^2.6.2:
     webpack-merge "^4.2.1"
     yargs "^12.0.5"
 
-electron@^5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.3.tgz#919818962caffbd909af15bc8a3034be972fa76e"
-  integrity sha512-kgnxPQoTNzu0lKC8ToAktt93mTimgqHZGFCVmTaFjs1G2Bk9VqKHljbQemH+REKAaw1aEgIRn2JCrTe0Dy7fVQ==
+electron@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.4.tgz#2e0d09055363e983f4a73317cde4821c39617b02"
+  integrity sha512-7QaKorvANvP+azMT7wElx33oLlqw8QxmLs7/outfH7LC5amErk4EUtWDesQ6Zgr+s5pYFbykl8ZtJ4ZGXER05g==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -5993,10 +5993,10 @@ karma-coverage@^1.1.2:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
-karma-electron@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/karma-electron/-/karma-electron-6.2.0.tgz#174111fd62f1e4d42c025b3e8d4eb4dc5d4c6c89"
-  integrity sha512-XtVMOWfzBCxh/s5dotO00kpxW/Fzok0pB4ddSQPt7t9lh7dEvlhq5n+aOF3sXIiYzjPl4gfH0foJMNPx9VfhDQ==
+karma-electron@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/karma-electron/-/karma-electron-6.2.1.tgz#648ded0e73bf6aef9f5010331dbfc5e6d265017e"
+  integrity sha512-oN6KDUC5GJIY2wnbPKrw+RlOHlUfVXBkAqP8UQ+uMgAtRN1aI7gpqGOTrirBpb+9JRa2/dWjykM7WMvX8ik/xg==
   dependencies:
     combine-source-map "~0.8.0"
     commander "~2.9.0"
@@ -6170,10 +6170,10 @@ lightercollective@^0.1.0:
   resolved "https://registry.yarnpkg.com/lightercollective/-/lightercollective-0.1.0.tgz#70df102c530dcb8d0ccabfe6175a8d00d5f61300"
   integrity sha512-J9tg5uraYoQKaWbmrzDDexbG6hHnMcWS1qLYgJSWE+mpA3U5OCSeMUhb+K55otgZJ34oFdR0ECvdIb3xuO5JOQ==
 
-liquidjs@^8.2.3:
-  version "8.2.3"
-  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-8.2.3.tgz#189f4501ecaee9f6a6ffb011c1069e11ca1b82a9"
-  integrity sha512-eirFAblWc3oKO8eX8N5MPumsczrBAaT+ZP7ZRENfP9H5WgtxsaQ3SiO+sySX61Dg2oqIlE3IVlxFC4OpHO4mVw==
+liquidjs@^8.2.4:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-8.2.4.tgz#ea3f79ccf7932c8178f9af579ae220e1389c9d5d"
+  integrity sha512-a8ORgcANpA2IUG2l4iG1JwU+dA0Gkca6Pa3QkqcLbOZ8+C/K18rnZ4dV0JkjlJDMBacmS7BpKLKD5wx4P+Raqg==
 
 load-json-file@^1.0.0:
   version "1.1.0"
