@@ -8,6 +8,6 @@ export default function buildPageSection (page, pageDefinition) {
     type: 'page',
     text: page.name,
     definition: pageDefinition,
-    data: page.data
+    data: page.settings
   }
 }

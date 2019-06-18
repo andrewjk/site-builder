@@ -9,11 +9,11 @@ export default async function buildPageEditorHtml (site, page, blocks) {
   const siteName = site.info.name
 
   // TODO: Remove this at some point, it's just for older pages
-  if (!page.data.id) {
-    page.data.id = uuid()
+  if (!page.settings.id) {
+    page.settings.id = uuid()
   }
 
-  const id = page.data.id
+  const id = page.settings.id
 
   let content = ''
   let styles = ''

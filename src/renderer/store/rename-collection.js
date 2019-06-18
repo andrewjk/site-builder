@@ -7,8 +7,8 @@ export default async function renameCollection (collection, name, sections) {
 
   // Rename the collection in pages
   sections.filter((section) => section.key.startsWith('page-')).forEach((section) => {
-    if (section.page.data && section.page.data.data === collection.name) {
-      section.page.data.data = name
+    if (section.page.settings && section.page.settings.data === collection.name) {
+      section.page.settings.data = name
     }
   })
 

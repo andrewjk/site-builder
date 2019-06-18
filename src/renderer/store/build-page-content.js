@@ -1,6 +1,6 @@
 
 export default async function buildPageContent (page) {
-  let template = page.data.layout || 'default.liquid'
+  let template = page.settings.layout || 'default.liquid'
   if (template.indexOf('.liquid') === -1) {
     template = template + '.liquid'
   }

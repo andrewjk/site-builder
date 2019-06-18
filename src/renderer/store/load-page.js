@@ -5,8 +5,8 @@ export default async function loadPage (siteFolder, file) {
   const name = file.substring(file.lastIndexOf(path.sep) + 1, file.lastIndexOf('.'))
 
   // Load the page's data
-  const dataFile = file.replace('.liquid', '.json')
-  const data = fs.existsSync(dataFile) ? fs.readJSONSync(dataFile) : {}
+  const settingsFile = file.replace('.liquid', '.json')
+  const settings = fs.existsSync(settingsFile) ? fs.readJSONSync(settingsFile) : {}
 
   // Load the page's blocks
   const lines = fs.readFileSync(file).toString().split('\n')
@@ -67,7 +67,7 @@ export default async function loadPage (siteFolder, file) {
   const page = {
     file,
     name,
-    data,
+    settings,
     blocks,
     tempFile: null
   }

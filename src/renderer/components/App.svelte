@@ -91,7 +91,7 @@
           <PageEditor
             page={$activeSection.page}
             definition={$activeSection.definition}
-            data={$activeSection.data}
+            settings={$activeSection.data}
             @save="savePage(activeSection)"
             @cancel="cancelPage(activeSection)" />
         {:else if $activeSection && $activeSection.type === 'block'}

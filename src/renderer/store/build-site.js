@@ -120,14 +120,14 @@ function sorter (a, b) {
 async function buildPage (site, page, outputFile, engine) {
   console.log('GENERATING', page.file)
 
-  if (page.data.data) {
+  if (page.settings.data) {
     // We need to create a page file for each item in the collection
     const collection = site.collections.find(
-      item => item.name && item.name.localeCompare(page.data.data, undefined, { sensitivity: 'accent' }) === 0
+      item => item.name && item.name.localeCompare(page.settings.data, undefined, { sensitivity: 'accent' }) === 0
     )
     if (!collection) {
       // TODO: Throw and log properly
-      console.log('Collection not found: ' + page.data.data + ' in ' + page.name)
+      console.log('Collection not found: ' + page.settings.data + ' in ' + page.name)
     }
 
     if (collection) {
@@ -150,7 +150,7 @@ async function generatePage (site, page, outputFile, engine, isLayout, itemData)
   console.log('GENERATING', page.file)
 
   // Build the page's data
-  const data = Object.assign({}, site.info, page.data)
+  const data = Object.assign({}, site.info, page.settings)
 
   if (itemData) {
     data.item = itemData

@@ -19,7 +19,7 @@
 
   export let page = {};
   export let definition = {};
-  export let data = {};
+  export let settings = {};
 
   let expandSettings = false;
   let pageFile = "";
@@ -47,18 +47,18 @@
     if (templateBlock) {
       const block = { name: templateBlock.name, data: {} };
       // For data blocks, add the definition fields as divs that can be edited by the user
-      if (block.name === "data-item" && page.data.data) {
+      if (block.name === "data-item" && page.settings.data) {
         const collection = $activeSite.collections.find(
           item =>
             item.name &&
-            item.name.localeCompare(page.data.data, undefined, {
+            item.name.localeCompare(page.settings.data, undefined, {
               sensitivity: "accent"
             }) === 0
         );
         if (!collection) {
           // TODO: Throw and log properly
           console.log(
-            "Collection not found: " + page.data.data + " in " + page.name
+            "Collection not found: " + page.settings.data + " in " + page.name
           );
         }
 
@@ -211,7 +211,7 @@
     </div>
     {#if expandSettings}
       <div class="expander-body">
-        <DataEditor {definition} {data} />
+        <DataEditor {definition} data={settings} />
       </div>
     {/if}
   </div>
