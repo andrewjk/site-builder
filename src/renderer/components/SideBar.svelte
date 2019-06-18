@@ -20,13 +20,6 @@
   import showPrompt from "../../../../svelte-toolkit/src/dialogs/Prompt/show-prompt";
   import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
-  $: style = $activeSite
-    ? [
-        `background-color: ${$activeSite.appearance["background-color"]}`,
-        `color: ${$activeSite.appearance["color"]}`
-      ].join(";\n")
-    : "";
-
   let input = null;
   let newName = "";
 
@@ -219,7 +212,7 @@
   }
 </style>
 
-<div class="side-bar-wrapper" {style}>
+<div class="side-bar-wrapper">
   {#each $sections as section (section.key)}
     {#if section.class === 'title'}
       <div class="side-bar-title" class:selected={section === $activeSection}>
