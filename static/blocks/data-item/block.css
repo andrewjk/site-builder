@@ -1,4 +1,7 @@
+.data-item {
+    padding: 5px 10px;
+}
 
 .data-field {
-    margin: 5px;
+    margin: 5px 0;
 }

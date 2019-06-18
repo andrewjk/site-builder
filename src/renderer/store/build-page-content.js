@@ -35,7 +35,7 @@ function buildContentContent (block) {
 function buildDataItemContent (block) {
   // NOTE: Trim the start but ensure there's a newline at the end for nicer output HTML formatting
   return `
-<div id="data-item-content">
+<div class="data-item">
 ${block.html}
 </div>
 `.trimStart()

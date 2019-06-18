@@ -12,7 +12,7 @@ export default async function loadPage (siteFolder, file) {
   const lines = fs.readFileSync(file).toString().split('\n')
   const regex = /{% include '(.+).liquid'(?:, (.+))* %}/gi
   const contentRegex = /{% block content %}Page content{% endblock %}/gi
-  const dataItemRegex = /<div id="data-item-content">/gi
+  const dataItemRegex = /<div class="data-item">/gi
   const blocks = []
   for (let i = 0; i < lines.length; i++) {
     const content = lines[i]
