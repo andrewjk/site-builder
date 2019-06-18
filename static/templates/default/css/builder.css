@@ -3,19 +3,29 @@
  */
 
  * {
+    /* Make everything easier to size by including padding and border in each elements' total width and height */
     box-sizing: border-box;
 }
 
 html {
     font-family: sans-serif;
+    /* 62.5% ensures that 1rem = 10px */
+    font-size: 62.5%;
 }
 
 body {
+    /* Set up the body for having a header, content and footer that stretch to fill the vertical space */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    /* Default font to 16px with 1.4 line height (at 16px, that's 22.4px) */
+    font-size: 1.6rem;
+    line-height: 1.4;
+    /* Prepare the body to be centered horizontally if a max-width is set */
+    margin: 0 auto;
 }
 
 main {
+    /* The main should stretch to fill the vertical space left after headers and footers */
     flex: 1 1 auto;
 }

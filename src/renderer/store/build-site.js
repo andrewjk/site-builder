@@ -11,7 +11,7 @@ import { exec } from 'child_process'
 // eslint-disable-next-line camelcase
 import { html_beautify } from 'js-beautify'
 
-export default async function buildSite (site) {
+export default async function buildSite (site, definitions) {
   const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name)
 
   // Ensure the output folder exists
@@ -82,17 +82,41 @@ export default async function buildSite (site) {
     await buildPage(site, page, outputFile, engine)
   }))
 
-  // TODO: Concat and minify CSS from templates, layouts and blocks
+  // TODO: Concat and minify CSS from appearance, templates, layouts and blocks
+  let styles = ''
+  const htmlStyles = []
+  const bodyStyles = []
+  definitions.appearance.fields.forEach(def => {
+    if (site.appearance[def.key]) {
+      if (def.appliesTo === 'html') {
+        htmlStyles.push(`${def.key}: ${site.appearance[def.key]}`)
+      } else if (def.appliesTo === 'body') {
+        bodyStyles.push(`${def.key}: ${site.appearance[def.key]}`)
+      }
+    }
+  })
+  if (htmlStyles.length) {
+    styles = styles + `
+html {
+  ${htmlStyles.join(';\n')}
+}`
+  }
+  if (bodyStyles.length) {
+    styles = styles + `
+body {
+  ${bodyStyles.join(';\n')}
+}`
+  }
+
   // For now, we're just loading CSS from blocks into site.css
   const allBlocks = [].concat.apply([], site.pages.map(page => page.blocks))
   const templateBlocks = allBlocks.map(block => site.blocks.find(tb => block.name === tb.name))
   const uniqueBlocks = [...new Set(templateBlocks)]
-  let styles = ''
   for (let i = 0; i < uniqueBlocks.length; i++) {
     styles = styles + '\n' + uniqueBlocks[i].styles
   }
   const siteCssFile = path.join(webSiteFolder, 'css', 'site.css')
-  fs.writeFileSync(siteCssFile, styles)
+  fs.writeFileSync(siteCssFile, styles.trim())
 
   // TODO: Concat and minify JS from templates, layouts and blocks
 

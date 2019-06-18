@@ -20,6 +20,13 @@
   import showPrompt from "../../../../svelte-toolkit/src/dialogs/Prompt/show-prompt";
   import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
+  $: style = $activeSite
+    ? [
+        `background-color: ${$activeSite.appearance["background-color"]}`,
+        `color: ${$activeSite.appearance["color"]}`
+      ].join(";\n")
+    : "";
+
   let input = null;
   let newName = "";
 
@@ -189,7 +196,7 @@
   .side-bar-title {
     button {
       background-color: inherit;
-      color: #bbb;
+      filter: brightness(80%);
       font-size: 13px;
       margin: 5px 0;
       padding: 6px 4px;
@@ -212,7 +219,7 @@
   }
 </style>
 
-<div class="side-bar-wrapper">
+<div class="side-bar-wrapper" {style}>
   {#each $sections as section (section.key)}
     {#if section.class === 'title'}
       <div class="side-bar-title" class:selected={section === $activeSection}>

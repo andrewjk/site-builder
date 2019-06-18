@@ -4,12 +4,32 @@
         {
             "key": "font-family",
             "name": "Font family",
-            "type": "text"
+            "type": "text",
+            "appliesTo": "html"
         },
         {
             "key": "font-size",
             "name": "Font size",
-            "type": "text"
+            "type": "size",
+            "appliesTo": "html"
+        },
+        {
+            "key": "background-color",
+            "name": "Background color",
+            "type": "color",
+            "appliesTo": "html"
+        },
+        {
+            "key": "color",
+            "name": "Text color",
+            "type": "color",
+            "appliesTo": "html"
+        },
+        {
+            "key": "max-width",
+            "name": "Content width",
+            "type": "size",
+            "appliesTo": "body"
         }
     ]
 }

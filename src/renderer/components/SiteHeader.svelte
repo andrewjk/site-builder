@@ -16,6 +16,13 @@
 
   let siteName = $activeSite ? $activeSite.info.name : "Loading";
 
+  $: style = $activeSite
+    ? [
+        `background-color: ${$activeSite.appearance["background-color"]}`,
+        `color: ${$activeSite.appearance["color"]}`
+      ].join(";\n")
+    : "";
+
   async function loadOrCreateSite() {
     // HACK: Tildes ensure that it's not something that a user can create
     if (siteName === "~Create~") {
@@ -24,7 +31,7 @@
       $creatingSite = false;
       $activeSite = await loadSite(siteName);
       $sections = buildSections($activeSite, $definitions);
-      settings.set('app', { siteName });
+      settings.set("app", { siteName });
     }
   }
 </script>
@@ -65,7 +72,7 @@
   }
 </style>
 
-<div class="header-wrapper">
+<div class="header-wrapper" {style}>
   <h1>{$activeSite ? $activeSite.info.name : 'Loading'}</h1>
   {#if $sites.length}
     <select bind:value={siteName} on:change={loadOrCreateSite}>
@@ -76,5 +83,5 @@
     </select>
   {/if}
   <button type="button" on:click={e => saveSite($activeSite)}>Save</button>
-  <button type="button" on:click={e => buildSite($activeSite)}>Build</button>
+  <button type="button" on:click={e => buildSite($activeSite, $definitions)}>Build</button>
 </div>
