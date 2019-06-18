@@ -6,6 +6,8 @@
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
   import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
+  import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
+  import { faCaretUp } from "@fortawesome/free-solid-svg-icons/faCaretUp";
 
   export let definitions = [];
   export let collection = [];
@@ -37,6 +39,25 @@
       collection.forEach(item => {
         item[def.key] = undefined;
       });
+      // HACK: Force reactivity
+      definitions = definitions;
+      dispatch("defchange");
+    }
+  }
+
+  function moveDefinitionDown(def, index) {
+    if (index < definitions.length - 1) {
+      definitions.splice(index + 1, 0, definitions.splice(index, 1)[0]);
+      // HACK: Force reactivity
+      definitions = definitions;
+      dispatch("defchange");
+    }
+  }
+
+  function moveDefinitionUp(def, index) {
+    // NOTE: Don't allow moving the Name field
+    if (index > 1) {
+      definitions.splice(index - 1, 0, definitions.splice(index, 1)[0]);
       // HACK: Force reactivity
       definitions = definitions;
       dispatch("defchange");
@@ -83,9 +104,21 @@
           <td>
             {#if def.name !== 'Name'}
               <Button
+                size="inline"
+                title="Move this field down"
+                on:click={e => moveDefinitionDown(def, index)}>
+                <Icon icon={faCaretDown} />
+              </Button>
+              <Button
+                size="inline"
+                title="Move this field up"
+                on:click={e => moveDefinitionUp(def, index)}>
+                <Icon icon={faCaretUp} />
+              </Button>
+              <Button
                 type="danger"
                 size="inline"
-                title="Delete this definition"
+                title="Delete this field"
                 on:click={e => deleteDefinition(def, index)}>
                 <Icon icon={faTimes} />
               </Button>
