@@ -1,6 +1,11 @@
 import fs from 'fs-extra'
 
 export default async function renamePage (page, name, sections) {
+  if (page.name.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0) {
+    // TODO: throw a proper error
+    return
+  }
+
   const oldFile = page.file
   const newFile = page.file.replace(page.name + '.liquid', name + '.liquid')
   await fs.move(oldFile, newFile)

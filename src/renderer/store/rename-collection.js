@@ -1,6 +1,11 @@
 import fs from 'fs-extra'
 
 export default async function renameCollection (collection, name, sections) {
+  if (collection.name.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0) {
+    // TODO: throw a proper error
+    return
+  }
+
   const oldFile = collection.file
   const newFile = collection.file.replace(collection.name + '.json', name + '.json')
   await fs.move(oldFile, newFile)
