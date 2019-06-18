@@ -14,7 +14,7 @@
 
   const dispatch = createEventDispatcher();
 
-  function addDefinition() {
+  function addField() {
     definitions.push({
       key: "",
       name: "",
@@ -25,7 +25,7 @@
     dispatch("defchange");
   }
 
-  async function deleteDefinition(def, index) {
+  async function deleteField(def, index) {
     const result = await showConfirm({
       content: "Are you sure you want to delete this definition?",
       buttons: [
@@ -45,7 +45,7 @@
     }
   }
 
-  function moveDefinitionDown(def, index) {
+  function moveFieldDown(def, index) {
     if (index < definitions.length - 1) {
       definitions.splice(index + 1, 0, definitions.splice(index, 1)[0]);
       // HACK: Force reactivity
@@ -54,7 +54,7 @@
     }
   }
 
-  function moveDefinitionUp(def, index) {
+  function moveFieldUp(def, index) {
     // NOTE: Don't allow moving the Name field
     if (index > 1) {
       definitions.splice(index - 1, 0, definitions.splice(index, 1)[0]);
@@ -106,20 +106,20 @@
               <Button
                 size="inline"
                 title="Move this field down"
-                on:click={e => moveDefinitionDown(def, index)}>
+                on:click={e => moveFieldDown(def, index)}>
                 <Icon icon={faCaretDown} />
               </Button>
               <Button
                 size="inline"
                 title="Move this field up"
-                on:click={e => moveDefinitionUp(def, index)}>
+                on:click={e => moveFieldUp(def, index)}>
                 <Icon icon={faCaretUp} />
               </Button>
               <Button
                 type="danger"
                 size="inline"
                 title="Delete this field"
-                on:click={e => deleteDefinition(def, index)}>
+                on:click={e => deleteField(def, index)}>
                 <Icon icon={faTimes} />
               </Button>
             {/if}
@@ -133,7 +133,7 @@
       class="full-width"
       size="inline"
       title="Add a definition"
-      on:click={addDefinition}>
+      on:click={addField}>
       <Icon icon={faPlus} />
     </Button>
   </div>
