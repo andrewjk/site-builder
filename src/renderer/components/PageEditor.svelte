@@ -49,7 +49,11 @@
       // For data blocks, add the definition fields as divs that can be edited by the user
       if (block.name === "data-item" && page.data.data) {
         const collection = $activeSite.collections.find(
-          item => item.name === page.data.data
+          item =>
+            item.name &&
+            item.name.localeCompare(page.data.data, undefined, {
+              sensitivity: "accent"
+            }) === 0
         );
         if (!collection) {
           // TODO: Throw and log properly

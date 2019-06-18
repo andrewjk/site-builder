@@ -122,7 +122,9 @@ async function buildPage (site, page, outputFile, engine) {
 
   if (page.data.data) {
     // We need to create a page file for each item in the collection
-    const collection = site.collections.find((item) => item.name === page.data.data)
+    const collection = site.collections.find(
+      item => item.name && item.name.localeCompare(page.data.data, undefined, { sensitivity: 'accent' }) === 0
+    )
     if (!collection) {
       // TODO: Throw and log properly
       console.log('Collection not found: ' + page.data.data + ' in ' + page.name)
