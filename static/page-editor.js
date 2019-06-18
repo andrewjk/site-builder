@@ -16,6 +16,11 @@ function setupBlocks () {
 
     // Add the control container to the block
     addControlContainer(blocks[i])
+
+    // Listen to dragging and dropping
+    blocks[i].addEventListener('dragstart', (e) => handleDragStart(e))
+    blocks[i].addEventListener('dragover', (e) => handleDragOver(e))
+    blocks[i].addEventListener('drop', (e) => handleDrop(e))
   }
 }
 
@@ -109,22 +114,11 @@ function buildSvg (paths) {
 
 function moveBlockDown (e) {
   try {
-    const pageId = document.__pageId
     const blockId = e.target.dataset.blockId
-
     const div = document.getElementById(`data-block-${blockId}`)
     const next = div.nextElementSibling
     if (next) {
-      // Move the node
-      const parent = div.parentNode
-      parent.insertBefore(div, next.nextElementSibling)
-
-      // Send an event so that things can be updated
-      const update = {
-        pageId,
-        blockId
-      }
-      ipcRenderer.send('move-block-up', update)
+      moveBlock(blockId, div, next.nextElementSibling)
     }
   } catch (err) {
     console.log('$' + err)
@@ -133,26 +127,31 @@ function moveBlockDown (e) {
 
 function moveBlockUp (e) {
   try {
-    const pageId = document.__pageId
     const blockId = e.target.dataset.blockId
-
     const div = document.getElementById(`data-block-${blockId}`)
     const before = div.previousElementSibling
     if (before) {
-      // Move the node
-      const parent = div.parentNode
-      parent.insertBefore(div, before)
-
-      // Send an event so that things can be updated
-      const update = {
-        pageId,
-        blockId
-      }
-      ipcRenderer.send('move-block-up', update)
+      moveBlock(blockId, div, before)
     }
   } catch (err) {
     console.log('$' + err)
   }
+}
+
+function moveBlock (blockId, div, before) {
+  const pageId = document.__pageId
+
+  // Move the node
+  const parent = div.parentNode
+  parent.insertBefore(div, before)
+
+  // Send an event so that things can be updated
+  const update = {
+    pageId,
+    blockId,
+    beforeBlockId: before ? before.dataset.blockId : null
+  }
+  ipcRenderer.send('move-block', update)
 }
 
 function deleteBlock (e) {
@@ -192,7 +191,7 @@ function showDataBorder (e, focussing) {
   if (target) {
     // Show the data border for the closest ancestor block or input
     const rect = target.getBoundingClientRect()
-    const border = document.getElementById('data-border')
+    const border = document.getElementById('sb-data-border')
     border.style.display = 'block'
     border.style.top = rect.top
     border.style.left = rect.left
@@ -218,7 +217,7 @@ function hideDataBorder (e, focussing) {
   const target = e.target.closest('.data-block, .data-input')
   if (target && target !== document.activeElement) {
     // Hide the data border for the closest ancestor block or input
-    const el = document.getElementById('data-border')
+    const el = document.getElementById('sb-data-border')
     el.style.display = 'none'
 
     // Hide the data controls for blocks
@@ -232,4 +231,54 @@ function isDataInputFocused (target) {
   return document.activeElement &&
     document.activeElement.classList.contains('data-input') &&
     document.activeElement !== target
+}
+
+let dragId = ''
+
+function handleDragStart (e) {
+  dragId = e.target.dataset.blockId
+}
+
+function handleDragOver (e) {
+  const target = e.target.closest('.data-block')
+  if (target) {
+    // Enable dropping
+    e.preventDefault()
+
+    // Show the data border for the closest ancestor block
+    const rect = target.getBoundingClientRect()
+    const border = document.getElementById('sb-drag-border')
+    border.style.display = 'block'
+    border.style.top = dragAtTop(e.y, rect) ? rect.top - 1 : rect.bottom - 1
+    border.style.left = rect.left
+    border.style.width = rect.right - rect.left
+  }
+}
+
+function handleDrop (e) {
+  // Move the block
+  const target = e.target.closest('.data-block')
+  if (target) {
+    e.preventDefault()
+
+    try {
+      const blockId = dragId
+      const div = document.getElementById(`data-block-${blockId}`)
+
+      const rect = target.getBoundingClientRect()
+      const before = dragAtTop(e.y, rect) ? target : target.nextElementSibling
+
+      moveBlock(blockId, div, before)
+    } catch (err) {
+      console.log('$' + err)
+    }
+  }
+
+  // Hide the border
+  const border = document.getElementById('sb-drag-border')
+  border.style.display = 'none'
+}
+
+function dragAtTop (y, rect) {
+  return y < rect.top + (rect.bottom - rect.top) / 2
 }

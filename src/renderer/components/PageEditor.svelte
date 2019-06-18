@@ -78,23 +78,19 @@
 
     // Listen to button clicks
     electron.remote.ipcMain.on(
-      "move-block-up",
-      async (event, { pageId, blockId }) => {
+      "move-block",
+      async (event, { pageId, blockId, beforeBlockId }) => {
         if (pageId === page.id) {
           const index = page.blocks.findIndex(block => block.id === blockId);
-          if (index > 0) {
-            page.blocks.splice(index - 1, 0, page.blocks.splice(index, 1)[0]);
-          }
-        }
-      }
-    );
-    electron.remote.ipcMain.on(
-      "move-block-down",
-      async (event, { pageId, blockId }) => {
-        if (pageId === page.id) {
-          const index = page.blocks.findIndex(block => block.id === blockId);
-          if (index < page.blocks.length - 1) {
-            page.blocks.splice(index + 1, 0, page.blocks.splice(index, 1)[0]);
+          if (index !== -1) {
+            if (beforeBlockId) {
+              const beforeIndex = page.blocks.findIndex(
+                block => block.id === beforeBlockId
+              );
+              page.blocks.splice(beforeIndex, 0, page.blocks.splice(index, 1)[0]);
+            } else {
+              page.blocks.splice(page.blocks.length, 0, page.blocks.splice(index, 1)[0]);
+            }
           }
         }
       }

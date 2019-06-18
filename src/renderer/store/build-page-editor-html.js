@@ -47,8 +47,11 @@ ${editorStyles}
   </style>
 </head>
 <body>
+  <div id="sb-data-content">
 ${content}
-  <div id="data-border"></div>
+  </div>
+  <div id="sb-data-border"></div>
+  <div id="sb-drag-border"></div>
   <script>
     document.__pageId = '${id}';
   </script>
@@ -107,7 +110,7 @@ function buildBlockEditorHtml (block, templateBlock) {
   block.data = data
 
   return `
-<div id="data-block-${blockId}" class="data-block" data-block-id="${blockId}">
+<div id="data-block-${blockId}" class="data-block" data-block-id="${blockId}" draggable="true">
 ${content}
 </div>`.trim()
 }
