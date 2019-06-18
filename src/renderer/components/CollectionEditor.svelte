@@ -13,7 +13,9 @@
   export let name = "";
   export let data = {};
 
-  let expandFields = false;
+  let showFields = true;
+  let itemName = "~Fields~";
+  let activeItem = null;
   let search = "";
 
   $: items = data.items.filter(item =>
@@ -23,6 +25,16 @@
     )
   );
 
+  async function selectItem() {
+    // HACK: Tildes ensure that it's not something that a user can create
+    if (itemName[0] === "~Fields~") {
+      showFields = true;
+    } else {
+      showFields = false;
+      activeItem = data.items.find(item => item.name === itemName[0]);
+    }
+  }
+
   function addItem() {
     search = "";
     const item = {};
@@ -31,11 +43,13 @@
       item[data.fields[i].key] = "";
     }
     data.items.push(item);
+    showFields = false;
+    activeItem = item;
     // HACK: Force reactivity
     data.items = data.items;
   }
 
-  async function deleteItem(item, index) {
+  async function deleteItem(item) {
     const result = await showConfirm({
       content: "Are you sure you want to delete this item?",
       buttons: [
@@ -44,6 +58,7 @@
       ]
     });
     if (result) {
+      const index = data.items.findIndex(item);
       data.items.splice(index, 1);
       // HACK: Force reactivity
       data.items = data.items;
@@ -57,62 +72,58 @@
 </script>
 
 <style lang="scss">
+  .collection-editor-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 20px;
+  }
+
   .title {
     font-size: 24px;
     margin-bottom: 10px;
   }
-
-  .expander-title {
-    cursor: pointer;
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .expander-icon {
-    font-size: 14px;
-  }
-
-  .expander-body {
-    margin-bottom: 20px;
-  }
 </style>
 
 <div class="collection-editor-wrapper">
-  <div class="title">Data: {name}</div>
-
-  <div class="block">
-    <label for="search">Search:</label>
-    <input id="search" type="text" bind:value={search} />
-  </div>
-
-  <div class="expander">
-    <div class="expander-title" on:click={e => (expandFields = !expandFields)}>
-      <span class="expander-icon">
-        <Icon icon={expandFields ? faCaretDown : faCaretRight} />
-      </span>
-      <span>Fields</span>
+  <div class="collection-list">
+    <div class="title">{name}</div>
+    <div class="block">
+      <label for="search">Search:</label>
+      <input id="search" type="text" bind:value={search} />
     </div>
-    {#if expandFields}
-      <div class="expander-body">
-        <DefinitionsEditor
-          collection={data.items}
-          definitions={data.fields}
-          on:defchange={defChanged} />
-      </div>
-    {/if}
+    <div class="block">
+      <select
+        multiple
+        size="10"
+        bind:value={itemName}
+        on:change={selectItem}>
+        <option value="~Fields~">Fields</option>
+        {#each items as item, index (item.name)}
+          <option value={item.name}>{item.name}</option>
+        {/each}
+      </select>
+    </div>
+    <div class="edit-collection-buttons">
+      <Button
+        class="full-width"
+        size="inline"
+        title="Add an item"
+        on:click={addItem}>
+        <Icon icon={faPlus} />
+      </Button>
+    </div>
   </div>
 
-  {#each items as item, index}
-    <ItemEditor definition={data} {item} {index} on:delete={deleteItem} />
-  {/each}
-
-  <div class="edit-collection-buttons">
-    <Button
-      class="full-width"
-      size="inline"
-      title="Add an item"
-      on:click={addItem}>
-      <Icon icon={faPlus} />
-    </Button>
+  <div class="collection-item">
+    {#if showFields}
+      <div class="title">Fields</div>
+      <DefinitionsEditor
+        collection={data.items}
+        definitions={data.fields}
+        on:defchange={defChanged} />
+    {:else if activeItem}
+      <div class="title">{activeItem.name}</div>
+      <ItemEditor definition={data} item={activeItem} on:delete={deleteItem} />
+    {/if}
   </div>
 </div>

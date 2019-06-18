@@ -11,60 +11,27 @@
 
   export let definition;
   export let item = {};
-  export let index = 0;
 
   let expanded = false;
 
   const dispatch = createEventDispatcher();
 
-  async function deleteItem(item, index) {
-    dispatch("delete", item, index);
+  async function deleteItem(item) {
+    dispatch("delete", item);
   }
 </script>
 
 <style lang="scss">
-  .title {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  .expander-title {
-    cursor: pointer;
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .expander-icon {
-    font-size: 14px;
-  }
-
-  .expander-body {
-    margin-bottom: 20px;
-  }
 </style>
 
 <div class="collection-editor-wrapper">
-  <div class="expander">
-    <div class="expander-title" on:click={e => (expanded = !expanded)}>
-      <span class="expander-icon">
-        <Icon icon={expanded ? faCaretDown : faCaretRight} />
-      </span>
-      <span>Item: {item.name}</span>
-    </div>
-    {#if expanded}
-      <div class="expander-body">
-        <div>
-          <DataEditor {definition} data={item} />
-          <Button
-            class="full-width"
-            type="danger"
-            size="inline"
-            title="Delete this item"
-            on:click={e => deleteItem(item, index)}>
-            <Icon icon={faTimes} />
-          </Button>
-        </div>
-      </div>
-    {/if}
-  </div>
+  <DataEditor {definition} data={item} />
+  <Button
+    class="full-width"
+    type="danger"
+    size="inline"
+    title="Delete this item"
+    on:click={e => deleteItem(item)}>
+    <Icon icon={faTimes} />
+  </Button>
 </div>
