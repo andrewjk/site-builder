@@ -19,7 +19,7 @@ export default function buildSections (activeSite, definitions) {
     key: 'settings-info',
     class: 'item',
     type: 'settings',
-    text: 'info',
+    text: 'Info',
     definition: definitions.info,
     data: activeSite.info
   })
@@ -29,7 +29,7 @@ export default function buildSections (activeSite, definitions) {
     key: 'settings-appearance',
     class: 'item',
     type: 'settings',
-    text: 'appearance',
+    text: 'Appearance',
     definition: definitions.appearance,
     data: activeSite.appearance
   })
