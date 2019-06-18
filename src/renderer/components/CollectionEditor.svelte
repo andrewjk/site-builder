@@ -13,9 +13,18 @@
   export let name = "";
   export let data = {};
 
-  let expandDefinitions = false;
+  let expandFields = false;
+  let search = "";
+
+  $: items = data.items.filter(item =>
+    item.name.match(
+      // Escape invalid regex chars and do a case-insensitive search
+      new RegExp(search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "i")
+    )
+  );
 
   function addItem() {
+    search = "";
     const item = {};
     for (let i = 0; i < data.fields.length; i++) {
       // TODO: From type e.g. numbers should be 0
@@ -71,16 +80,19 @@
 <div class="collection-editor-wrapper">
   <div class="title">Data: {name}</div>
 
+  <div class="block">
+    <label for="search">Search:</label>
+    <input id="search" type="text" bind:value={search} />
+  </div>
+
   <div class="expander">
-    <div
-      class="expander-title"
-      on:click={e => (expandDefinitions = !expandDefinitions)}>
+    <div class="expander-title" on:click={e => (expandFields = !expandFields)}>
       <span class="expander-icon">
-        <Icon icon={expandDefinitions ? faCaretDown : faCaretRight} />
+        <Icon icon={expandFields ? faCaretDown : faCaretRight} />
       </span>
       <span>Fields</span>
     </div>
-    {#if expandDefinitions}
+    {#if expandFields}
       <div class="expander-body">
         <DefinitionsEditor
           collection={data.items}
@@ -90,12 +102,16 @@
     {/if}
   </div>
 
-  {#each data.items as item, index}
+  {#each items as item, index}
     <ItemEditor definition={data} {item} {index} on:delete={deleteItem} />
   {/each}
 
   <div class="edit-collection-buttons">
-    <Button class="full-width" size="inline" title="Add an item" on:click={addItem}>
+    <Button
+      class="full-width"
+      size="inline"
+      title="Add an item"
+      on:click={addItem}>
       <Icon icon={faPlus} />
     </Button>
   </div>
