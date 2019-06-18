@@ -58,7 +58,7 @@
       ]
     });
     if (result) {
-      const index = data.items.findIndex(item);
+      const index = data.items.indexOf(item);
       data.items.splice(index, 1);
       // HACK: Force reactivity
       data.items = data.items;

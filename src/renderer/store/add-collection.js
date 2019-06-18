@@ -11,7 +11,8 @@ export default async function addCollection (collectionName, site, sections) {
   // Create the empty file
   // Add a default Name definition that can't be removed
   const data = {
-    definitions: [{
+    fields: [{
+      key: 'name',
       name: 'Name',
       type: 'text'
     }],
