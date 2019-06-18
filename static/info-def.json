@@ -1,6 +1,6 @@
 {
     "title": "Site Information",
-    "definitions": [
+    "fields": [
         {
             "key": "name",
             "name": "Site name",

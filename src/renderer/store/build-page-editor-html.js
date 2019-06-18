@@ -80,8 +80,8 @@ function buildBlockEditorHtml (block, templateBlock) {
 
   // Update data from the definition, just in case it hasn't been loaded or the template has changed
   const data = block.data
-  if (templateBlock.definition.definitions) {
-    templateBlock.definition.definitions.forEach((def) => {
+  if (templateBlock.definition.fields) {
+    templateBlock.definition.fields.forEach((def) => {
       if (!data[def.key]) {
         // TODO: Depends on the type, I guess...
         data[def.key] = ''

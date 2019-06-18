@@ -59,7 +59,7 @@
         }
 
         if (collection) {
-          block.html = collection.data.definitions
+          block.html = collection.data.fields
             .map(def => {
               return `<div id="data-field-${
                 def.key

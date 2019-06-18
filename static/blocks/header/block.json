@@ -1,6 +1,6 @@
 {
     "title": "Header",
-    "definitions": [
+    "fields": [
         {
             "key": "logo",
             "name": "Logo",

@@ -1,6 +1,6 @@
 {
     "title": "Page Information",
-    "definitions": [
+    "fields": [
         {
             "key": "title",
             "name": "Title",

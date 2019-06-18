@@ -1,6 +1,6 @@
 {
     "title": "Site Appearance",
-    "definitions": [
+    "fields": [
         {
             "key": "font-family",
             "name": "Font family",

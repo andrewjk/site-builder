@@ -17,9 +17,9 @@
 
   function addItem() {
     const item = {};
-    for (let i = 0; i < data.definitions.length; i++) {
+    for (let i = 0; i < data.fields.length; i++) {
       // TODO: From type e.g. numbers should be 0
-      item[data.definitions[i].key] = "";
+      item[data.fields[i].key] = "";
     }
     data.items.push(item);
     // HACK: Force reactivity
@@ -69,7 +69,7 @@
 </style>
 
 <div class="collection-editor-wrapper">
-  <div class="title">Collection: {name}</div>
+  <div class="title">Data: {name}</div>
 
   <div class="expander">
     <div
@@ -84,7 +84,7 @@
       <div class="expander-body">
         <DefinitionsEditor
           collection={data.items}
-          definitions={data.definitions}
+          definitions={data.fields}
           on:defchange={defChanged} />
       </div>
     {/if}

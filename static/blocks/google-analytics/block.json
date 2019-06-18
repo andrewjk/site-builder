@@ -1,6 +1,6 @@
 {
     "title": "Google Analytics",
-    "definitions": [
+    "fields": [
         {
             "key": "siteId",
             "name": "Text",

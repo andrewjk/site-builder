@@ -1,6 +1,6 @@
 {
     "title": "Banner",
-    "definitions": [
+    "fields": [
         {
             "key": "title",
             "name": "Title (optional)",
