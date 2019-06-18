@@ -46,6 +46,30 @@
     });
     if (templateBlock) {
       const block = { name: templateBlock.name, data: {} };
+      // For data blocks, add the definition fields as divs that can be edited by the user
+      if (block.name === "data-item" && page.data.data) {
+        const collection = $activeSite.collections.find(
+          item => item.name === page.data.data
+        );
+        if (!collection) {
+          // TODO: Throw and log properly
+          console.log(
+            "Collection not found: " + page.data.data + " in " + page.name
+          );
+        }
+
+        if (collection) {
+          block.html = collection.data.definitions
+            .map(def => {
+              return `<div id="data-field-${
+                def.key
+              }" class="data-field" data-field-key="${
+                def.key
+              }" draggable="true">{{ item.${def.key} }}</div>`;
+            })
+            .join("\n");
+        }
+      }
       page.blocks.push(block);
       await rebuildPageEditorHtml();
     }
@@ -76,7 +100,7 @@
       }
     );
 
-    // Listen to button clicks
+    // Listen to block changes
     electron.remote.ipcMain.on(
       "move-block",
       async (event, { pageId, blockId, beforeBlockId }) => {
@@ -87,9 +111,17 @@
               const beforeIndex = page.blocks.findIndex(
                 block => block.id === beforeBlockId
               );
-              page.blocks.splice(beforeIndex, 0, page.blocks.splice(index, 1)[0]);
+              page.blocks.splice(
+                beforeIndex,
+                0,
+                page.blocks.splice(index, 1)[0]
+              );
             } else {
-              page.blocks.splice(page.blocks.length, 0, page.blocks.splice(index, 1)[0]);
+              page.blocks.splice(
+                page.blocks.length,
+                0,
+                page.blocks.splice(index, 1)[0]
+              );
             }
           }
         }
@@ -111,6 +143,18 @@
             page.blocks.splice(index, 1);
             event.sender.send("confirm-delete-block", { blockId });
           }
+        }
+      }
+    );
+
+    // Listen to field changes
+    electron.remote.ipcMain.on(
+      "move-field",
+      async (event, { pageId, blockId, html }) => {
+        if (pageId === page.id) {
+          // HACK: Do this more elegantly
+          const block = page.blocks.find(block => block.id === blockId);
+          block.html = html;
         }
       }
     );

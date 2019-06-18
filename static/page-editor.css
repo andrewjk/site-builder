@@ -28,11 +28,22 @@ body {
     outline: none;
 }
 
-#sb-data-border {
-    border: 1px solid orange;
+#data-border {
     display: none;
     pointer-events: none;
     position: absolute;
+}
+
+#data-border.data-block {
+    border: 1px solid lightblue;
+}
+
+#data-border.data-input {
+    border: 1px solid orange;
+}
+
+#data-border.data-field {
+    border: 1px solid lightgreen;
 }
 
 .data-block {
@@ -66,10 +77,17 @@ body {
     background-color: blue;
 }
 
-#sb-drag-border {
-    background-color: lightblue;
+#drag-border {
     display: none;
     height: 3px;
     pointer-events: none;
     position: absolute;
+}
+
+#drag-border.data-block {
+    background-color: lightblue;
+}
+
+#drag-border.data-field {
+    background-color: lightgreen;
 }

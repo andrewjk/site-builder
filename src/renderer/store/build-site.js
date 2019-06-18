@@ -180,12 +180,6 @@ async function generatePage (site, page, outputFile, engine, isLayout, itemData)
       .replace(/<script src="/gi, '<script src="../')
   }
 
-  // TODO: We also have to build any data-item blocks somehow
-  if (itemData) {
-    result = result
-      .replace(/<div id="data-item-content">Data item content<\/div>/gi, JSON.stringify(itemData))
-  }
-
   // Write the output file
   fs.writeFileSync(outputFile, result, (err) => {
     if (err) {

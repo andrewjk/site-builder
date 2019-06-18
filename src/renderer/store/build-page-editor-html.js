@@ -47,11 +47,11 @@ ${editorStyles}
   </style>
 </head>
 <body>
-  <div id="sb-data-content">
+  <div id="data-content">
 ${content}
   </div>
-  <div id="sb-data-border"></div>
-  <div id="sb-drag-border"></div>
+  <div id="data-border"></div>
+  <div id="drag-border"></div>
   <script>
     document.__pageId = '${id}';
   </script>
@@ -83,7 +83,7 @@ function buildBlockEditorHtml (block, templateBlock) {
   if (templateBlock.definition.definitions) {
     templateBlock.definition.definitions.forEach((def) => {
       if (!data[def.key]) {
-      // TODO: Depends on the type, I guess...
+        // TODO: Depends on the type, I guess...
         data[def.key] = ''
       }
     })
@@ -92,17 +92,24 @@ function buildBlockEditorHtml (block, templateBlock) {
   // Load the content from the template and make it dynamic, by replacing liquid fields with
   // inputs that the user can type into and saving it to a temp file
   // TODO: change the input based on the data type!
-  let content = templateBlock.content
-  const regex = /{{ (.+) }}/gi
-  let match = regex.exec(content)
-  while (match != null) {
-    const name = match[1]
-    const value = data[name]
-    // TODO: Placeholder from definitions...
-    const placeholder = name
-    const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
-    content = content.replace(match[0], input)
-    match = regex.exec(content)
+  // TODO: Ok, so i think we should always be getting content from the block's content, not the templateBlock's content...
+  let content = ''
+
+  if (block.name === 'data-item') {
+    content = block.html
+  } else {
+    content = templateBlock.content
+    const regex = /{{ (.+) }}/gi
+    let match = regex.exec(content)
+    while (match != null) {
+      const name = match[1]
+      const value = data[name]
+      // TODO: Placeholder from definitions...
+      const placeholder = name
+      const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
+      content = content.replace(match[0], input)
+      match = regex.exec(content)
+    }
   }
 
   block.id = blockId

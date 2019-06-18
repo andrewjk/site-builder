@@ -12,7 +12,7 @@ export default async function loadPage (siteFolder, file) {
   const lines = fs.readFileSync(file).toString().split('\n')
   const regex = /{% include '(.+).liquid'(?:, (.+))* %}/gi
   const contentRegex = /{% block content %}Page content{% endblock %}/gi
-  const dataItemRegex = /<div id="data-item-content">Data item content<\/div>/gi
+  const dataItemRegex = /<div id="data-item-content">/gi
   const blocks = []
   for (let i = 0; i < lines.length; i++) {
     const content = lines[i]
@@ -46,9 +46,18 @@ export default async function loadPage (siteFolder, file) {
     // HACK: Special case for data item blocks
     let dataItemMatch = dataItemRegex.exec(content)
     while (dataItemMatch != null) {
+      const contentLines = []
+      for (let j = i + 1; j < lines.length; j++) {
+        if (lines[j] === '</div>') {
+          i = j
+          break
+        }
+        contentLines.push(lines[j])
+      }
       const block = {
         name: 'data-item',
-        data: {}
+        data: {},
+        html: contentLines.join('\n')
       }
       blocks.push(block)
       dataItemMatch = dataItemRegex.exec(content)

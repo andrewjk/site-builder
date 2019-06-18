@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 window.addEventListener('DOMContentLoaded', (event) => {
   setupBlocks()
   setupInputs()
+  setupFields()
 })
 
 function setupBlocks () {
@@ -53,6 +54,20 @@ function setupInputs () {
       // Recalculate the position and size of the border, too
       showDataBorder(e)
     })
+  }
+}
+
+function setupFields () {
+  const fields = document.getElementsByClassName('data-input')
+  for (let i = 0; i < fields.length; i++) {
+    // Listen to mouse and focus events to display the data border over data item fields
+    fields[i].addEventListener('mouseover', (e) => showDataBorder(e))
+    fields[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
+
+    // TODO: Listen to dragging and dropping
+    fields[i].addEventListener('dragstart', (e) => handleDragStart(e))
+    fields[i].addEventListener('dragover', (e) => handleDragOver(e))
+    fields[i].addEventListener('drop', (e) => handleDrop(e))
   }
 }
 
@@ -187,17 +202,21 @@ function showDataBorder (e, focussing) {
     return
   }
 
-  const target = e.target.closest('.data-block, .data-input')
+  const target = e.target.closest('.data-block, .data-input, .data-field')
   if (target) {
     // Show the data border for the closest ancestor block or input
     const rect = target.getBoundingClientRect()
-    const border = document.getElementById('sb-data-border')
+    const border = document.getElementById('data-border')
     border.style.display = 'block'
     border.style.top = rect.top
     border.style.left = rect.left
     border.style.width = rect.right - rect.left
     border.style.height = rect.bottom - rect.top
-    border.style.borderColor = target.classList.contains('data-input') ? 'orange' : 'lightblue'
+    border.classList.add(
+      target.classList.contains('data-block') ? 'data-block' : null,
+      target.classList.contains('data-input') ? 'data-input' : null,
+      target.classList.contains('data-field') ? 'data-field' : null
+    )
 
     // Show the data controls for blocks
     if (target.classList.contains('data-block')) {
@@ -214,11 +233,12 @@ function hideDataBorder (e, focussing) {
     return
   }
 
-  const target = e.target.closest('.data-block, .data-input')
+  const target = e.target.closest('.data-block, .data-input, .data-field')
   if (target && target !== document.activeElement) {
     // Hide the data border for the closest ancestor block or input
-    const el = document.getElementById('sb-data-border')
-    el.style.display = 'none'
+    const border = document.getElementById('data-border')
+    border.style.display = 'none'
+    border.classList.remove('data-block', 'data-input', 'data-field')
 
     // Hide the data controls for blocks
     if (target.classList.contains('data-block')) {
@@ -233,50 +253,114 @@ function isDataInputFocused (target) {
     document.activeElement !== target
 }
 
-let dragId = ''
+let dragType = ''
+let dragBlockId = ''
+let dragFieldKey = ''
 
 function handleDragStart (e) {
-  dragId = e.target.dataset.blockId
+  if (e.target.classList.contains('data-block')) {
+    dragType = 'block'
+    dragBlockId = e.target.dataset.blockId
+  } else if (e.target.classList.contains('data-field')) {
+    dragType = 'field'
+    dragFieldKey = e.target.dataset.fieldKey
+    const block = e.target.closest('.data-block')
+    if (block) {
+      dragBlockId = block.dataset.blockId
+    }
+  }
 }
 
 function handleDragOver (e) {
-  const target = e.target.closest('.data-block')
+  const target = e.target.closest('.data-block, .data-field')
   if (target) {
     // Enable dropping
     e.preventDefault()
 
     // Show the data border for the closest ancestor block
     const rect = target.getBoundingClientRect()
-    const border = document.getElementById('sb-drag-border')
+    const border = document.getElementById('drag-border')
     border.style.display = 'block'
     border.style.top = dragAtTop(e.y, rect) ? rect.top - 1 : rect.bottom - 1
     border.style.left = rect.left
     border.style.width = rect.right - rect.left
+    border.classList.add(
+      target.classList.contains('data-block') ? 'data-block' : null,
+      target.classList.contains('data-field') ? 'data-field' : null
+    )
   }
 }
 
 function handleDrop (e) {
+  // Move the element
+  if (dragType === 'block') {
+    handleDropBlock(e)
+  } else if (dragType === 'field') {
+    handleDropField(e)
+  }
+
+  // Hide the border
+  const border = document.getElementById('drag-border')
+  border.style.display = 'none'
+  border.classList.remove('data-block', 'data-field')
+}
+
+function handleDropBlock (e) {
   // Move the block
   const target = e.target.closest('.data-block')
   if (target) {
     e.preventDefault()
 
     try {
-      const blockId = dragId
-      const div = document.getElementById(`data-block-${blockId}`)
+      const div = document.getElementById(`data-block-${dragBlockId}`)
 
       const rect = target.getBoundingClientRect()
       const before = dragAtTop(e.y, rect) ? target : target.nextElementSibling
 
-      moveBlock(blockId, div, before)
+      moveBlock(dragBlockId, div, before)
     } catch (err) {
       console.log('$' + err)
     }
   }
+}
 
-  // Hide the border
-  const border = document.getElementById('sb-drag-border')
-  border.style.display = 'none'
+function handleDropField (e) {
+  // Move the field
+  const target = e.target.closest('.data-field')
+  if (target) {
+    e.preventDefault()
+
+    try {
+      const div = document.getElementById(`data-field-${dragFieldKey}`)
+
+      const rect = target.getBoundingClientRect()
+      const before = dragAtTop(e.y, rect) ? target : target.nextElementSibling
+
+      moveField(dragBlockId, div, before)
+    } catch (err) {
+      console.log('$' + err)
+    }
+  }
+}
+
+function moveField (blockId, div, before) {
+  const pageId = document.__pageId
+
+  // Move the node
+  const parent = div.parentNode
+  parent.insertBefore(div, before)
+
+  const elements = parent.getElementsByClassName('data-field')
+  const html = Array.from(elements).map((item) => item.outerHTML).join('\n')
+
+  // Send an event so that things can be updated
+  // HACK: Do this more elegantly
+  const update = {
+    pageId,
+    blockId,
+    html
+  }
+  ipcRenderer.send('move-field', update)
 }
 
 function dragAtTop (y, rect) {
