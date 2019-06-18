@@ -30,6 +30,8 @@ body {
 
 #data-border {
     display: none;
+    margin: 0;
+    padding: 0;
     pointer-events: none;
     position: absolute;
 }
@@ -80,6 +82,8 @@ body {
 #drag-border {
     display: none;
     height: 3px;
+    margin: 0;
+    padding: 0;
     pointer-events: none;
     position: absolute;
 }

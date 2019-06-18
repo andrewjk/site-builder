@@ -205,13 +205,13 @@ function showDataBorder (e, focussing) {
   const target = e.target.closest('.data-block, .data-input, .data-field')
   if (target) {
     // Show the data border for the closest ancestor block or input
-    const rect = target.getBoundingClientRect()
+    const rect = getOffsetRect(target)
     const border = document.getElementById('data-border')
     border.style.display = 'block'
     border.style.top = rect.top
     border.style.left = rect.left
-    border.style.width = rect.right - rect.left
-    border.style.height = rect.bottom - rect.top
+    border.style.width = rect.width
+    border.style.height = rect.height
     border.classList.add(
       target.classList.contains('data-block') ? 'data-block' : null,
       target.classList.contains('data-input') ? 'data-input' : null,
@@ -222,7 +222,7 @@ function showDataBorder (e, focussing) {
     if (target.classList.contains('data-block')) {
       const controls = target.querySelector('.data-block-controls')
       controls.style.display = 'block'
-      controls.style.left = (rect.right - rect.left) / 2 - controls.offsetWidth / 2
+      controls.style.left = rect.width / 2 - controls.offsetWidth / 2
     }
   }
 }
@@ -278,12 +278,12 @@ function handleDragOver (e) {
     e.preventDefault()
 
     // Show the data border for the closest ancestor block
-    const rect = target.getBoundingClientRect()
+    const rect = getOffsetRect(target)
     const border = document.getElementById('drag-border')
     border.style.display = 'block'
     border.style.top = dragAtTop(e.y, rect) ? rect.top - 1 : rect.bottom - 1
     border.style.left = rect.left
-    border.style.width = rect.right - rect.left
+    border.style.width = rect.width
     border.classList.add(
       target.classList.contains('data-block') ? 'data-block' : null,
       target.classList.contains('data-field') ? 'data-field' : null
@@ -314,7 +314,7 @@ function handleDropBlock (e) {
     try {
       const div = document.getElementById(`data-block-${dragBlockId}`)
 
-      const rect = target.getBoundingClientRect()
+      const rect = getOffsetRect(target)
       const before = dragAtTop(e.y, rect) ? target : target.nextElementSibling
 
       moveBlock(dragBlockId, div, before)
@@ -333,7 +333,7 @@ function handleDropField (e) {
     try {
       const div = document.getElementById(`data-field-${dragFieldKey}`)
 
-      const rect = target.getBoundingClientRect()
+      const rect = getOffsetRect(target)
       const before = dragAtTop(e.y, rect) ? target : target.nextElementSibling
 
       moveField(dragBlockId, div, before)
@@ -363,6 +363,16 @@ function moveField (blockId, div, before) {
   ipcRenderer.send('move-field', update)
 }
 
+function getOffsetRect (el) {
+  const rect = el.getBoundingClientRect()
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY,
+    height: rect.bottom - rect.top,
+    width: rect.right - rect.left
+  }
+}
+
 function dragAtTop (y, rect) {
-  return y < rect.top + (rect.bottom - rect.top) / 2
+  return y < rect.top + rect.height / 2
 }
