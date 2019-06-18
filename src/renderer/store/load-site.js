@@ -20,32 +20,32 @@ export default async function loadSite (name) {
 
   // Load data
   const collectionFiles = await getFilesInFolder(path.join(siteFolder, 'data'))
-  const collections = await Promise.all(
+  const collections = (await Promise.all(
     collectionFiles
       .map((file) => {
         return loadCollection(file)
       })
-  )
+  )).sort((a, b) => a.name.localeCompare(b.name))
 
   // Load the pages that have been created
   const pageFiles = await getFilesInFolder(path.join(siteFolder, 'pages'))
-  const pages = await Promise.all(
+  const pages = (await Promise.all(
     pageFiles
       .filter((file) => file.indexOf('.liquid') !== -1)
       .map((file) => {
         return loadPage(siteFolder, file)
       })
-  )
+  )).sort((a, b) => a.name.localeCompare(b.name))
 
   // Load the blocks that are available
   // TODO: Is this the right place to be getting data from?
   const blockFolders = await getDirectoriesInFolder(path.join(__static, 'blocks'))
-  const blocks = await Promise.all(
+  const blocks = (await Promise.all(
     blockFolders
       .map(async (dir) => {
         return loadBlock(dir)
       })
-  )
+  )).sort((a, b) => a.name.localeCompare(b.name))
 
   return {
     info,
