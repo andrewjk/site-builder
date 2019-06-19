@@ -15,6 +15,8 @@ function setupBlocks () {
     blocks[i].addEventListener('mouseover', (e) => showDataBorder(e))
     blocks[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
 
+    blocks[i].addEventListener('click', (e) => selectBlock(e))
+
     // Add the control container to the block
     addControlContainer(blocks[i])
 
@@ -33,6 +35,9 @@ function setupInputs () {
     inputs[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
     inputs[i].addEventListener('focus', (e) => showDataBorder(e, true))
     inputs[i].addEventListener('blur', (e) => hideDataBorder(e, true))
+
+    inputs[i].addEventListener('click', (e) => selectInput(e))
+
     // Listen to the input event to resize the input and relay changes to the app
     if (inputs[i].value) {
       inputs[i].size = inputs[i].value.length
@@ -58,13 +63,15 @@ function setupInputs () {
 }
 
 function setupFields () {
-  const fields = document.getElementsByClassName('data-input')
+  const fields = document.getElementsByClassName('data-field')
   for (let i = 0; i < fields.length; i++) {
     // Listen to mouse and focus events to display the data border over data item fields
     fields[i].addEventListener('mouseover', (e) => showDataBorder(e))
     fields[i].addEventListener('mouseleave', (e) => hideDataBorder(e))
 
-    // TODO: Listen to dragging and dropping
+    fields[i].addEventListener('click', (e) => selectField(e))
+
+    // Listen to dragging and dropping
     fields[i].addEventListener('dragstart', (e) => handleDragStart(e))
     fields[i].addEventListener('dragover', (e) => handleDragOver(e))
     fields[i].addEventListener('drop', (e) => handleDrop(e))
@@ -251,6 +258,75 @@ function isDataInputFocused (target) {
   return document.activeElement &&
     document.activeElement.classList.contains('data-input') &&
     document.activeElement !== target
+}
+
+function selectBlock (e) {
+  try {
+    const target = e.target.closest('.data-block, .data-input, .data-field')
+    if (target) {
+      const pageId = document.__pageId
+      const blockId = target.dataset.blockId
+
+      // TODO: Don't remove the data border if a block is clicked?  Or have a different focused data border?
+
+      // Send an event to the renderer
+      const update = {
+        pageId,
+        blockId
+      }
+      ipcRenderer.send('select-block', update)
+    }
+  } catch (err) {
+    console.log('$' + err)
+  }
+}
+
+function selectInput (e) {
+  try {
+    const target = e.target.closest('.data-input')
+    if (target) {
+      const pageId = document.__pageId
+      const key = e.target.name
+      const blockId = e.target.dataset.blockId
+
+      // Send an event to the renderer
+      const update = {
+        pageId,
+        blockId,
+        key
+      }
+      ipcRenderer.send('select-input', update)
+
+      e.stopPropagation()
+    }
+  } catch (err) {
+    console.log('$' + err)
+  }
+}
+
+function selectField (e) {
+  try {
+    const target = e.target.closest('.data-field')
+    if (target) {
+      const pageId = document.__pageId
+      const fieldKey = target.dataset.fieldKey
+
+      const blockTarget = e.target.closest('.data-block')
+      const blockId = blockTarget.dataset.blockId
+
+      // Send an event to the renderer
+      const update = {
+        pageId,
+        blockId,
+        fieldKey
+      }
+      ipcRenderer.send('select-field', update)
+
+      e.stopPropagation()
+    }
+  } catch (err) {
+    console.log('$' + err)
+  }
 }
 
 let dragType = ''

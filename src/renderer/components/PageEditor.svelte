@@ -4,8 +4,6 @@
 
   import electron from "electron";
   import path from "path";
-  import buildPageEditorHtml from "../store/build-page-editor-html";
-  import showSelectBlockDialog from "../store/show-select-block-dialog";
 
   import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
   import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
@@ -17,6 +15,9 @@
 
   import DataEditor from "./DataEditor";
 
+  import buildPageEditorHtml from "../store/build-page-editor-html";
+  import showSelectBlockDialog from "../store/show-select-block-dialog";
+
   export let page = {};
   export let definition = {};
   export let settings = {};
@@ -25,6 +26,9 @@
   let pageFile = "";
   let webview = null;
   let preload = "file:///" + path.join(__static, "/page-editor.js");
+  let activeBlock = null;
+  let activeInput = null;
+  let activeField = null;
 
   onMount(async () => {
     // await buildPageEditorHtml($activeSite, page, $activeSite.blocks);
@@ -150,6 +154,30 @@
         }
       }
     );
+    electron.remote.ipcMain.on(
+      "select-block",
+      async (event, { pageId, blockId }) => {
+        if (pageId === page.id) {
+          activeBlock = page.blocks.find(block => block.id === blockId);
+          activeInput = null;
+          activeField = null;
+        }
+      }
+    );
+
+    // Listen to input changes
+    electron.remote.ipcMain.on(
+      "select-input",
+      async (event, { pageId, blockId, key }) => {
+        if (pageId === page.id) {
+          activeBlock = page.blocks.find(block => block.id === blockId);
+          activeInput = activeBlock.definition.fields.find(
+            field => field.key === key
+          );
+          activeField = null;
+        }
+      }
+    );
 
     // Listen to field changes
     electron.remote.ipcMain.on(
@@ -159,6 +187,16 @@
           // HACK: Do this more elegantly
           const block = page.blocks.find(block => block.id === blockId);
           block.html = html;
+        }
+      }
+    );
+    electron.remote.ipcMain.on(
+      "select-field",
+      async (event, { pageId, blockId, fieldKey }) => {
+        if (pageId === page.id) {
+          activeBlock = page.blocks.find(block => block.id === blockId);
+          // TODO: Get activeField from the associated collection
+          activeInput = null;
         }
       }
     );
@@ -191,6 +229,12 @@
     margin-bottom: 20px;
   }
 
+  .page-block-editor-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    grid-column-gap: 20px;
+  }
+
   .page-block-editor {
     min-height: 400px;
     margin-bottom: 20px;
@@ -198,7 +242,7 @@
 </style>
 
 <div class="page-editor-wrapper">
-  <div class="title">Page: {page.name}</div>
+  <div class="title">{page.name}</div>
 
   <div class="expander">
     <div
@@ -216,14 +260,28 @@
     {/if}
   </div>
 
-  <webview
-    class="page-block-editor"
-    src={pageFile}
-    {preload}
-    autosize
-    minwidth="0"
-    minheight="0"
-    bind:this={webview} />
+  <div class="page-block-editor-wrapper">
+    <webview
+      class="page-block-editor"
+      src={pageFile}
+      {preload}
+      autosize
+      minwidth="0"
+      minheight="0"
+      bind:this={webview} />
+
+    <div class="page-block-props">
+      {#if activeBlock}
+        <div>{activeBlock.name}</div>
+      {/if}
+      {#if activeInput}
+        <div>{activeInput.name}</div>
+      {/if}
+      {#if activeField}
+        <div>{activeField.name}</div>
+      {/if}
+    </div>
+  </div>
 
   <Button
     class="full-width"
