@@ -20,11 +20,25 @@ export default async function loadPage (siteFolder, file) {
     while (match != null) {
       // TODO: This probably needs to be much more robust
       const blockData = {}
-      const dataRegex = /(\w+): '((?:[^'\\]|\\.)+)'/gi
+      const dataRegex = /([\w\.-]+): '((?:[^'\\]|\\.)+)'/gi
       let dataMatch = dataRegex.exec(match[2])
       while (dataMatch != null) {
-        blockData[dataMatch[1]] = dataMatch[2].replace('&#39;', '\'')
+        let key = dataMatch[1].replace('__', '.')
+        const value = dataMatch[2].replace('&#39;', '\'')
+        let object = blockData
+        const parts = key.split('.')
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!object[parts[i]]) {
+            object[parts[i]] = {}
+          }
+          object = object[parts[i]]
+          key = parts[i + 1]
+        }
+        object[key] = value
         dataMatch = dataRegex.exec(match[2])
+      }
+      if (!blockData.settings) {
+        blockData.settings = {}
       }
       const block = {
         name: match[1],
@@ -38,7 +52,9 @@ export default async function loadPage (siteFolder, file) {
     while (contentMatch != null) {
       const block = {
         name: 'content',
-        data: {}
+        data: {
+          settings: {}
+        }
       }
       blocks.push(block)
       contentMatch = contentRegex.exec(content)
@@ -56,7 +72,9 @@ export default async function loadPage (siteFolder, file) {
       }
       const block = {
         name: 'data-item',
-        data: {},
+        data: {
+          settings: {}
+        },
         html: contentLines.join('\n')
       }
       blocks.push(block)

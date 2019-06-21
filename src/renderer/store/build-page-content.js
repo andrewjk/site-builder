@@ -43,9 +43,17 @@ ${block.html}
 
 function buildBlockContent (block) {
   const name = `'${block.name}.liquid'`
-  const data = Object.keys(block.data)
-    .filter((key) => block.data[key])
-    .map((key) => `${key}: '${block.data[key].replace('\'', '&#39;')}'`)
+  const data = formatBlockData(block.data)
+  console.log(block.data)
+  return `{% include ${name}${data.length ? ', ' : ''}${data} %}`
+}
+
+function formatBlockData (data, prefix = '') {
+  if (!data) {
+    return ''
+  }
+  return Object.keys(data)
+    .filter((key) => data[key])
+    .map((key) => data[key] && data[key] instanceof Object ? formatBlockData(data[key], prefix + key + '__') : `${prefix}${key}: '${data[key].replace('\'', '&#39;')}'`)
     .join(', ')
-  return `{% include ${name}${data && data.length ? ', ' : ''}${data} %}`
 }

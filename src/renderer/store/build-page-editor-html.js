@@ -104,10 +104,13 @@ function buildBlockEditorHtml (block, templateBlock) {
     while (match != null) {
       const name = match[1]
       const value = data[name]
-      // TODO: Placeholder from definitions...
-      const placeholder = name
-      const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
-      content = content.replace(match[0], input)
+      // HACK: Don't replace settings
+      if (!name.startsWith('settings__')) {
+        // TODO: Placeholder from definitions...
+        const placeholder = name
+        const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
+        content = content.replace(match[0], input)
+      }
       match = regex.exec(content)
     }
   }

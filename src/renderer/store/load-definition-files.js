@@ -12,9 +12,17 @@ export default async function loadDefinitionFiles () {
   const pageFile = path.join(__static, 'page-def.json')
   const page = await fs.readJson(pageFile)
 
+  const blockFile = path.join(__static, 'block-def.json')
+  const block = await fs.readJson(blockFile)
+
+  const inputFile = path.join(__static, 'input-def.json')
+  const input = await fs.readJson(inputFile)
+
   return {
     info,
     appearance,
-    page
+    page,
+    block,
+    input
   }
 }

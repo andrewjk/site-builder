@@ -22,18 +22,12 @@
 </style>
 
 <div class="data-editor-wrapper">
-  <table>
-    <tbody>
-      {#each definition.fields as def, index}
-        <tr>
-          <td>
-            <label for={def.key}>{def.name}</label>
-          </td>
-          <td>
-            <input type="text" id={def.key} bind:value={data[def.key]} />
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
+  {#each definition.fields as def, index}
+    <div>
+      <label for={def.key}>{def.name}</label>
+    </div>
+    <div>
+      <input type="text" id={def.key} bind:value={data[def.key]} />
+    </div>
+  {/each}
 </div>

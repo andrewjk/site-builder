@@ -1,12 +1,12 @@
 <script>
   import { onMount, beforeUpdate } from "svelte";
-  import { activeSite } from "../store/state";
+  import { activeSite, definitions } from "../store/state";
 
   import electron from "electron";
   import path from "path";
 
   import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
-  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  // import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
@@ -159,6 +159,7 @@
       async (event, { pageId, blockId }) => {
         if (pageId === page.id) {
           activeBlock = page.blocks.find(block => block.id === blockId);
+          console.log(activeBlock)
           activeInput = null;
           activeField = null;
         }
@@ -174,6 +175,10 @@
           activeInput = activeBlock.definition.fields.find(
             field => field.key === key
           );
+          // Set the data for this input if it hasn't already been set
+          if (!activeBlock.data.settings[key]) {
+            activeBlock.data.settings[key] = {};
+          }
           activeField = null;
         }
       }
@@ -272,13 +277,15 @@
 
     <div class="page-block-props">
       {#if activeBlock}
-        <div>{activeBlock.name}</div>
+        <h4>{activeBlock.name}</h4>
+        <DataEditor definition={$definitions.block} data={activeBlock.data.settings}/>
       {/if}
       {#if activeInput}
-        <div>{activeInput.name}</div>
+        <h4>{activeInput.name}</h4>
+        <DataEditor definition={$definitions.input} data={activeBlock.data.settings[activeInput.key]}/>
       {/if}
       {#if activeField}
-        <div>{activeField.name}</div>
+        <h4>{activeField.name}</h4>
       {/if}
     </div>
   </div>

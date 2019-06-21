@@ -1,0 +1,29 @@
+{
+    "title": "Input Appearance",
+    "fields": [
+        {
+            "key": "font-family",
+            "name": "Font family",
+            "type": "text",
+            "appliesTo": "input"
+        },
+        {
+            "key": "font-size",
+            "name": "Font size",
+            "type": "size",
+            "appliesTo": "input"
+        },
+        {
+            "key": "background-color",
+            "name": "Background color",
+            "type": "color",
+            "appliesTo": "input"
+        },
+        {
+            "key": "color",
+            "name": "Text color",
+            "type": "color",
+            "appliesTo": "input"
+        }
+    ]
+}

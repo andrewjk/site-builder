@@ -1,5 +1,5 @@
-<header class="header">
-    <div class="header-title">
+<header class="header" style="background-color: {{ settings__background-color | default: 'auto' }}; color: {{ settings__color | default: 'auto' }}; font-family: '{{ settings__font-family | default: auto }}'; font-size: {{ settings__font-size | default: auto }}">
+    <div class="header-title" style="background-color: {{ settings__title__background-color | default: 'auto' }}; color: {{ settings__title__color | default: 'auto' }}; font-family: '{{ settings__title__font-family | default: auto }}'; font-size: {{ settings__title__font-size | default: auto }}">
         {{ title }}
     </div>
 </header>
