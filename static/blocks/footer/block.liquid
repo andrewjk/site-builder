@@ -1,8 +1,8 @@
-<footer class="footer">
-    <div class="footer-left">
+<footer class="footer" {{ "" | styles: settings__font-family, settings__font-size, settings__background-color, settings__color }}>
+    <div class="footer-left" {{ "" | styles: settings__leftText__font-family, settings__leftText__font-size, settings__leftText__background-color, settings__leftText__color }}>
         {{ leftText }}
     </div>
-    <div class="footer-right">
+    <div class="footer-right" {{ "" | styles: settings__rightText__font-family, settings__rightText__font-size, settings__rightText__background-color, settings__rightText__color }}>
         {{ rightText }}
     </div>
 </footer>

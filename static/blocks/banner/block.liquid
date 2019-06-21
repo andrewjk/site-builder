@@ -1,4 +1,8 @@
-<div class="banner">
-    <div class="banner-title">{{ title }}</div>
-    <div class="banner-text">{{ text }}</div>
+<div class="header" {{ "" | styles: settings__font-family, settings__font-size, settings__background-color, settings__color }}>
+    <div class="banner-title" {{ "" | styles: settings__title__font-family, settings__title__font-size, settings__title__background-color, settings__title__color }}>
+        {{ title }}
+    </div>
+    <div class="banner-text" {{ "" | styles: settings__text__font-family, settings__text__font-size, settings__text__background-color, settings__text__color }}>
+        {{ text }}
+    </div>
 </div>

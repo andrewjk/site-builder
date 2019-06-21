@@ -69,6 +69,19 @@ export default async function buildSite (site, definitions) {
     root: [layoutsFolder, includesFolder]
   })
 
+  // Register a custom filter to build styles
+  engine.registerFilter('styles', (initial, fontFamily, fontSize, backgroundColor, color) => {
+    let style = ''
+    style = style + (backgroundColor ? `background-color: ${backgroundColor}; ` : '')
+    style = style + (color ? `color: ${color}; ` : '')
+    style = style + (fontFamily ? `font-family: '${fontFamily}'; ` : '')
+    style = style + (fontSize ? `font-size: ${fontSize}; ` : '')
+    if (style) {
+      style = `style="${style.trim()}"`
+    }
+    return style
+  })
+
   // Generate each layout
   // Files starting with underscores are templates and should get built into the layouts folder
   await Promise.all([...site.pages].sort(sorter).filter(page => path.basename(page.file).startsWith('_')).map(async (page) => {

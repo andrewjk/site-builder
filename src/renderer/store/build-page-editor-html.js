@@ -105,7 +105,7 @@ function buildBlockEditorHtml (block, templateBlock) {
       const name = match[1]
       const value = data[name]
       // HACK: Don't replace settings
-      if (!name.startsWith('settings__')) {
+      if (name.indexOf('| styles:') === -1) {
         // TODO: Placeholder from definitions...
         const placeholder = name
         const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`

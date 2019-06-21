@@ -44,7 +44,6 @@ ${block.html}
 function buildBlockContent (block) {
   const name = `'${block.name}.liquid'`
   const data = formatBlockData(block.data)
-  console.log(block.data)
   return `{% include ${name}${data.length ? ', ' : ''}${data} %}`
 }
 
