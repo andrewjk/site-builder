@@ -6,9 +6,9 @@ export default function buildStyles (site, definitions) {
   definitions.appearance.fields.forEach(def => {
     if (site.appearance[def.key]) {
       if (def.appliesTo === 'html') {
-        htmlStyles.push(`${def.key}: ${site.appearance[def.key]}`)
+        htmlStyles.push(`${formatStyleName(def.key)}: ${site.appearance[def.key]}`)
       } else if (def.appliesTo === 'body') {
-        bodyStyles.push(`${def.key}: ${site.appearance[def.key]}`)
+        bodyStyles.push(`${formatStyleName(def.key)}: ${site.appearance[def.key]}`)
       }
     }
   })
@@ -34,4 +34,8 @@ body {
   }
 
   return styles
+}
+
+function formatStyleName (text) {
+  return text.replace(/([A-Z])/, '-$1').toLowerCase()
 }

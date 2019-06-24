@@ -2,19 +2,19 @@
     "title": "Site Appearance",
     "fields": [
         {
-            "key": "font-family",
+            "key": "fontFamily",
             "name": "Font family",
             "type": "text",
             "appliesTo": "html"
         },
         {
-            "key": "font-size",
+            "key": "fontSize",
             "name": "Font size",
             "type": "size",
             "appliesTo": "html"
         },
         {
-            "key": "background-color",
+            "key": "backgroundColor",
             "name": "Background color",
             "type": "color",
             "appliesTo": "html"
@@ -26,7 +26,7 @@
             "appliesTo": "html"
         },
         {
-            "key": "max-width",
+            "key": "maxWidth",
             "name": "Content width",
             "type": "size",
             "appliesTo": "body"

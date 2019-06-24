@@ -2,19 +2,19 @@
     "title": "Block Appearance",
     "fields": [
         {
-            "key": "font-family",
+            "key": "fontFamily",
             "name": "Font family",
             "type": "text",
             "appliesTo": "div"
         },
         {
-            "key": "font-size",
+            "key": "fontSize",
             "name": "Font size",
             "type": "size",
             "appliesTo": "div"
         },
         {
-            "key": "background-color",
+            "key": "backgroundColor",
             "name": "Background color",
             "type": "color",
             "appliesTo": "div"

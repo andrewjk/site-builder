@@ -17,12 +17,12 @@
             "type": "array",
             "values": [
                 {
-                    "key": "menu-title",
+                    "key": "menuTitle",
                     "name": "Title",
                     "type": "text"
                 },
                 {
-                    "key": "menu-page",
+                    "key": "menuPage",
                     "name": "Page",
                     "type": "text"
                 }

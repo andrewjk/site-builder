@@ -456,24 +456,20 @@ function dragAtTop (y, rect) {
 ipcRenderer.on(
   'changed-page-setting',
   async (event, { style, value }) => {
-    document.getElementsByTagName('html')[0].style[kebabToCamelCase(style)] = value
+    document.getElementsByTagName('html')[0].style[style] = value
   }
 )
 
 ipcRenderer.on(
   'changed-block-setting',
   async (event, { blockId, style, value }) => {
-    document.getElementById(`data-block-${blockId}`).style[kebabToCamelCase(style)] = value
+    document.getElementById(`data-block-${blockId}`).style[style] = value
   }
 )
 
 ipcRenderer.on(
   'changed-input-setting',
   async (event, { blockId, key, style, value }) => {
-    document.getElementById(`data-input-${blockId}-${key}`).style[kebabToCamelCase(style)] = value
+    document.getElementById(`data-input-${blockId}-${key}`).style[style] = value
   }
 )
-
-function kebabToCamelCase (text) {
-  return text.replace(/-\w/g, match => `${match[1].toUpperCase()}`)
-}

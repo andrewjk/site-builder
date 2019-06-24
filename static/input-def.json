@@ -2,19 +2,19 @@
     "title": "Input Appearance",
     "fields": [
         {
-            "key": "font-family",
+            "key": "fontFamily",
             "name": "Font family",
             "type": "text",
             "appliesTo": "input"
         },
         {
-            "key": "font-size",
+            "key": "fontSize",
             "name": "Font size",
             "type": "size",
             "appliesTo": "input"
         },
         {
-            "key": "background-color",
+            "key": "backgroundColor",
             "name": "Background color",
             "type": "color",
             "appliesTo": "input"

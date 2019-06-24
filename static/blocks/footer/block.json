@@ -17,12 +17,12 @@
             "type": "array",
             "fields": [
                 {
-                    "key": "link-type",
+                    "key": "linkType",
                     "name": "Type",
                     "type": "text"
                 },
                 {
-                    "key": "link-url",
+                    "key": "linkUrl",
                     "name": "Url",
                     "type": "text"
                 }

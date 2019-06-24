@@ -24,7 +24,7 @@ export default async function buildPageEditorHtml (site, page, blocks, definitio
     const block = page.blocks[i]
     const templateBlock = blocks.find((b) => b.name === block.name)
 
-    const blockContent = buildBlockEditorHtml(block, templateBlock, page.name === '_Layout' && block.name === 'footer')
+    const blockContent = buildBlockEditorHtml(block, templateBlock)
 
     pageContent = `${pageContent}\n${blockContent}`
   }
@@ -72,7 +72,7 @@ ${pageContent}
   page.tempFile = tempFile
 }
 
-function buildBlockEditorHtml (block, templateBlock, logit) {
+function buildBlockEditorHtml (block, templateBlock) {
   // HACK: Give the block a temporary id
   if (!block.id) {
     block.id = uuid()
@@ -124,7 +124,7 @@ function buildBlockEditorHtml (block, templateBlock, logit) {
             block.data.settings[key] = {}
           }
           const inputSettings = block.data.settings[key]
-          const inputStyles = buildStyleAttribute(inputSettings['font-family'], inputSettings['font-size'], inputSettings['background-color'], inputSettings['color'])
+          const inputStyles = buildStyleAttribute(inputSettings.fontFamily, inputSettings.fontSize, inputSettings.backgroundColor, inputSettings.color)
           content = content.replace(match[0], inputStyles)
         } else {
           // It's a block style, which will get set in the return statement...
@@ -141,7 +141,7 @@ function buildBlockEditorHtml (block, templateBlock, logit) {
   block.data = data
 
   const blockSettings = block.data.settings
-  const blockStyles = buildStyleAttribute(blockSettings['font-family'], blockSettings['font-size'], blockSettings['background-color'], blockSettings['color'])
+  const blockStyles = buildStyleAttribute(blockSettings.fontFamily, blockSettings.fontSize, blockSettings.backgroundColor, blockSettings.color)
 
   return `
 <div id="data-block-${blockId}" class="data-block" data-block-id="${blockId}" draggable="true" ${blockStyles}>
