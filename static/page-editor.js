@@ -455,8 +455,9 @@ function dragAtTop (y, rect) {
 
 ipcRenderer.on(
   'changed-page-setting',
-  async (event, { style, value }) => {
-    document.getElementsByTagName('html')[0].style[style] = value
+  async (event, { style, value, appliesTo }) => {
+    console.log('$setting style for' + appliesTo)
+    document.getElementsByTagName(appliesTo)[0].style[style] = value
   }
 )
 

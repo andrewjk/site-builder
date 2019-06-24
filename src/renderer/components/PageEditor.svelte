@@ -217,15 +217,14 @@
   }
 
   function handlePageChange(e) {
-    console.log($activeSite.appearance[e.detail])
     webview.send("changed-page-setting", {
       style: e.detail,
-      value: $activeSite.appearance[e.detail]
+      value: $activeSite.appearance[e.detail],
+      appliesTo: $definitions.appearance.fields.find((item) => item.key === e.detail).appliesTo
     });
   }
 
   function handleBlockChange(e) {
-    console.log(activeBlock.data.settings[e.detail])
     webview.send("changed-block-setting", {
       blockId: activeBlock.id,
       style: e.detail,
@@ -234,7 +233,6 @@
   }
 
   function handleInputChange(e) {
-    console.log(activeBlock.data.settings[activeInput.key][e.detail])
     webview.send("changed-input-setting", {
       blockId: activeBlock.id,
       key: activeInput.key,
