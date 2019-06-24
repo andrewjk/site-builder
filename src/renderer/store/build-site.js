@@ -5,6 +5,8 @@ import { remote } from 'electron'
 
 import getFilesInFolder from './get-files-in-folder'
 import buildPageContent from './build-page-content'
+import buildStyles from './build-styles'
+import buildStyleAttribute from './build-style-attribute'
 
 import Liquid from 'liquidjs'
 import { exec } from 'child_process'
@@ -71,15 +73,7 @@ export default async function buildSite (site, definitions) {
 
   // Register a custom filter to build styles
   engine.registerFilter('styles', (initial, fontFamily, fontSize, backgroundColor, color) => {
-    let style = ''
-    style = style + (backgroundColor ? `background-color: ${backgroundColor}; ` : '')
-    style = style + (color ? `color: ${color}; ` : '')
-    style = style + (fontFamily ? `font-family: '${fontFamily}'; ` : '')
-    style = style + (fontSize ? `font-size: ${fontSize}; ` : '')
-    if (style) {
-      style = `style="${style.trim()}"`
-    }
-    return style
+    return buildStyleAttribute(fontFamily, fontSize, backgroundColor, color)
   })
 
   // Generate each layout
@@ -95,39 +89,7 @@ export default async function buildSite (site, definitions) {
     await buildPage(site, page, outputFile, engine)
   }))
 
-  // TODO: Concat and minify CSS from appearance, templates, layouts and blocks
-  let styles = ''
-  const htmlStyles = []
-  const bodyStyles = []
-  definitions.appearance.fields.forEach(def => {
-    if (site.appearance[def.key]) {
-      if (def.appliesTo === 'html') {
-        htmlStyles.push(`${def.key}: ${site.appearance[def.key]}`)
-      } else if (def.appliesTo === 'body') {
-        bodyStyles.push(`${def.key}: ${site.appearance[def.key]}`)
-      }
-    }
-  })
-  if (htmlStyles.length) {
-    styles = styles + `
-html {
-  ${htmlStyles.join(';\n')}
-}`
-  }
-  if (bodyStyles.length) {
-    styles = styles + `
-body {
-  ${bodyStyles.join(';\n')}
-}`
-  }
-
-  // For now, we're just loading CSS from blocks into site.css
-  const allBlocks = [].concat.apply([], site.pages.map(page => page.blocks))
-  const templateBlocks = allBlocks.map(block => site.blocks.find(tb => block.name === tb.name))
-  const uniqueBlocks = [...new Set(templateBlocks)]
-  for (let i = 0; i < uniqueBlocks.length; i++) {
-    styles = styles + '\n' + uniqueBlocks[i].styles
-  }
+  const styles = buildStyles(site, definitions)
   const siteCssFile = path.join(webSiteFolder, 'css', 'site.css')
   fs.writeFileSync(siteCssFile, styles.trim())
 

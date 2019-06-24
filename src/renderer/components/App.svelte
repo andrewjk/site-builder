@@ -78,29 +78,21 @@
           <SettingsEditor
             name={$activeSection.name}
             definition={$activeSection.definition}
-            data={$activeSection.data}
-            @save="saveSettings(activeSection)"
-            @cancel="cancelSettings(activeSection)" />
+            data={$activeSection.data} />
         {:else if $activeSection && $activeSection.type === 'collection'}
           <CollectionEditor
             name={$activeSection.text}
-            data={$activeSection.data}
-            @save="saveData(activeSection)"
-            @cancel="cancelData(activeSection)" />
+            data={$activeSection.data} />
         {:else if $activeSection && $activeSection.type === 'page'}
           <PageEditor
             page={$activeSection.page}
             definition={$activeSection.definition}
-            settings={$activeSection.data}
-            @save="savePage(activeSection)"
-            @cancel="cancelPage(activeSection)" />
+            settings={$activeSection.data} />
         {:else if $activeSection && $activeSection.type === 'block'}
           <BlockEditor
             block={$activeSection.block}
             definition={$activeSection.definition}
-            data={$activeSection.data}
-            @save="saveBlock(activeSection)"
-            @cancel="cancelBlock(activeSection)" />
+            data={$activeSection.data} />
         {/if}
       </div>
     </main>

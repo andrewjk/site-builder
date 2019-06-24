@@ -1,8 +1,10 @@
 <script>
-  import { beforeUpdate } from "svelte";
+  import { beforeUpdate, createEventDispatcher } from "svelte";
 
   export let definition = null;
   export let data = null;
+
+  const dispatch = createEventDispatcher();
 
   beforeUpdate(() => {
     // Update data from the definition, just in case it hasn't been loaded or the template has changed
@@ -27,7 +29,11 @@
       <label for={def.key}>{def.name}</label>
     </div>
     <div>
-      <input type="text" id={def.key} bind:value={data[def.key]} />
+      <input
+        type="text"
+        id={def.key}
+        bind:value={data[def.key]}
+        on:change={e => dispatch('change', def.key)} />
     </div>
   {/each}
 </div>

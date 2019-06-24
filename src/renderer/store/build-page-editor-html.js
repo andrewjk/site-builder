@@ -5,7 +5,10 @@ import { remote } from 'electron'
 // NOTE: V4 uses random numbers
 import uuid from 'uuid/v4'
 
-export default async function buildPageEditorHtml (site, page, blocks) {
+import buildStyles from './build-styles'
+import buildStyleAttribute from './build-style-attribute'
+
+export default async function buildPageEditorHtml (site, page, blocks, definitions) {
   const siteName = site.info.name
 
   // TODO: Remove this at some point, it's just for older pages
@@ -15,27 +18,26 @@ export default async function buildPageEditorHtml (site, page, blocks) {
 
   const id = page.settings.id
 
-  let content = ''
-  let styles = ''
-
+  // Build the page content from the blocks that have been included
+  let pageContent = ''
   for (let i = 0; i < page.blocks.length; i++) {
     const block = page.blocks[i]
     const templateBlock = blocks.find((b) => b.name === block.name)
 
-    const blockContent = buildBlockEditorHtml(block, templateBlock)
+    const blockContent = buildBlockEditorHtml(block, templateBlock, page.name === '_Layout' && block.name === 'footer')
 
-    content = `${content}\n${blockContent}`
-    styles = `${styles}\n${templateBlock.styles}`
+    pageContent = `${pageContent}\n${blockContent}`
   }
 
-  // Load styles from the page-editor file
+  // Load standard styles, and styles from the page-editor file
+  const styles = buildStyles(site, definitions)
   const editorStylesFile = path.join(__static, '/page-editor.css')
   const editorStyles = fs.readFileSync(editorStylesFile)
 
   // Wrap the content in HTML so that it can be displayed in a webview
   // TODO: Load CSS from the template, instead of just including normalize and main
   // TODO: Make sure that this works well with custom styling - probably need to include custom page styles etc
-  content = `
+  const content = `
 <html>
 <head>
   <link rel="stylesheet" href="../templates/default/css/normalize.css">
@@ -48,7 +50,7 @@ ${editorStyles}
 </head>
 <body>
   <div id="data-content">
-${content}
+${pageContent}
   </div>
   <div id="data-border"></div>
   <div id="drag-border"></div>
@@ -70,7 +72,7 @@ ${content}
   page.tempFile = tempFile
 }
 
-function buildBlockEditorHtml (block, templateBlock) {
+function buildBlockEditorHtml (block, templateBlock, logit) {
   // HACK: Give the block a temporary id
   if (!block.id) {
     block.id = uuid()
@@ -99,18 +101,37 @@ function buildBlockEditorHtml (block, templateBlock) {
     content = block.html
   } else {
     content = templateBlock.content
+
+    // Pass 1 - replace inputs
     const regex = /{{ (.+) }}/gi
     let match = regex.exec(content)
     while (match != null) {
       const name = match[1]
-      const value = data[name]
-      // HACK: Don't replace settings
       if (name.indexOf('| styles:') === -1) {
         // TODO: Placeholder from definitions...
+        const value = data[name]
         const placeholder = name
-        const input = `<input class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
+        const input = `<input id="data-input-${blockId}-${name}" class="data-input" type="text" name="${name}" value="${value}" placeholder="${placeholder}" data-block-id="${blockId}"/>`
         content = content.replace(match[0], input)
       }
+      if (name.indexOf('| styles:') !== -1) {
+        // HACK: Do this nicer!!
+        const keyregex = /__(\w+)__/gi
+        let key = keyregex.exec(name)
+        if (key) {
+          key = key[1]
+          if (!block.data.settings[key]) {
+            block.data.settings[key] = {}
+          }
+          const inputSettings = block.data.settings[key]
+          const inputStyles = buildStyleAttribute(inputSettings['font-family'], inputSettings['font-size'], inputSettings['background-color'], inputSettings['color'])
+          content = content.replace(match[0], inputStyles)
+        } else {
+          // It's a block style, which will get set in the return statement...
+          content = content.replace(match[0], '')
+        }
+      }
+      regex.lastIndex = 0
       match = regex.exec(content)
     }
   }
@@ -119,8 +140,11 @@ function buildBlockEditorHtml (block, templateBlock) {
   block.definition = templateBlock.definition
   block.data = data
 
+  const blockSettings = block.data.settings
+  const blockStyles = buildStyleAttribute(blockSettings['font-family'], blockSettings['font-size'], blockSettings['background-color'], blockSettings['color'])
+
   return `
-<div id="data-block-${blockId}" class="data-block" data-block-id="${blockId}" draggable="true">
+<div id="data-block-${blockId}" class="data-block" data-block-id="${blockId}" draggable="true" ${blockStyles}>
 ${content}
 </div>`.trim()
 }

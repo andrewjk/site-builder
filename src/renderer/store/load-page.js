@@ -23,7 +23,7 @@ export default async function loadPage (siteFolder, file) {
       const dataRegex = /([\w\.-]+): '((?:[^'\\]|\\.)+)'/gi
       let dataMatch = dataRegex.exec(match[2])
       while (dataMatch != null) {
-        let key = dataMatch[1].replace('__', '.')
+        let key = dataMatch[1].replace(/__/gi, '.')
         const value = dataMatch[2].replace('&#39;', '\'')
         let object = blockData
         const parts = key.split('.')

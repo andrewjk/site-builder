@@ -31,14 +31,19 @@
   let activeField = null;
 
   onMount(async () => {
-    // await buildPageEditorHtml($activeSite, page, $activeSite.blocks);
+    // await buildPageEditorHtml($activeSite, page, $activeSite.blocks, $definitions);
     // pageFile = "file:///" + page.tempFile.replace(/ /g, '%20').replace(/\\/g, '/');
     setupWebviewListeners();
   });
 
   beforeUpdate(async () => {
     if (!page.tempFile) {
-      await buildPageEditorHtml($activeSite, page, $activeSite.blocks);
+      await buildPageEditorHtml(
+        $activeSite,
+        page,
+        $activeSite.blocks,
+        $definitions
+      );
     }
     pageFile = "file:///" + page.tempFile;
   });
@@ -84,7 +89,12 @@
   }
 
   async function rebuildPageEditorHtml() {
-    await buildPageEditorHtml($activeSite, page, $activeSite.blocks);
+    await buildPageEditorHtml(
+      $activeSite,
+      page,
+      $activeSite.blocks,
+      $definitions
+    );
     webview.reload();
   }
 
@@ -159,7 +169,6 @@
       async (event, { pageId, blockId }) => {
         if (pageId === page.id) {
           activeBlock = page.blocks.find(block => block.id === blockId);
-          console.log(activeBlock)
           activeInput = null;
           activeField = null;
         }
@@ -205,6 +214,33 @@
         }
       }
     );
+  }
+
+  function handlePageChange(e) {
+    console.log($activeSite.appearance[e.detail])
+    webview.send("changed-page-setting", {
+      style: e.detail,
+      value: $activeSite.appearance[e.detail]
+    });
+  }
+
+  function handleBlockChange(e) {
+    console.log(activeBlock.data.settings[e.detail])
+    webview.send("changed-block-setting", {
+      blockId: activeBlock.id,
+      style: e.detail,
+      value: activeBlock.data.settings[e.detail]
+    });
+  }
+
+  function handleInputChange(e) {
+    console.log(activeBlock.data.settings[activeInput.key][e.detail])
+    webview.send("changed-input-setting", {
+      blockId: activeBlock.id,
+      key: activeInput.key,
+      style: e.detail,
+      value: activeBlock.data.settings[activeInput.key][e.detail]
+    });
   }
 </script>
 
@@ -276,13 +312,24 @@
       bind:this={webview} />
 
     <div class="page-block-props">
+      <h4>Site</h4>
+      <DataEditor
+        definition={$definitions.appearance}
+        data={$activeSite.appearance}
+        on:change={handlePageChange} />
       {#if activeBlock}
         <h4>{activeBlock.name}</h4>
-        <DataEditor definition={$definitions.block} data={activeBlock.data.settings}/>
+        <DataEditor
+          definition={$definitions.block}
+          data={activeBlock.data.settings}
+          on:change={handleBlockChange} />
       {/if}
       {#if activeInput}
         <h4>{activeInput.name}</h4>
-        <DataEditor definition={$definitions.input} data={activeBlock.data.settings[activeInput.key]}/>
+        <DataEditor
+          definition={$definitions.input}
+          data={activeBlock.data.settings[activeInput.key]}
+          on:change={handleInputChange} />
       {/if}
       {#if activeField}
         <h4>{activeField.name}</h4>
