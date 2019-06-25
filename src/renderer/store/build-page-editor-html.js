@@ -1,15 +1,15 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { remote } from 'electron'
 
 // NOTE: V4 uses random numbers
 import uuid from 'uuid/v4'
 
+import getSiteFolder from './get-site-folder'
 import buildStyles from './build-styles'
 import buildStyleAttribute from './build-style-attribute'
 
 export default async function buildPageEditorHtml (site, page, blocks, definitions) {
-  const siteName = site.info.name
+  const siteFolder = getSiteFolder(site.info.name)
 
   // TODO: Remove this at some point, it's just for older pages
   if (!page.settings.id) {
@@ -62,7 +62,6 @@ ${pageContent}
   // console.log(content)
 
   // Write the content to a temp file
-  const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', siteName)
   const tempFolder = path.join(siteFolder, 'temp')
   await fs.ensureDir(tempFolder)
   const tempFile = path.join(tempFolder, id + '.html')

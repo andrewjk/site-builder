@@ -1,12 +1,11 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import { remote } from 'electron'
-
+import getSiteFolder from './get-site-folder'
 import buildPageContent from './build-page-content'
 
 export default async function saveSite (site) {
-  const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name)
+  const siteFolder = getSiteFolder(site.info.name)
 
   // Save the data into info.json and appearance.json
   const infoFile = path.join(siteFolder, 'settings', 'info.json')

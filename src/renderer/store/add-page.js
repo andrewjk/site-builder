@@ -1,15 +1,17 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { remote } from 'electron'
 
+import getSiteFolder from './get-site-folder'
 import buildPageSection from './build-page-section'
 
 export default async function addPage (pageName, site, sections) {
+  const siteFolder = getSiteFolder(site.info.name)
+
   // TODO: Check that it's valid
   const name = pageName.replace(/ /g, '_')
 
   // Create the empty files
-  const pagesFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name, 'pages')
+  const pagesFolder = path.join(siteFolder, 'pages')
   const file = path.join(pagesFolder, name + '.liquid')
   fs.writeFile(file)
 

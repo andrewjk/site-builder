@@ -1,8 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import { remote } from 'electron'
-
+import getSiteFolder from './get-site-folder'
 import getFilesInFolder from './get-files-in-folder'
 import buildPageContent from './build-page-content'
 import buildStyles from './build-styles'
@@ -14,7 +13,7 @@ import { exec } from 'child_process'
 import { html_beautify } from 'js-beautify'
 
 export default async function buildSite (site, definitions) {
-  const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name)
+  const siteFolder = getSiteFolder(site.info.name)
 
   // Ensure the output folder exists
   const outputFolder = path.join(siteFolder, 'output')

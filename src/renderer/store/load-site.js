@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { remote } from 'electron'
 
+import getSiteFolder from './get-site-folder'
 import getFilesInFolder from './get-files-in-folder'
 import getDirectoriesInFolder from './get-directories-in-folder'
 import loadCollection from './load-collection'
@@ -9,7 +9,7 @@ import loadPage from './load-page'
 import loadBlock from './load-block'
 
 export default async function loadSite (name) {
-  const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', name)
+  const siteFolder = getSiteFolder(name)
 
   // Load the settings from info.json and appearance.json
   const infoFile = path.join(siteFolder, 'settings', 'info.json')

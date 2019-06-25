@@ -1,10 +1,12 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { remote } from 'electron'
 
+import getSiteFolder from './get-site-folder'
 import buildCollectionSection from './build-collection-section'
 
 export default async function addCollection (collectionName, site, sections) {
+  const siteFolder = getSiteFolder(site.info.name)
+
   // TODO: Check that it's valid
   const name = collectionName.replace(/ /g, '_')
 
@@ -18,7 +20,7 @@ export default async function addCollection (collectionName, site, sections) {
     }],
     items: []
   }
-  const dataFolder = path.join(remote.app.getPath('documents'), 'Site Builder', site.info.name, 'data')
+  const dataFolder = path.join(siteFolder, 'data')
   const file = path.join(dataFolder, name + '.json')
   fs.writeJSON(file, data)
 

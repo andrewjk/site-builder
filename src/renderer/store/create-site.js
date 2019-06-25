@@ -1,10 +1,10 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import { remote } from 'electron'
+import getSiteFolder from './get-site-folder'
 
 export default async function createSite (name, info, appearance) {
-  const siteFolder = path.join(remote.app.getPath('documents'), 'Site Builder', name)
+  const siteFolder = getSiteFolder(name)
   await fs.mkdir(siteFolder)
 
   // Create some default directories
