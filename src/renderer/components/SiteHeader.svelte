@@ -13,6 +13,7 @@
   import buildSections from "../store/build-sections";
   import saveSite from "../store/save-site";
   import buildSite from "../store/build-site";
+  import getSiteFolder from "../store/get-site-folder";
 
   let siteName = $activeSite ? $activeSite.info.name : "Loading";
 
@@ -24,9 +25,17 @@
       $creatingSite = false;
       $activeSite = await loadSite(siteName);
       $sections = buildSections($activeSite, $definitions);
+      $activeSection = null;
       settings.set("app", { siteName });
     }
   }
+
+  // function logo() {
+  //   const siteFolder = getSiteFolder($activeSite.info.name);
+  //   const logoFile = path.join(siteFolder, "images", $activeSite.info.logo);
+  //   var bitmap = fs.readFileSync(logoFile, { encoding: "base64" });
+  //   return `data:image/png;base64, ${bitmap}`;
+  // }
 </script>
 
 <style>
@@ -76,5 +85,7 @@
     </select>
   {/if}
   <button type="button" on:click={e => saveSite($activeSite)}>Save</button>
-  <button type="button" on:click={e => buildSite($activeSite, $definitions)}>Build</button>
+  <button type="button" on:click={e => buildSite($activeSite, $definitions)}>
+    Build
+  </button>
 </div>

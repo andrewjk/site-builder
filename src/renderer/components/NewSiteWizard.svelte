@@ -1,19 +1,60 @@
 <script>
-  import { creatingSite, sites, activeSite } from "../store/state";
+  import {
+    creatingSite,
+    sites,
+    activeSite,
+    definitions,
+    sections,
+    activeSection
+  } from "../store/state";
   import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
 
   import createSite from "../store/create-site";
-  import loadSite from '../store/load-site';
+  import loadSite from "../store/load-site";
 
   let name = "";
   let title = "";
-  let intro = "";
+  let description = "";
+  let logo = "";
+  let icon = "";
+  let bannerImage = "";
+  let bannerTitle = "";
+  let bannerText = "";
 
   async function handleCreateSite() {
-    await createSite(name, { name, title, intro }, {});
+    await createSite(
+      name,
+      {
+        name,
+        title,
+        description,
+        logo,
+        icon,
+        bannerImage,
+        bannerTitle,
+        bannerText
+      },
+      {
+        // Empty appearance, for now...
+      }
+    );
     $activeSite = await loadSite(name);
     $creatingSite = false;
     $sites.push(name);
+    $sections = buildSections($activeSite, $definitions);
+    $activeSection = null;
+  }
+
+  function logoSelected(e) {
+    logo = e.target.files[0].path;
+  }
+
+  function iconSelected(e) {
+    icon = e.target.files[0].path;
+  }
+
+  function bannerSelected(e) {
+    bannerImage = e.target.files[0].path;
   }
 </script>
 
@@ -56,13 +97,12 @@
     </div>
   </div>
   <div class="wizard-step">
-    <h2>Introduction</h2>
+    <h2>Description</h2>
     <p class="wizard-info">
-      Some introductory text about who you are and what you do. It will be
-      displayed under the heading on the main page.
+      A description of this site to help people find it.
     </p>
     <div class="wizard-input">
-      <textarea bind:value={intro} />
+      <textarea bind:value={description} />
     </div>
   </div>
   <div class="wizard-step">
@@ -72,7 +112,7 @@
       header. It should be a PNG file, at least ? px tall.
     </p>
     <div class="wizard-input">
-      <input type="file" />
+      <input type="file" bind:value={logo} on:change={logoSelected} />
     </div>
   </div>
   <div class="wizard-step">
@@ -82,7 +122,7 @@
       file, at least ? px square.
     </p>
     <div class="wizard-input">
-      <input type="file" />
+      <input type="file" bind:value={icon} on:change={iconSelected} />
     </div>
   </div>
   <div class="wizard-step">
@@ -92,8 +132,33 @@
       should be a JPG file, at least ? px wide.
     </p>
     <div class="wizard-input">
-      <input type="file" />
+      <input type="file" bind:value={bannerImage} on:change={bannerSelected} />
     </div>
   </div>
-  <Button class="full-width" size="large" type="success" on:click={handleCreateSite}>Create site</Button>
+  <div class="wizard-step">
+    <h2>Banner Title (optional)</h2>
+    <p class="wizard-info">
+      A title to display over the top of the banner image.
+    </p>
+    <div class="wizard-input">
+      <input type="text" bind:value={bannerTitle} />
+    </div>
+  </div>
+  <div class="wizard-step">
+    <h2>Banner Text (optional)</h2>
+    <p class="wizard-info">
+      Some text to display over the top of the banner image, underneath the
+      title.
+    </p>
+    <div class="wizard-input">
+      <textarea bind:value={bannerText} />
+    </div>
+  </div>
+  <Button
+    class="full-width"
+    size="large"
+    type="success"
+    on:click={handleCreateSite}>
+    Create site
+  </Button>
 </div>

@@ -6,7 +6,7 @@
   import path from "path";
 
   import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
-  // import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  // // import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   import Icon from "./Icon";
   import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";

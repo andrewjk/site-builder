@@ -17,8 +17,8 @@
   import deleteCollection from "../store/delete-collection";
   import deletePage from "../store/delete-page";
 
-  import showPrompt from "../../../../svelte-toolkit/src/dialogs/Prompt/show-prompt";
-  import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
+  // import showPrompt from "../../../../svelte-toolkit/src/dialogs/Prompt/show-prompt";
+  // import showConfirm from "../../../../svelte-toolkit/src/dialogs/Confirm/show-confirm";
 
   let input = null;
   let newName = "";
