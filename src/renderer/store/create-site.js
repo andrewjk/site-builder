@@ -60,7 +60,8 @@ export default async function createSite (name, info, appearance) {
   {% block content %}Page content{% endblock %}
 </main>
 {% endblock %}`
-  fs.writeFile(path.join(pagesFolder, '_Layout.liquid'), layout)
+  await fs.writeFile(path.join(pagesFolder, '_Layout.liquid'), layout)
+  await fs.writeJSON(path.join(pagesFolder, '_Layout.json'), {})
 
   let index = `{% layout '_Layout.liquid' %}
 {% block content %}`
@@ -70,5 +71,6 @@ export default async function createSite (name, info, appearance) {
   }
   index = index + `
 {% endblock %}`
-  fs.writeFile(path.join(pagesFolder, 'Index.liquid'), index)
+  await fs.writeFile(path.join(pagesFolder, 'Index.liquid'), index)
+  await fs.writeJSON(path.join(pagesFolder, 'Index.json'), { layout: '_Layout' })
 }
