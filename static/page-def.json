@@ -14,12 +14,12 @@
         {
             "key": "layout",
             "name": "Layout",
-            "type": "text"
+            "type": "layout"
         },
         {
             "key": "data",
             "name": "Data",
-            "type": "text"
+            "type": "collection"
         }
     ]
 }
