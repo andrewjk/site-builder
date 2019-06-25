@@ -11,6 +11,7 @@
   } from "../store/state";
 
   import loadAllSites from "../store/load-all-sites";
+  import siteExists from "../store/site-exists";
   import loadSite from "../store/load-site";
   import loadDefinitionFiles from "../store/load-definition-files";
   import buildSections from "../store/build-sections";
@@ -30,8 +31,11 @@
 
   onMount(async () => {
     $sites = await loadAllSites();
-    // Load the previous site used
-    const siteName = settings.get('app.siteName') || $sites[0];
+    // Load the previous site used, if it still exists
+    let siteName = settings.get("app.siteName");
+    if (!siteExists(siteName)) {
+      siteName = $sites[0];
+    }
     $activeSite = await loadSite(siteName);
     $definitions = await loadDefinitionFiles();
     $sections = buildSections($activeSite, $definitions);
