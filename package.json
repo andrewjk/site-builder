@@ -9,7 +9,8 @@
     "build:dir": "yarn build --dir -c.compression=store -c.mac.identity=null",
     "test": "yarn test:unit && yarn test:e2e",
     "test:e2e": "yarn compile && mocha test/e2e",
-    "test:unit": "karma start test/unit/karma.conf.js"
+    "test:unit": "karma start test/unit/karma.conf.js",
+    "postinstall": "rimraf node_modules/svelte/*.mjs"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
