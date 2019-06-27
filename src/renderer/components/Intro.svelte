@@ -1,6 +1,6 @@
 <script>
   import { creatingSite, activeSite } from "../store/state";
-  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import { Button } from "svelte-toolkit";
 
   function startCreatingSite() {
     $creatingSite = true;

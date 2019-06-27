@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import { Button } from "svelte-toolkit";
 
   import Icon from "./Icon";
   import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";

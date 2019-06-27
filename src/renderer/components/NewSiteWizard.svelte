@@ -7,7 +7,7 @@
     sections,
     activeSection
   } from "../store/state";
-  import Button from "../../../../svelte-toolkit/src/components/Button/Button.svelte";
+  import { Button } from "svelte-toolkit";
 
   import createSite from "../store/create-site";
   import loadSite from "../store/load-site";
